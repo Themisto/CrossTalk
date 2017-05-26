@@ -57,3 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
+# keep build.js from webpack off remote repo
+public/build.js
+**/.DS_Store
+
