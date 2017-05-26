@@ -1,0 +1,39 @@
+import Vue from 'vue'
+import Layout from './Layout.vue'
+import VueRouter from 'vue-router';
+import TodoList from './pages/list/TodoList.vue';
+import Video from './pages/video/Video.vue';
+
+Vue.use(VueRouter);
+
+const routes = [
+  { path: '/', component: TodoList },
+  { path: '/video', component: Video },
+];
+
+const router = new VueRouter({
+  mode: 'history',
+  hashbang: false,
+  routes
+});
+
+Vue.use(router);
+
+
+
+new Vue({
+  el: '#app',
+  data() {
+    return {
+      message: 'test msg'
+    }
+  },
+  router,
+  render(h) {
+    return h(Layout, {
+      props: {
+        parentMsg: this.message
+      }
+    })
+  }
+});
