@@ -1,13 +1,15 @@
 import Vue from 'vue'
 import Layout from './Layout.vue'
 import VueRouter from 'vue-router';
+import Home from './pages/home/Home.vue';
 import TodoList from './pages/list/TodoList.vue';
 import Video from './pages/video/Video.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
-  { path: '/', component: TodoList },
+  { path: '/', component: Home },
+  { path: '/list', component: TodoList },
   { path: '/video', component: Video },
 ];
 
