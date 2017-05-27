@@ -3,9 +3,6 @@
   <navbar></navbar>
   <div class="body">
     <router-view :list="list"></router-view>
-<!--     <div class="footer">
-      <h1>theres some stuff down here</h1>
-    </div> -->
     <body-footer></body-footer>
   </div>
 </div>
@@ -48,5 +45,4 @@ export default {
   margin-top: 50px;
   padding: 20px;
 }
-
 </style>
