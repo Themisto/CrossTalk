@@ -48,6 +48,6 @@
   display: flex;
   justify-content: space-around;
   margin-top: 50px;
-  font-size: 10pt;
+  font-size: 8pt;
 }
 </style>
