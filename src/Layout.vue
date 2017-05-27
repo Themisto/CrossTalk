@@ -1,6 +1,5 @@
 <template>
 <div>
-  <!-- <img src="./assets/logo.png"> -->
   <navbar></navbar>
   <router-view :list="list"></router-view>
 </div>
@@ -32,7 +31,8 @@ export default {
 
 
 <style>
-div {
-  display: flex;
+* {
+  margin: 0;
+  font-family: 'Noto Sans', sans-serif;
 }
 </style>
