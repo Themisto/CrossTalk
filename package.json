@@ -7,8 +7,8 @@
   "scripts": {
     "watch": "webpack --watch",
     "build": "webpack -p",
-    "start": "node server.js",
-    "dev": "webpack --watch & nodemon server.js"
+    "start": "node server/server.js",
+    "dev": "webpack --watch & nodemon server/server.js"
   },
   "dependencies": {
     "axios": "^0.16.1",

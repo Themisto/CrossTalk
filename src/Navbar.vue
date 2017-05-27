@@ -1,8 +1,8 @@
 <template>
-<div>
+<nav>
   <p><router-link to="/">Go Home</router-link></p>
   <p><router-link to="/video">Go Video</router-link></p>
-</div>
+</nav>
 </template>
 
 
@@ -22,11 +22,8 @@ export default {
 
 
 <style>
-div {
+nav {
   display: flex;
   margin: 10px;
-
-/*  font-size: 2em;
-  text-align: center;*/
 }
 </style>
