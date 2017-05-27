@@ -3,9 +3,6 @@
   <navbar></navbar>
   <div class="body">
     <router-view :list="list"></router-view>
-<!--     <div class="footer">
-      <h1>theres some stuff down here</h1>
-    </div> -->
     <body-footer></body-footer>
   </div>
 </div>
@@ -44,9 +41,11 @@ export default {
   font-family: 'Noto Sans', sans-serif;
 }
 
-.body {
-  margin-top: 50px;
-  padding: 20px;
+body {
+  background-color: #4065a0;
 }
 
+.body {
+  margin-top: 50px;
+}
 </style>

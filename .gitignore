@@ -58,6 +58,7 @@ typings/
 .env
 
 # keep build.js from webpack off remote repo
-public/build.js
+public/*
+!public/index.html
 **/.DS_Store
 
