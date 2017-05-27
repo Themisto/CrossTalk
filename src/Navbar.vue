@@ -20,14 +20,17 @@
 
 <style>
 nav {
+  margin-top: -50px;
   display: flex;
+  position: fixed;
+  width: 100%;
   background-color: lightgrey;
 }
 
 nav a {
   text-decoration: none;
   color: black;
-  padding: 20px;
+  padding: 14px;
 }
 
 nav a:hover {

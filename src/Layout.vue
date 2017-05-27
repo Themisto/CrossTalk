@@ -35,4 +35,9 @@ export default {
   margin: 0;
   font-family: 'Noto Sans', sans-serif;
 }
+
+.body {
+  margin-top: 50px;
+  padding: 20px;
+}
 </style>

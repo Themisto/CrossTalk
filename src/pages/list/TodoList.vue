@@ -1,10 +1,10 @@
 <template>
-<div>
-  <ul>
-    <list-entry v-for="item in list" :delete-item="deleteItem" :index="item[0]" :item="item[1]"></list-entry>
-  </ul>
+<div class="body">
   <input v-model="message" placeholder="edit me">
-  <button v-on:click="addToList(message)"></button>
+  <button v-on:click="addToList(message)">Add</button>
+  <ul>
+    <list-entry v-for="item in list" :delete-item="deleteItem.bind(this, item)" :text="item"></list-entry>
+  </ul>
 </div>
 </template>
 
@@ -13,7 +13,13 @@
 <script>
 import ListEntry from './ListEntry.vue'
 // import axios from 'axios'
-
+// axios.get('video')
+// .then(response => {
+//   console.log(response);
+// })
+// .catch(e => {
+//   this.errors.push(e)
+// })
 export default {
   props: ['list'],
   data() {
@@ -23,17 +29,10 @@ export default {
   },
   methods: {
     addToList: function(text) {
-      // axios.get('video')
-      // .then(response => {
-      //   console.log(response);
-      // })
-      // .catch(e => {
-      //   this.errors.push(e)
-      // })
-      this.list.push([this.list.length, text]);
+      this.list.push(text);
     },
-    deleteItem: function(index) {
-      console.log('asdf');
+    deleteItem: function(item) {
+      var index = this.list.indexOf(item);
       this.list.splice(index, 1);
     }
   },

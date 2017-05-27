@@ -1,6 +1,6 @@
 <template>
 <div>
-  <li v-on:click="deleteItem(index)">{{index}}{{item}}</li>
+  <li v-on:click="deleteItem">{{text}}</li>
 </div>
 </template>
 
@@ -9,7 +9,7 @@
 <script>
 
 export default {
-  props: ['deleteItem', 'index', 'item'],
+  props: ['deleteItem', 'text'],
   data() {
     return {
       message: ''
