@@ -41,8 +41,11 @@ export default {
   font-family: 'Noto Sans', sans-serif;
 }
 
+body {
+  background-color: #4065a0;
+}
+
 .body {
   margin-top: 50px;
-  padding: 20px;
 }
 </style>
