@@ -1,7 +1,9 @@
 <template>
 <div>
   <navbar></navbar>
-  <router-view :list="list"></router-view>
+  <div class="body">
+    <router-view :list="list"></router-view>
+  </div>
 </div>
 </template>
 

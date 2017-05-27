@@ -1,5 +1,5 @@
 <template>
-<div class="body">
+<div>
   <input v-model="message" placeholder="edit me">
   <button v-on:click="addToList(message)">Add</button>
   <ul>

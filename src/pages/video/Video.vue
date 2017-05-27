@@ -1,5 +1,5 @@
 <template>
-<div class="body">
+<div>
   Video
 </div>
 </template>
