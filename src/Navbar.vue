@@ -1,7 +1,7 @@
 <template>
 <nav>
-  <p><router-link to="/">Go Home</router-link></p>
-  <p><router-link to="/video">Go Video</router-link></p>
+  <router-link to="/">Home</router-link>
+  <router-link to="/video">Video</router-link>
 </nav>
 </template>
 
@@ -10,9 +10,6 @@
 
 
 <script>
-
-export default {
-}
 
 </script>
 
@@ -24,6 +21,17 @@ export default {
 <style>
 nav {
   display: flex;
-  margin: 10px;
+  background-color: lightgrey;
 }
+
+nav a {
+  text-decoration: none;
+  color: black;
+  padding: 20px;
+}
+
+nav a:hover {
+  background-color: grey;
+}
+
 </style>
