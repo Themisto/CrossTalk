@@ -3,6 +3,10 @@
   <navbar></navbar>
   <div class="body">
     <router-view :list="list"></router-view>
+<!--     <div class="footer">
+      <h1>theres some stuff down here</h1>
+    </div> -->
+    <body-footer></body-footer>
   </div>
 </div>
 </template>
@@ -13,6 +17,7 @@
 
 <script>
 import Navbar from './Navbar.vue'
+import BodyFooter from './BodyFooter.vue'
 
 export default {
   data() {
@@ -21,7 +26,8 @@ export default {
     }
   },
   components: {
-    Navbar
+    Navbar,
+    BodyFooter
   }
 }
 
@@ -42,4 +48,5 @@ export default {
   margin-top: 50px;
   padding: 20px;
 }
+
 </style>
