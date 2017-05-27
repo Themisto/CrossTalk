@@ -3,7 +3,7 @@
   <input v-model="message" placeholder="edit me">
   <button v-on:click="addToList(message)">Add</button>
   <ul>
-    <list-entry v-for="item in list" :delete-item="deleteItem.bind(this, item)" :text="item"></list-entry>
+    <list-entry v-for="item in list" :delete-item="deleteItem" :item="item"></list-entry>
   </ul>
 </div>
 </template>
@@ -28,8 +28,8 @@ export default {
     }
   },
   methods: {
-    addToList: function(text) {
-      this.list.push(text);
+    addToList: function(msg) {
+      this.list.push({text: msg});
     },
     deleteItem: function(item) {
       var index = this.list.indexOf(item);
