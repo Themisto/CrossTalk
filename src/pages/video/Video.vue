@@ -5,14 +5,18 @@
     <messages-panel id="chats"></messages-panel>
     <input-box></input-box>
   </div>
+  <div>
+    <video width="280" height="250" autoplay="true"></video>
+    <video width="280" height="250" autoplay="true"></video>
+  </div>
   <messages-panel id="translations"></messages-panel>
 </div>
 </template>
 
 
 <script>
-import InputBox from './InputBox.vue'
-import MessagesPanel from './MessagesPanel.vue'
+import InputBox from './components/InputBox.vue'
+import MessagesPanel from './components/MessagesPanel.vue'
 
 export default {
   components: {
