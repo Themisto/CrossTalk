@@ -1,18 +1,17 @@
 <template>
 <div>
   Video
-  <chat-panel></chat-panel>
-
+  <messages-panel></messages-panel>
 </div>
 </template>
 
 
 <script>
-import ChatPanel from './ChatPanel.vue'
+import MessagesPanel from './MessagesPanel.vue'
 
 export default {
   components: {
-    ChatPanel
+    MessagesPanel
   }
 }
 
