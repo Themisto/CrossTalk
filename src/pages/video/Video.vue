@@ -1,14 +1,22 @@
 <template>
 <div>
   Video
-  <video id="localVideo" autoplay></video>
-  <!-- <video id="remoteVideo" autoplay></video> -->
+  <chat-panel></chat-panel>
+
 </div>
 </template>
 
 
-
 <script>
+import ChatPanel from './ChatPanel.vue'
+
+export default {
+  components: {
+    ChatPanel
+  }
+}
+
+/* Video capture/render. Integrate on DOM mount.
 // var wsc = new WebSocket('ws://localhost:8080/websocket/');
 // var peerConnCfg = {
 //   'iceServers': [
@@ -36,12 +44,10 @@ function pageReady() {
 };
 
 window.addEventListener("load", pageReady);
-
+*/
 </script>
-
 
 
 <style>
 
 </style>
-
