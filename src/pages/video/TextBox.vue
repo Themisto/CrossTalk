@@ -1,13 +1,13 @@
 <template>
 <p>
-Hello
+  {{message.text}}
 </p>
 </template>
 
 
 <script>
 export default {
-  props: [],
+  props: ['message'],
   methods: {
 
   },
