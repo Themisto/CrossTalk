@@ -17,17 +17,18 @@
 //   ]
 // };
 var localVideo;
+var localVideoStream;
 function pageReady() {
   localVideo = document.getElementById('localVideo');
-  if (navigator.getUserMedia) {
-    navigator.getUserMedia({audio: true, video: true},
-    (stream) => {
-      localVideo.src = URL.createObjectURL(stream);
-    },
-    (err) => {
-      console.error('Failed to acquire local video/audio stream.\n', err);
-    });
-  }
+  navigator.getUserMedia({audio: true, video: true},
+  (stream) => {
+    localVideoStream = URL.createObjectURL(stream);
+    localVideo.src = localVideoStream;
+  },
+  (err) => {
+    console.error('Failed to acquire local video/audio stream.\n', err);
+  });
+
 };
 
 window.addEventListener("load", pageReady);
