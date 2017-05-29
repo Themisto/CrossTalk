@@ -1,16 +1,22 @@
 <template>
 <div>
   Video
-  <messages-panel></messages-panel>
+  <div>
+    <messages-panel id="chats"></messages-panel>
+    <input-box></input-box>
+  </div>
+  <messages-panel id="translations"></messages-panel>
 </div>
 </template>
 
 
 <script>
+import InputBox from './InputBox.vue'
 import MessagesPanel from './MessagesPanel.vue'
 
 export default {
   components: {
+    InputBox,
     MessagesPanel
   }
 }
