@@ -3,6 +3,7 @@
   <text-box
     v-for="message in messages"
     :message="message"
+    :key="message.id"
   ></text-box>
 </div>
 </template>

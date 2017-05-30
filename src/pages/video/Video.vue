@@ -2,8 +2,7 @@
 <div>
   Video
   <div>
-    <messages-panel id="chats"></messages-panel>
-    <input-box></input-box>
+    <chats-panel id="chats"></chats-panel>
   </div>
   <div>
     <video width="320" height="240" autoplay="true"></video>
@@ -11,20 +10,20 @@
     <video width="320" height="240" autoplay="true"></video>
     <text-box :message="{text:'User_1'}"></text-box>
   </div>
-  <messages-panel id="translations"></messages-panel>
+  <translations-panel></translations-panel>
 </div>
 </template>
 
 
 <script>
-import InputBox from './components/InputBox.vue'
-import MessagesPanel from './components/MessagesPanel.vue'
+import ChatsPanel from './components/ChatsPanel.vue'
+import TranslationsPanel from './components/TranslationsPanel.vue'
 import TextBox from './components/TextBox.vue'
 
 export default {
   components: {
-    InputBox,
-    MessagesPanel,
+    ChatsPanel,
+    TranslationsPanel,
     TextBox
   }
 }
