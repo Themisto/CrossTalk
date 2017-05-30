@@ -1,14 +1,35 @@
 <template>
-<div>
-  Video
-  <video id="localVideo" autoplay></video>
-  <!-- <video id="remoteVideo" autoplay></video> -->
+<div id="video-page">
+  <chats-panel></chats-panel>
+  <div id="videos">
+    <div id="remote-video">
+      <video autoplay="true"></video>
+      <text-box :message="{text:'User_0'}"></text-box>
+    </div>
+    <div id="local-video">
+      <video autoplay="true"></video>
+      <text-box :message="{text:'User_1'}"></text-box>
+    </div>
+  </div>
+  <translations-panel></translations-panel>
 </div>
 </template>
 
 
-
 <script>
+import ChatsPanel from './components/ChatsPanel.vue'
+import TranslationsPanel from './components/TranslationsPanel.vue'
+import TextBox from './components/TextBox.vue'
+
+export default {
+  components: {
+    ChatsPanel,
+    TranslationsPanel,
+    TextBox
+  }
+}
+
+/* Video capture/render. Integrate on DOM mount.
 // var wsc = new WebSocket('ws://localhost:8080/websocket/');
 // var peerConnCfg = {
 //   'iceServers': [
@@ -36,12 +57,26 @@ function pageReady() {
 };
 
 window.addEventListener("load", pageReady);
-
+*/
 </script>
 
 
-
 <style>
+#video-page {
+  background-color: #7aa2e2;
+  display: flex;
+  justify-content: space-around;
+}
+
+#videos {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+video {
+  border-style: groove;
+  height: 240px;
+  width: 320px;
+}
 
 </style>
-
