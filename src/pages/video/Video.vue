@@ -6,8 +6,10 @@
     <input-box></input-box>
   </div>
   <div>
-    <video width="280" height="250" autoplay="true"></video>
-    <video width="280" height="250" autoplay="true"></video>
+    <video width="320" height="240" autoplay="true"></video>
+    <text-box :message="{text:'User_0'}"></text-box>
+    <video width="320" height="240" autoplay="true"></video>
+    <text-box :message="{text:'User_1'}"></text-box>
   </div>
   <messages-panel id="translations"></messages-panel>
 </div>
@@ -17,11 +19,13 @@
 <script>
 import InputBox from './components/InputBox.vue'
 import MessagesPanel from './components/MessagesPanel.vue'
+import TextBox from './components/TextBox.vue'
 
 export default {
   components: {
     InputBox,
-    MessagesPanel
+    MessagesPanel,
+    TextBox
   }
 }
 
