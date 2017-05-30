@@ -5,8 +5,8 @@
     :message="message"
     :key="message.id"
   ></text-box>
-  <input placeholder="Enter chat here">
-  <button> Send </button>
+  <input placeholder="Enter chat here" v-model="chat">
+  <button v-on:click="sendMessage"> Send </button>
 </div>
 </template>
 
@@ -25,8 +25,21 @@ export default {
       }
     }
   },
+  data: function () {
+    return {
+      chat: ''
+    }
+  },
   methods: {
+    sendMessage: function () {
+      var message = {
+        id: this.messages.length,
+        text: this.chat
+      }
 
+      this.chat = ''
+      this.messages.push(message)
+    },
   },
   components: {
     TextBox
