@@ -1,8 +1,8 @@
 <template>
 <div>
   Video
-  <video id="localVideo"></video>
-  <!-- <video id="remoteVideo"></video> -->
+  <video id="localVideo" autoplay></video>
+  <!-- <video id="remoteVideo" autoplay></video> -->
 </div>
 </template>
 
@@ -18,13 +18,17 @@
 // };
 var localVideo;
 var localVideoStream;
+
+let constraints = {audio: true, video: true};
+
 function pageReady() {
-  localVideo = document.getElementById('localVideo');
-  navigator.getUserMedia({audio: true, video: true},
+  navigator.mediaDevices.getUserMedia(constraints).then(
   (stream) => {
+    // console.dir(stream.getAudioTracks());
+    localVideo = document.getElementById('localVideo');
     localVideoStream = URL.createObjectURL(stream);
     localVideo.src = localVideoStream;
-  },
+  }).catch(
   (err) => {
     console.error('Failed to acquire local video/audio stream.\n', err);
   });
