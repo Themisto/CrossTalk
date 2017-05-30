@@ -1,14 +1,15 @@
 <template>
-<div>
-  Video
-  <div>
-    <chats-panel id="chats"></chats-panel>
-  </div>
-  <div>
-    <video width="320" height="240" autoplay="true"></video>
-    <text-box :message="{text:'User_0'}"></text-box>
-    <video width="320" height="240" autoplay="true"></video>
-    <text-box :message="{text:'User_1'}"></text-box>
+<div id="video-page">
+  <chats-panel></chats-panel>
+  <div id="videos">
+    <div id="remote-video">
+      <video autoplay="true"></video>
+      <text-box :message="{text:'User_0'}"></text-box>
+    </div>
+    <div id="local-video">
+      <video autoplay="true"></video>
+      <text-box :message="{text:'User_1'}"></text-box>
+    </div>
   </div>
   <translations-panel></translations-panel>
 </div>
@@ -61,5 +62,21 @@ window.addEventListener("load", pageReady);
 
 
 <style>
+#video-page {
+  background-color: #7aa2e2;
+  display: flex;
+  justify-content: space-around;
+}
+
+#videos {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+video {
+  border-style: groove;
+  height: 240px;
+  width: 320px;
+}
 
 </style>
