@@ -2,12 +2,12 @@
 <div id="video-page">
   <chats-panel></chats-panel>
   <div id="videos">
-    <div id="remote-video">
-      <video autoplay="true"></video>
+    <div>
+      <video id="remote-video" autoplay="true"></video>
       <text-box :message="{text:'User_0'}"></text-box>
     </div>
-    <div id="local-video">
-      <video autoplay="true"></video>
+    <div>
+      <video id="local-video" autoplay="true"></video>
       <text-box :message="{text:'User_1'}"></text-box>
     </div>
   </div>
@@ -29,7 +29,8 @@ export default {
   }
 }
 
-/* Video capture/render. Integrate on DOM mount.
+// Video capture/render. Integrate on DOM mount.
+// =============================================
 // var wsc = new WebSocket('ws://localhost:8080/websocket/');
 // var peerConnCfg = {
 //   'iceServers': [
@@ -46,7 +47,7 @@ function pageReady() {
   navigator.mediaDevices.getUserMedia(constraints).then(
   (stream) => {
     // console.dir(stream.getAudioTracks());
-    localVideo = document.getElementById('localVideo');
+    localVideo = document.getElementById('local-video');
     localVideoStream = URL.createObjectURL(stream);
     localVideo.src = localVideoStream;
   }).catch(
@@ -57,7 +58,7 @@ function pageReady() {
 };
 
 window.addEventListener("load", pageReady);
-*/
+
 </script>
 
 
