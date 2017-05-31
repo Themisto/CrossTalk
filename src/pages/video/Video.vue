@@ -1,5 +1,100 @@
 <template>
-<div>
-  Video
+<div id="video-page">
+  <chats-panel></chats-panel>
+  <div id="videos">
+    <div>
+      <video id="remote-video" autoplay="true"></video>
+      <text-box :message="{text:'User_0'}"></text-box>
+    </div>
+    <div>
+      <video id="local-video" autoplay="true"></video>
+      <text-box :message="{text:'User_1'}"></text-box>
+    </div>
+  </div>
+  <translations-panel></translations-panel>
 </div>
 </template>
+
+
+<script>
+import ChatsPanel from './components/ChatsPanel.vue'
+import TranslationsPanel from './components/TranslationsPanel.vue'
+import TextBox from './components/TextBox.vue'
+
+export default {
+  // State variables.
+  // ================
+  data: function () {
+    return {
+      localVideo: '',  // Set by startVideoCapture().
+      localVideoStream: '',  // Set by startVideoCapture().
+    }
+  },
+  // Controller methods.
+  // ===================
+  methods: {
+    startVideoCapture: function () {
+      console.log('Starting video capture...')
+      var constraints = {audio: true, video: true}
+
+      this.localVideo = document.getElementById('local-video')
+
+      navigator.mediaDevices.getUserMedia(constraints)
+      .then((stream) => {
+        // console.dir(stream.getAudioTracks());
+        this.localVideoStream = stream
+        this.localVideo.src = URL.createObjectURL(stream)
+      })
+      .catch((err) => {
+        console.error('Failed to acquire local video/audio stream.\n', err)
+      })
+    },
+
+    stopVideoCapture: function () {
+      console.log('Ending video capture...')
+      // Need to call stop() on each track in stream.
+      var tracks = this.localVideoStream.getTracks()
+      tracks.forEach(function (track) {
+        track.stop()
+      })
+    },
+  },
+  // Custom components.
+  // ==================
+  components: {
+    ChatsPanel,
+    TranslationsPanel,
+    TextBox
+  },
+  // Lifecycle hooks
+  // ===============
+  mounted: function () {
+    this.startVideoCapture()
+  },
+
+  beforeDestroy: function () {
+    this.stopVideoCapture()
+  },
+}
+</script>
+
+
+<style>
+#video-page {
+  background-color: #7aa2e2;
+  display: flex;
+  justify-content: space-around;
+}
+
+#videos {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+video {
+  border-style: groove;
+  height: 240px;
+  width: 320px;
+}
+
+</style>
