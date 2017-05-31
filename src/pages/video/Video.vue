@@ -20,6 +20,8 @@
 import ChatsPanel from './components/ChatsPanel.vue';
 import TranslationsPanel from './components/TranslationsPanel.vue';
 import TextBox from './components/TextBox.vue';
+// import io from '../../../node_modules/socket.io/lib/socket.js';
+import io from '../../../node_modules/socket.io-client/dist/socket.io.js';
 
 export default {
   // State variables.
@@ -31,12 +33,33 @@ export default {
       localVideoStream: '',  // Set by startVideoCapture().
       remoteVideoStream: '',  // Set by handleAddStream().
       rtcpc: '', // The RTCPeerConnection, set by createPeerConnection().
-      caller: false // Determines whether we
+      caller: false // Determines role, set by startSocketIO().
     }
   },
   // Controller methods.
   // ===================
   methods: {
+
+    startSocketIO: function() {
+      let socket = io.connect();
+      let room = null; // TODO: room strategy?
+
+      // Signal intent to join or create the room
+      socket.emit('enter room', room);
+      console.log(`Attempting to join or create room "${room}"`);
+
+      // LISTENERS
+
+      socket.on('created room', (message) => {
+        // If we created the room, we will be the caller.
+        this.caller = true;
+      });
+
+      socket.on('joined room', (message) => {
+        // If we joined the room, we will be the callee.
+        this.caller = false;
+      });
+    },
 
     startVideoCapture: function () {
       console.log('Starting video capture...');
@@ -142,6 +165,7 @@ export default {
   // Lifecycle hooks
   // ===============
   mounted: function () {
+    this.startSocketIO();
     // Initialize references to HTML5 video elements
     this.localVideo = document.getElementById('local-video');
     this.remoteVideo = document.getElementById('remote-video');
