@@ -26,30 +26,37 @@ export default {
   // ================
   data: function () {
     return {
-      localVideo: '',
-      localVideoStream: '',
+      localVideo: '',  // Set by startVideoCapture().
+      localVideoStream: '',  // Set by startVideoCapture().
     }
   },
   // Controller methods.
   // ===================
   methods: {
-    captureLocalVideo: function () {
-      console.log('Beginning video capture...')
-      var constraints = {audio: true, video: true};
+    startVideoCapture: function () {
+      console.log('Starting video capture...')
+      var constraints = {audio: true, video: true}
+
+      this.localVideo = document.getElementById('local-video')
 
       navigator.mediaDevices.getUserMedia(constraints)
       .then((stream) => {
         // console.dir(stream.getAudioTracks());
-        this.localVideoStream = URL.createObjectURL(stream);
-        this.localVideo.src = this.localVideoStream;
+        this.localVideoStream = stream
+        this.localVideo.src = URL.createObjectURL(stream)
       })
       .catch((err) => {
-        console.error('Failed to acquire local video/audio stream.\n', err);
+        console.error('Failed to acquire local video/audio stream.\n', err)
       })
     },
 
-    endVideoCapture: function () {
+    stopVideoCapture: function () {
       console.log('Ending video capture...')
+      // Need to call stop() on each track in stream.
+      var tracks = this.localVideoStream.getTracks()
+      tracks.forEach(function (track) {
+        track.stop()
+      })
     },
   },
   // Custom components.
@@ -62,11 +69,11 @@ export default {
   // Lifecycle hooks
   // ===============
   mounted: function () {
-    this.localVideo = document.getElementById('local-video')
-    this.captureLocalVideo()
+    this.startVideoCapture()
   },
+
   beforeDestroy: function () {
-    this.endVideoCapture()
+    this.stopVideoCapture()
   },
 }
 </script>
