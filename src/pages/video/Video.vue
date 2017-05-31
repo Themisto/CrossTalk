@@ -22,35 +22,53 @@ import TranslationsPanel from './components/TranslationsPanel.vue'
 import TextBox from './components/TextBox.vue'
 
 export default {
+  // State variables.
+  // ================
+  data: function () {
+    return {
+      localVideo: '',
+      localVideoStream: '',
+    }
+  },
+  // Controller methods.
+  // ===================
   methods: {
     captureLocalVideo: function () {
       console.log('Beginning video capture...')
-      var localVideo;
-      var localVideoStream;
       var constraints = {audio: true, video: true};
 
       navigator.mediaDevices.getUserMedia(constraints)
       .then((stream) => {
         // console.dir(stream.getAudioTracks());
-        localVideo = document.getElementById('local-video');
-        localVideoStream = URL.createObjectURL(stream);
-        localVideo.src = localVideoStream;
+        this.localVideoStream = URL.createObjectURL(stream);
+        this.localVideo.src = this.localVideoStream;
       })
       .catch((err) => {
         console.error('Failed to acquire local video/audio stream.\n', err);
       })
     },
+
+    endVideoCapture: function () {
+      console.log('Ending video capture...')
+    },
   },
-  mounted: function () {
-    this.captureLocalVideo()
-  },
+  // Custom components.
+  // ==================
   components: {
     ChatsPanel,
     TranslationsPanel,
     TextBox
-  }
+  },
+  // Lifecycle hooks
+  // ===============
+  mounted: function () {
+    this.localVideo = document.getElementById('local-video')
+    this.captureLocalVideo()
+  },
+  beforeDestroy: function () {
+    this.endVideoCapture()
+  },
 }
-
 </script>
 
 
