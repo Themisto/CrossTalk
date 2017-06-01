@@ -1,5 +1,11 @@
 var server = require('./routes.js');
 
-server.listen(process.env.PORT || 8000, function() {
-  console.log('Server is listening on 8000');
+// Start signal server
+require('./signal.js');
+
+var port = process.env.PORT || 8000;
+
+server.listen(port, function() {
+  console.log(`Server is listening on ${port}`);
 });
+
