@@ -1,6 +1,6 @@
 <template>
 <div id="video-page">
-  <chats-panel></chats-panel>
+  <chats-panel :socket="socket"></chats-panel>
   <div id="videos">
     <div>
       <video id="remote-video" autoplay="true"></video>
@@ -28,12 +28,14 @@ export default {
   // ================
   data: function () {
     return {
-      localVideo: '',  // Set in mounted lifecycle hook.
-      remoteVideo: '',  // Set in mounted lifecycle hook.
-      localVideoStream: '',  // Set by startVideoCapture().
-      remoteVideoStream: '',  // Set by handleAddStream().
-      rtcpc: '', // The RTCPeerConnection, set by createPeerConnection().
-      caller: false // Determines role, set by startSocketIO().
+      localVideo: null,  // Set in mounted lifecycle hook.
+      remoteVideo: null,  // Set in mounted lifecycle hook.
+      localVideoStream: null,  // Set by startVideoCapture().
+      remoteVideoStream: null,  // Set by handleAddStream().
+      rtcpc: null, // The RTCPeerConnection, set by createPeerConnection().
+      caller: false, // Determines role, set by startSocketIO().
+      socket: null,  // Socket.io connection to signal server, set by startSocketIO().
+      room: 'test'
     }
   },
   // Controller methods.
@@ -41,8 +43,12 @@ export default {
   methods: {
 
     startSocketIO: function() {
-      let socket = io.connect();
-      let room = null; // TODO: room strategy?
+      // let socket = io.connect();
+      this.socket = io('http://localhost:8001');
+      // this.room = null; // TODO: room strategy?
+
+      // Expose socket to window for console testing
+      window.socket = socket;
 
       // Signal intent to join or create the room
       socket.emit('enter room', room);
@@ -63,7 +69,7 @@ export default {
 
     startVideoCapture: function () {
       console.log('Starting video capture...');
-      var constraints = {audio: true, video: true};
+      var constraints = {audio: false, video: true};
 
       navigator.mediaDevices.getUserMedia(constraints)
       .then((stream) => {
