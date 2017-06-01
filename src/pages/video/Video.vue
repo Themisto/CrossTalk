@@ -48,20 +48,20 @@ export default {
       // this.room = null; // TODO: room strategy?
 
       // Expose socket to window for console testing
-      window.socket = socket;
+      // window.socket = socket;
 
       // Signal intent to join or create the room
-      socket.emit('enter room', room);
-      console.log(`Attempting to join or create room "${room}"`);
+      this.socket.emit('enter room', this.room);
+      console.log(`Attempting to join or create room "${this.room}"`);
 
       // LISTENERS
 
-      socket.on('created room', (message) => {
+      this.socket.on('created room', (message) => {
         // If we created the room, we will be the caller.
         this.caller = true;
       });
 
-      socket.on('joined room', (message) => {
+      this.socket.on('joined room', (message) => {
         // If we joined the room, we will be the callee.
         this.caller = false;
       });
