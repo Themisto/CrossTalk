@@ -6,6 +6,6 @@ require('./signal.js');
 var port = process.env.PORT || 8000;
 
 server.listen(port, function() {
-  console.log(`Server is listening on ${port}`);
+  console.log(`Web server listening on port ${port}`);
 });
 
