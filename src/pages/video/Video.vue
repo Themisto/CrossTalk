@@ -7,7 +7,7 @@
       <text-box :message="{text:'Remote'}"></text-box>
     </div>
     <div>
-      <video id="local-video" autoplay="true"></video>
+      <video id="local-video" autoplay="true" muted></video>
       <text-box :message="{text:'Local'}"></text-box>
     </div>
   </div>
@@ -17,10 +17,10 @@
 
 
 <script>
+
 import ChatsPanel from './components/ChatsPanel.vue';
 import TranslationsPanel from './components/TranslationsPanel.vue';
 import TextBox from './components/TextBox.vue';
-// import io from '../../../node_modules/socket.io/lib/socket.js';
 import io from '../../../node_modules/socket.io-client/dist/socket.io.js';
 
 export default {
@@ -33,133 +33,216 @@ export default {
       localVideoStream: null,  // Set by startVideoCapture().
       remoteVideoStream: null,  // Set by handleAddStream().
       rtcpc: null, // The RTCPeerConnection, set by createPeerConnection().
-      caller: false, // Determines role, set by startSocketIO().
+      isCaller: null, // Caller or Callee, set by startSocketIO().
       socket: null,  // Socket.io connection to signal server, set by startSocketIO().
-      room: 'test'
-    }
+      room: 'test', // Room name, TODO: Strategy for assigning roomnames for each pair
+      verbose: false // On/off flag for log() method
+    };
   },
+
   // Controller methods.
   // ===================
   methods: {
 
-    startSocketIO: function() {
-      // let socket = io.connect();
-      this.socket = io('http://localhost:8001');
-      // this.room = null; // TODO: room strategy?
+    // Convenience method for logging debugging messages
+    log: function() {
+      this.verbose && console.log.apply(console, arguments);
+    },
 
-      // Expose socket to window for console testing
-      // window.socket = socket;
+    // Connect to Signal Server and initiate listeners
+    startSocketIO: function() {
+      // Should point to deployed signal server, or http://localhost:8001 for local testing
+      let SignalServerURL = 'http://localhost:8001';
+
+      this.log(`Connecting to signal server at ${SignalServerURL}...`);
+      this.socket = io(SignalServerURL);
 
       // Signal intent to join or create the room
+      this.log(`Attempting to join or create room "${this.room}"...`);
       this.socket.emit('enter room', this.room);
-      console.log(`Attempting to join or create room "${this.room}"`);
 
       // LISTENERS
 
-      this.socket.on('created room', (message) => {
-        // If we created the room, we will be the caller.
-        this.caller = true;
+      // Occurs if we are the first client in the room
+      this.socket.on('created room', (room) => {
+        this.log(`Created room "${room}", we are the Caller`);
+        // We must be the caller
+        this.isCaller = true;
       });
 
-      this.socket.on('joined room', (message) => {
-        // If we joined the room, we will be the callee.
-        this.caller = false;
+      // Occurs if we are not the first client in the room
+      this.socket.on('joined room', (room) => {
+        this.log(`Joined room "${room}", we are the Callee`);
+        // We must be the callee
+        this.isCaller = false;
       });
+
+      // Occurs when another party joins our room
+      this.socket.on('callee joined', (room) => {
+        this.log('Callee has joined room "${room}"');
+        // It is now safe to initiate call
+        this.isCaller && this.sendOffer();
+      });
+
+      this.socket.on('relay', (data) => {
+        if (data.type === 'ICECandidate') {   // ICE candidate received from counterpart
+          this.handleReceiveIceCandidate(data);
+        } else if (data.type === 'Offer') {   // Offer received from Caller
+          this.handleReceiveOffer(data.sdp);
+        } else if (data.type === 'Answer') {  // Answer received from Callee
+          this.handleReceiveAnswer(data.sdp);
+        } else if (data.type === 'Bye') {     // Hangup received from counterpart
+          this.handleRemoveStream();
+        } else {
+          console.error(`Warning: Invalid message type '${data.type}' received`);
+        }
+      });
+
+    },
+
+    // Convenience method for including room name with every 'relay' message
+    relay: function(message) {
+      let data = {
+        message: message,
+        room: this.room
+      };
+      this.socket.emit('relay', data);
     },
 
     startVideoCapture: function () {
-      console.log('Starting video capture...');
-      var constraints = {audio: false, video: true};
+      this.log('Starting video capture...');
+      var constraints = {audio: true, video: true};
 
       navigator.mediaDevices.getUserMedia(constraints)
       .then((stream) => {
-        // console.dir(stream.getAudioTracks());
+        this.log('Local stream acquired');
         this.localVideoStream = stream;
         this.localVideo.src = URL.createObjectURL(stream);
         this.createPeerConnection();
       })
       .catch((err) => {
-        console.error('Failed to acquire local video/audio stream.\n', err)
+        console.error('Failed to acquire local video/audio stream.\n', err);
       });
     },
 
     stopVideoCapture: function () {
-      console.log('Ending video capture...');
+      this.log('Ending video capture...');
       // Need to call stop() on each track in stream.
       var tracks = this.localVideoStream.getTracks();
       tracks.forEach(function (track) {
         track.stop();
-      })
+      });
     },
 
     createPeerConnection: function() {
       try {
-        // The addresses to the STUN and/or TURN servers.
-        let STServers = null;
+        this.log('Creating RTCPeerConnection...');
+
+        // TODO: The addresses to the STUN and/or TURN servers.
+        let STServers =  {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]}; // null is also an acceptable value
 
         this.rtcpc = new RTCPeerConnection(STServers);
-        // add local stream to send to recipient
+        // Add local stream to send to recipient
         this.rtcpc.addStream(this.localVideoStream);
-        // listen for and handle our own local ICE Candidate
-        this.rtcpc.onicecandidate = this.handleNewIceCandidate;
-        // listen for and handle the remote stream
+        // Listen for and handle our own local ICE Candidate
+        this.rtcpc.onicecandidate = this.handleGenerateIceCandidate;
+        // Listen for and handle the remote stream
         this.rtcpc.onaddstream = this.handleAddStream;
-        // listen for and handle a hangup from recipient
+        // Listen for and handle a hangup from recipient
         this.rtcpc.onremovestream = this.handleRemoveStream;
+        // Initiate communication with signal server
+        this.startSocketIO();
       } catch (err) {
-        console.error(`Failed to create RTCPeerConnection.\nError: ${err}`);
+        console.error('Failed to create RTCPeerConnection.\n', err);
       }
     },
 
-    handleNewIceCandidate: function(event) {
+    // Receive a local ICE Candidate
+    handleGenerateIceCandidate: function(event) {
       if (event.candidate) {
-        // Create candidate object
-        // This is proprietary and can take whatever form we like
+        this.log('Local ICE Candidate acquired, sending ICE Candidate...');
         let candidateMessage = {
           type: 'ICECandidate',
           sdpMLineIndex: event.candidate.sdpMLineIndex,
           sdpMid: event.candidate.sdpMid,
           candidate: event.candidate.candidate
         };
-        // TODO: send local ICE candidate data (candidateMessage) to signal server
+        // Send ICE Candidate to counterpart
+        this.relay(candidateMessage);
+      } else {
+        this.log('Finished generating ICE Candidates');
       }
     },
 
+    // Receive an ICE Candidate from counterpart
+    handleReceiveIceCandidate: function(remoteIceCandidate) {
+      this.log('ICE Candidate received from counterpart');
+      let remoteCandidate = new RTCIceCandidate({
+        sdpMLineIndex: remoteIceCandidate.sdpMLineIndex,
+        candidate: remoteIceCandidate.candidate
+      });
+      // Add remote ICE Candidate to candidates
+      this.rtcpc.addIceCandidate(remoteCandidate);
+    },
+
+    // Receive an offer from the caller
+    handleReceiveOffer: function(remoteSession) {
+      this.log('Offer received from Caller');
+      this.rtcpc.setRemoteDescription(remoteSession);
+      this.sendAnswer();
+    },
+
+    // Receive an answer from the callee
+    handleReceiveAnswer: function(remoteSession) {
+      this.log('Answer received from Callee');
+      this.rtcpc.setRemoteDescription(remoteSession);
+    },
+
+    // Receive the remote stream
     handleAddStream: function(event) {
-      // Store reference to remote stream
       this.remoteVideoStream = event.stream;
-      // Display remote stream in video element
       this.remoteVideo.src = URL.createObjectURL(this.remoteVideoStream);
     },
 
+    // Counterpart hung up
     handleRemoveStream: function(event) {
-      // TODO
+      this.log('Remote stream has ended');
+      this.remoteVideoStream = this.remoteVideo.src = '';
+      // TODO: Handle resetting environment in case of counterpart reconnect
+    },
+
+    // Create offer, set local description, and send to Callee
+    sendOffer: function() {
+      this.log('Sending offer to Callee...');
+      this.rtcpc.createOffer()
+      .then( (localSession) => {
+        this.rtcpc.setLocalDescription(localSession);
+        this.relay({
+          type: 'Offer',
+          sdp: localSession
+        });
+      })
+      .catch( (err) => {
+        console.error('Error creating offer!\n', err);
+      });
+    },
+
+    // Create answer, set local description, and send to Caller
+    sendAnswer: function() {
+      this.log('Sending answer to Caller...');
+      this.rtcpc.createAnswer()
+      .then( (localSession) => {
+        this.rtcpc.setLocalDescription(localSession);
+        this.relay({
+          type: 'Answer',
+          sdp: localSession
+        });
+      })
+      .catch( (err) => {
+        console.error('Error creating answer!\n', err);
+      });
     }
   },
-
-  // create a new RTCPeerConnection
-    // use the getUserMedia method to get local webcam/mic stream
-      // set the local video stream
-    // retrieve local ICE candidate data using the .onicecandidate event listener
-      // send ICE candidate data to signal server using socket.io
-    // when we receive remote ICE candidate data from the signal server, make a new RTCIceCandidate instance using the candidate data
-      // add new ice candidate using the .addIceCandidate() method
-    // on add stream event
-      // set the remote video stream
-
-  // if we are the caller
-    // create an offer (.createOffer())
-      // set local session description (.setLocalDescription())
-      // send local session description to signal server
-    // wait for an answer from the callee
-      // set the remote description with the session data from the callee (.setRemoteDescription())
-
-  // if we are the callee
-    // wait for an offer from the caller
-      // set the remote description with the session data from the caller (.setRemoteDescription())
-    // create an answer (.createAnswer())
-      // set local session description (.setLocalDescription())
-      // send local session description to signal server
 
   // Custom components.
   // ==================
@@ -168,10 +251,10 @@ export default {
     TranslationsPanel,
     TextBox
   },
+
   // Lifecycle hooks
   // ===============
   mounted: function () {
-    this.startSocketIO();
     // Initialize references to HTML5 video elements
     this.localVideo = document.getElementById('local-video');
     this.remoteVideo = document.getElementById('remote-video');
@@ -180,8 +263,13 @@ export default {
 
   beforeDestroy: function () {
     this.stopVideoCapture();
-  },
+    if (this.socket) {
+      this.relay({type: 'Bye'});
+      this.socket.disconnect();
+    }
+  }
 }
+
 </script>
 
 
@@ -198,6 +286,7 @@ export default {
 }
 
 video {
+  background-color: #303030;
   border-style: groove;
   height: 240px;
   width: 320px;
