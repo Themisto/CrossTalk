@@ -130,11 +130,13 @@ export default {
 
     stopVideoCapture: function () {
       this.log('Ending video capture...');
-      // Need to call stop() on each track in stream.
-      var tracks = this.localVideoStream.getTracks();
-      tracks.forEach(function (track) {
-        track.stop();
-      });
+      if (this.localVideoStream) {
+        // Need to call stop() on each track in stream.
+        var tracks = this.localVideoStream.getTracks();
+        tracks.forEach(function (track) {
+          track.stop();
+        });
+      }
     },
 
     createPeerConnection: function() {
