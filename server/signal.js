@@ -1,9 +1,29 @@
-
+var express = require('express');
+var fs = require('fs');
+var https = require('https');
 // On/off flag for log() method
 const verbose = false;
 
-const port = process.env.SIGNAL_PORT || 8001;
-var io = require('socket.io')(port);
+const port = process.env.SIGNAL_PORT || 443;
+
+
+
+var app = express();
+
+// ... set up your express middleware, etc
+
+var options = {
+  key: fs.readFileSync('/etc/pki/tls/private/localhost.key', 'utf8'),
+  cert: fs.readFileSync('/etc/pki/tls/certs/localhost.crt', 'utf8')
+}
+var server = https.createServer(options, app);
+// attach your socket.io server to the express server
+var io = require("socket.io").listen(server);
+server.listen(port);
+
+
+
+
 
 console.log(`Signal server listening on port ${port}`);
 
