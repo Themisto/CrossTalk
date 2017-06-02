@@ -48,7 +48,8 @@ export default {
     // =========
     startSocketIO: function() {
       // Should point to deployed signal server, or http://localhost:8001 for local testing
-      let SignalServerURL = 'http://localhost:8001';
+      let SignalServerURL = '/';
+      // let SignalServerURL = 'https://localhost:8001';
 
       this.log(`Connecting to signal server at ${SignalServerURL}...`);
       this.socket = io(SignalServerURL);
