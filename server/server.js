@@ -4,8 +4,8 @@ var http = require('http');
 var fs = require('fs');
 
 // For deployment use port 80
-var port = process.env.PORT || 80;
-// var port = process.env.PORT || 8000;
+// var port = process.env.PORT || 80;
+var port = process.env.PORT || 8000;
 
 // More deployment stuff, for https connections use port 443 and credentials
 // var options = {
@@ -19,7 +19,7 @@ var port = process.env.PORT || 80;
 
 var server = http.createServer(server).listen(port);
 
-// var io = require("socket.io").listen(server);
+var io = require("socket.io").listen(server);
 
 
 console.log(`Signal server listening on port ${port}`);
