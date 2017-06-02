@@ -36,7 +36,7 @@ export default {
       isCaller: null, // Caller or Callee, set by startSocketIO().
       socket: null,  // Socket.io connection to signal server, set by startSocketIO().
       room: 'test', // Room name, TODO: Strategy for assigning roomnames for each pair
-      verbose: false // On/off flag for log() method
+      verbose: true // Set to true for debug logging
     };
   },
 
@@ -44,12 +44,8 @@ export default {
   // ===================
   methods: {
 
-    // Convenience method for logging debugging messages
-    log: function() {
-      this.verbose && console.log.apply(console, arguments);
-    },
-
-    // Connect to Signal Server and initiate listeners
+    // Socket.IO
+    // =========
     startSocketIO: function() {
       // Should point to deployed signal server, or http://localhost:8001 for local testing
       let SignalServerURL = 'http://localhost:8001';
@@ -100,6 +96,13 @@ export default {
 
     },
 
+    // WebRTC
+    // ======
+    // Convenience method for logging debugging messages
+    log: function() {
+      this.verbose && console.log.apply(console, arguments);
+    },
+
     // Convenience method for including room name with every 'relay' message
     relay: function(message) {
       let data = {
@@ -127,11 +130,13 @@ export default {
 
     stopVideoCapture: function () {
       this.log('Ending video capture...');
-      // Need to call stop() on each track in stream.
-      var tracks = this.localVideoStream.getTracks();
-      tracks.forEach(function (track) {
-        track.stop();
-      });
+      if (this.localVideoStream) {
+        // Need to call stop() on each track in stream.
+        var tracks = this.localVideoStream.getTracks();
+        tracks.forEach(function (track) {
+          track.stop();
+        });
+      }
     },
 
     createPeerConnection: function() {
@@ -209,6 +214,10 @@ export default {
       this.log('Remote stream has ended');
       this.remoteVideoStream = this.remoteVideo.src = '';
       // TODO: Handle resetting environment in case of counterpart reconnect
+      this.socket.disconnect();
+      this.socket = null;
+      this.rtcpc = null;
+      this.createPeerConnection();
     },
 
     // Create offer, set local description, and send to Callee
@@ -241,6 +250,14 @@ export default {
       .catch( (err) => {
         console.error('Error creating answer!\n', err);
       });
+    },
+
+    hangup: function() {
+      this.stopVideoCapture();
+      if (this.socket) {
+        this.relay({type: 'Bye'});
+        this.socket.disconnect();
+      }
     }
   },
 
@@ -258,15 +275,15 @@ export default {
     // Initialize references to HTML5 video elements
     this.localVideo = document.getElementById('local-video');
     this.remoteVideo = document.getElementById('remote-video');
+    // Initialize listener for page exit or reload
+    window.addEventListener('unload', this.hangup);
+    // Invoke main entry point
     this.startVideoCapture();
   },
 
   beforeDestroy: function () {
-    this.stopVideoCapture();
-    if (this.socket) {
-      this.relay({type: 'Bye'});
-      this.socket.disconnect();
-    }
+    // Invoke hangup in case of component unload with no page exit or unload
+    this.hangup();
   }
 }
 
