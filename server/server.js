@@ -1,19 +1,69 @@
 var server = require('./routes.js');
 var https = require('https');
 var fs = require('fs');
-
-// Start signal server
-require('./signal.js');
+// var io = require('./signal.js');
 
 var port = process.env.PORT || 80;
 
-server.listen(port, function() {
-  console.log(`Web server listening on port ${port}`);
-});
+// server.listen(port, function() {
+//   console.log(`Web server listening on port ${port}`);
+// });
 
 var options = {
   key: fs.readFileSync('/etc/pki/tls/private/localhost.key', 'utf8'),
   cert: fs.readFileSync('/etc/pki/tls/certs/localhost.crt', 'utf8')
 }
 
-https.createServer(options, server).listen(443);
+var secureServer = https.createServer(options, server).listen(443);
+// io.listen(server);
+
+// module.
+
+var io = require("socket.io").listen(secureServer);
+// server.listen(port);
+
+
+
+
+
+console.log(`Signal server listening on port ${port}`);
+
+io.on('connection', function(socket) {
+  console.log(`Connection received from socket "${socket.id}"`);
+
+  // User attempting to join or create a room
+  socket.on('enter room', function(room) {
+    console.log(`Socket "${socket.id}" requested to join room "${room}"`);
+
+    // Add user to room
+    socket.join(room);
+
+    // Count number of users in room
+    io.in(room).clients((err, clients) => {
+      if (clients.length === 1) { // if previous empty room
+        socket.emit('created room', room);
+      } else {  // if occupied room
+        socket.emit('joined room', room);
+        socket.to(room).emit('callee joined', room);
+      }
+    });
+
+  });
+
+  // User attempting to send WebRTC (ICECandidates, session descriptions) data to other user
+  socket.on('relay', function(data) {
+    console.log(`Relaying "${data.message.type}" message from socket "${socket.id}" to room "${data.room}"`);
+    socket.to(data.room).emit('relay', data.message);
+  });
+
+  // User attempt to send text chat message to other user
+  socket.on('message', function(data) {
+    console.log(`Relaying chat message from socket "${socket.id}" to room "${data.room}"`);
+    socket.to(data.room).emit('message', data.message);
+  });
+
+});
+
+// var log = function(message) {
+//   verbose && console.log(`Signal: ${message}`);
+// }

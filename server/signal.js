@@ -19,7 +19,7 @@ var options = {
 var server = https.createServer(options, app);
 // attach your socket.io server to the express server
 var io = require("socket.io").listen(server);
-server.listen(port);
+// server.listen(port);
 
 
 

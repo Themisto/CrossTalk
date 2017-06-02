@@ -52,7 +52,7 @@ export default {
     // Connect to Signal Server and initiate listeners
     startSocketIO: function() {
       // Should point to deployed signal server, or http://localhost:8001 for local testing
-      let SignalServerURL = 'https://ec2-54-219-172-42.us-west-1.compute.amazonaws.com';
+      let SignalServerURL = 'https://ec2-54-183-35-145.us-west-1.compute.amazonaws.com';
       // let SignalServerURL = 'https://localhost:8001';
 
       this.log(`Connecting to signal server at ${SignalServerURL}...`);
