@@ -17,7 +17,7 @@ import io from '../../../../node_modules/socket.io-client/dist/socket.io.js';
 
 export default {
 
-  props: ['socket'],
+  props: ['socket', 'room'],
 
   watch: {
     socket: function() {
@@ -48,7 +48,7 @@ export default {
     // Connect to Signal Server and initiate listeners
     startSocketIO: function() {
       this.socket.on('message', (message) => {
-        console.log('ENORMOUS SUCCESSS!', this.messages, message);
+        this.log('Received chat message: ', message);
         this.messages.push(message);
       });
 
@@ -58,10 +58,10 @@ export default {
 
       if (this.socket !== null) {
 
-        console.log('sendMessage: ', this.socket.id);
+        this.log('Sending chat message: ', this.chat);
 
         var data = {
-          room: 'test',
+          room: this.room,
           message: {
             id: this.messages.length,
             text: this.chat
