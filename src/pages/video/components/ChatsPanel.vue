@@ -17,27 +17,21 @@ import io from '../../../../node_modules/socket.io-client/dist/socket.io.js';
 
 export default {
 
-  props: ['socket', 'messages'],
+  props: ['socket'],
 
-  // props: {
-  //   messages: {
-  //     default: function () {
-  //       return [
-  //         {id: 0, text: 'test_message_0'},
-  //         {id: 1, text: 'test_message_1'},
-  //         {id: 2, text: 'test_message_2'},
-  //       ]
-  //     }
-  //   }
-  // },
+  watch: {
+    socket: function() {
+      this.startSocketIO();
+    }
+
+  },
 
   // State variables.
   // ================
   data: function () {
     return {
-      //socket: null,  // Socket.io connection to signal server, set by startSocketIO().
+      messages: [],
       chat: '',
-
       verbose: true // On/off flag for log() method
     }
   },
@@ -53,36 +47,27 @@ export default {
 
     // Connect to Signal Server and initiate listeners
     startSocketIO: function() {
-      // Should point to deployed signal server, or http://localhost:8001 for local testing
-      //let SignalServerURL = 'http://localhost:8001';
-
-      //this.log(`Connecting to signal server at ${SignalServerURL}...`);
-      //this.socket = io(SignalServerURL);
-
-
-      var messages = this.messages;
-
       this.socket.on('message', (message) => {
-        console.log('YO! ', messages, message);
-        messages.push(message);
+        console.log('ENORMOUS SUCCESSS!', this.messages, message);
+        this.messages.push(message);
       });
+
     },
 
     sendMessage: function() {
-      console.log('sendMessage: ', this.socket.id);
-
-      var data = {
-        room: 'test',
-        message: {
-          id: this.messages.length,
-          text: this.chat
-        }
-      }
-
-      // this.chat = ''
-      //var messages = this.messages;
 
       if (this.socket !== null) {
+
+        console.log('sendMessage: ', this.socket.id);
+
+        var data = {
+          room: 'test',
+          message: {
+            id: this.messages.length,
+            text: this.chat
+          }
+        };
+
         this.socket.emit('message', data);
         this.messages.push(data.message);
       } else {
@@ -95,16 +80,8 @@ export default {
 
   components: {
     TextBox
-  },
-
-  mounted: function () {
-    this.$parent.$on('CONNECTED!', this.startSocketIO);
-
-    // this.startSocketIO();
-    // setTimeout(function() {
-    //     console.log('startSocketIO: ', this.socket);
-    // }, 1000);
   }
+
 }
 
 </script>
