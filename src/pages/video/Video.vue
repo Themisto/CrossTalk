@@ -48,22 +48,40 @@ export default {
     // ==============SocketIO==============
     // ====================================
 
-    startSocketIO: function() {
+    startSocketIO: function(room) {
       // Should point to deployed signal server, or http://localhost:8001 for local testing
       let SignalServerURL = '/';
-      // var room = window.location.pathname.split('/')[2];
       // console.log('room: ', room);
 
       this.log(`Connecting to signal server at ${SignalServerURL}...`);
       this.socket = io(SignalServerURL);
+      this.socket.room = room;
 
       // Signal intent to join or create the room
       this.log(`Attempting to join or create room "${this.room}"...`);
-      this.socket.emit('enter room', this.room);
+      this.socket.emit('enter room', this.socket.room);
 
       //this.$emit('CONNECTED!');
 
-      // LISTENERS
+      // Emitter Mixins
+
+      this.socket.relay = function(message) {
+        let data = {
+          room: this.room,
+          message: message
+        };
+        this.emit('relay', data);
+      };
+
+      this.socket.message = function(message) {
+        let data = {
+          room: this.room,
+          message: message
+        };
+        this.emit('message', data);
+      }
+
+      // Listeners
 
       // Occurs if we are the first client in the room
       this.socket.on('created room', (room) => {
@@ -110,13 +128,13 @@ export default {
     },
 
     // Convenience method for including room name with every 'relay' message
-    relay: function(message) {
-      let data = {
-        message: message,
-        room: this.room
-      };
-      this.socket.emit('relay', data);
-    },
+    // relay: function(message) {
+    //   let data = {
+    //     message: message,
+    //     room: this.room
+    //   };
+    //   this.socket.emit('relay', data);
+    // },
 
     startVideoCapture: function () {
       this.log('Starting video capture...');
@@ -162,7 +180,7 @@ export default {
         // Listen for and handle a hangup from recipient
         this.rtcpc.onremovestream = this.handleRemoveStream;
         // Initiate communication with signal server
-        this.startSocketIO();
+        this.startSocketIO(this.room);
       } catch (err) {
         console.error('Failed to create RTCPeerConnection.\n', err);
       }
@@ -179,7 +197,7 @@ export default {
           candidate: event.candidate.candidate
         };
         // Send ICE Candidate to counterpart
-        this.relay(candidateMessage);
+        this.socket.relay(candidateMessage);
       } else {
         this.log('Finished generating ICE Candidates');
       }
@@ -232,7 +250,7 @@ export default {
       this.rtcpc.createOffer()
       .then( (localSession) => {
         this.rtcpc.setLocalDescription(localSession);
-        this.relay({
+        this.socket.relay({
           type: 'Offer',
           sdp: localSession
         });
@@ -248,7 +266,7 @@ export default {
       this.rtcpc.createAnswer()
       .then( (localSession) => {
         this.rtcpc.setLocalDescription(localSession);
-        this.relay({
+        this.socket.relay({
           type: 'Answer',
           sdp: localSession
         });
@@ -261,7 +279,7 @@ export default {
     hangup: function() {
       this.stopVideoCapture();
       if (this.socket) {
-        this.relay({type: 'Bye'});
+        this.socket.relay({type: 'Bye'});
         this.socket.disconnect();
       }
     }
