@@ -1,6 +1,6 @@
 <template>
 <div id="video-page">
-  <chats-panel :socket="socket"></chats-panel>
+  <chats-panel :socket="socket" :room="room"></chats-panel>
   <div id="videos">
     <div>
       <video id="remote-video" autoplay="true"></video>
@@ -35,7 +35,7 @@ export default {
       rtcpc: null, // The RTCPeerConnection, set by createPeerConnection().
       isCaller: null, // Caller or Callee, set by startSocketIO().
       socket: false,  // Socket.io connection to signal server, set by startSocketIO().
-      room: window.location.pathname.split('/')[2], // Room name, TODO: Strategy for assigning roomnames for each pair
+      room: window.location.pathname.split('/')[2], // Room name
       verbose: true // Set to true for debug logging
     };
   },
