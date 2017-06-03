@@ -11,6 +11,7 @@ const routes = [
   { path: '/', component: Home },
   { path: '/list', component: TodoList },
   { path: '/video', component: Video },
+  { path: '/room/:id', component: Video }
 ];
 
 const router = new VueRouter({
