@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var handlers = require('./handlers.js');
+var rooms = require('./roomQueue.js');
+
 
 var app = express();
 
@@ -21,6 +23,7 @@ app.use(express.static(__dirname + '/../public/'));
 app.get('/', handlers.index);
 app.get('/list', handlers.index);
 app.get('/video', handlers.index);
+app.get('/room/:id', handlers.index);
 // -------------------------------------
 
 
@@ -28,6 +31,8 @@ app.get('/video', handlers.index);
 
 
 // ------------ api routes ------------
+
+app.post('/api/queue', rooms.findMatch);
 
 // ------------------------------------
 

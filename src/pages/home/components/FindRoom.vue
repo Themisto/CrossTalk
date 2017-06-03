@@ -6,7 +6,7 @@
         <option selected>English</option>
         <option>Spanish</option>
         <option>Russian</option>
-        <option>Mandarin</option>
+        <option>Chinese</option>
         <option>Dutch</option>
         <option>German</option>
         <option>French</option>
@@ -20,7 +20,7 @@
         <option>English</option>
         <option>Spanish</option>
         <option selected>Russian</option>
-        <option>Mandarin</option>
+        <option>Chinese</option>
         <option>Dutch</option>
         <option>German</option>
         <option>French</option>
@@ -52,11 +52,11 @@ export default {
         foreign_lang: document.getElementById('foreign-lang').selectedIndex
       })
       .then(response => {
-        console.log(response);
+        this.$router.push(response.data);
       })
       .catch(error => {
         console.log(error);
-      })
+      });
     }
   }
 }
@@ -72,7 +72,7 @@ export default {
   .home-inner {
     height: 200px;
     display: flex;
-    align-items: center;
+    /*align-items: center;*/
     justify-content: center;
     background-color: #7aa2e2;
   }

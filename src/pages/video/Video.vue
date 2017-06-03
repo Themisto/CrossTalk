@@ -35,7 +35,7 @@ export default {
       rtcpc: null, // The RTCPeerConnection, set by createPeerConnection().
       isCaller: null, // Caller or Callee, set by startSocketIO().
       socket: false,  // Socket.io connection to signal server, set by startSocketIO().
-      room: 'test', // Room name, TODO: Strategy for assigning roomnames for each pair
+      room: window.location.pathname.split('/')[2], // Room name, TODO: Strategy for assigning roomnames for each pair
       verbose: true // Set to true for debug logging
     };
   },
@@ -49,7 +49,8 @@ export default {
     startSocketIO: function() {
       // Should point to deployed signal server, or http://localhost:8001 for local testing
       let SignalServerURL = '/';
-      // let SignalServerURL = 'https://localhost:8001';
+      // var room = window.location.pathname.split('/')[2];
+      // console.log('room: ', room);
 
       this.log(`Connecting to signal server at ${SignalServerURL}...`);
       this.socket = io(SignalServerURL);
