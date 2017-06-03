@@ -17,7 +17,7 @@
 export default {
 
   props: [
-
+  'socket'
   ],
 
   data: {
@@ -198,7 +198,13 @@ export default {
   },
 
   mounted: function() {
-
+    // Initialize references to HTML5 video elements
+    this.localVideo = document.getElementById('local-video');
+    this.remoteVideo = document.getElementById('remote-video');
+    // Initialize listener for page exit or reload
+    window.addEventListener('unload', this.hangup);
+    // Invoke main entry point
+    this.startVideoCapture();
   },
 
   beforeDestroy: function() {

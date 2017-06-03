@@ -44,8 +44,10 @@ export default {
   // ===================
   methods: {
 
-    // Socket.IO
-    // =========
+    // ====================================
+    // ==============SocketIO==============
+    // ====================================
+
     startSocketIO: function() {
       // Should point to deployed signal server, or http://localhost:8001 for local testing
       let SignalServerURL = '/';
