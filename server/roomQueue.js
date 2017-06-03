@@ -17,18 +17,16 @@ module.exports = {
     for (var i = 0; i < queue.length; i++) {
       var current = queue[i];
       if (current.native_lang === user.foreign_lang && current.foreign_lang === user.native_lang) {
-        var room = newRoom(40);
-        console.log('found');
-
+        console.log('match: ', user);
         queue.splice(i, 1);
-        current.res.end(`/room/${room}`);
-
-        res.end(`/room/${room}`);
+        res.end(`/room/${current.room}`);
         return;
       }
     }
-    console.log('not found');
-    user.res = res;
+
+    console.log('no match: ', user);
+    user.room = newRoom(40);
+    res.end(`/room/${user.room}`);
     queue.push(user);
   }
 };
