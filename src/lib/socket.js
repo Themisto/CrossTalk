@@ -8,10 +8,10 @@ export default function(URL, verbose) {
   let debug = verbose || false;
 
   function log() {
-    debug && console.log.apply(console, arguments);
+    debug && console.log.apply(console, ['Socket:', ...arguments]);
   };
 
-  log(`Connecting to signal server at ${serverURL}...`);
+  log(`Connecting to signal server at "${serverURL}"...`);
   let socket = io(serverURL);
   socket._room = null;
 
@@ -69,7 +69,7 @@ export default function(URL, verbose) {
   */
   socket.reset = function (join) {
     join = join || true;
-    log(`Resetting connection to signal server at ${serverURL}...`);
+    log(`Resetting connection to signal server at "${serverURL}"...`);
     this.disconnect();
     this.connect();
     if (join && this._room) { this.join(this._room); }
