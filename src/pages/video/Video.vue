@@ -1,7 +1,19 @@
 <template>
 <div id="video-page">
-  <chats-panel :socket="socket" :socketReady="socketReady"></chats-panel>
-  <video-stream :socket="socket" :socketReady="socketReady" v-on:RTCPCReady="startSocketIO"></video-stream>
+  <chats-panel
+    :socket="socket"
+    :socketReady="socketReady"
+    :roomJoined="roomJoined"
+    :verbose="verbose"
+    v-on:Ready="joinRoom"
+  ></chats-panel>
+  <video-stream
+    :socket="socket"
+    :socketReady="socketReady"
+    :verbose="verbose"
+    v-on:RTCPCReady="startSocket"
+    v-on:Ready="joinRoom"
+  ></video-stream>
   <translations-panel></translations-panel>
 </div>
 </template>
@@ -16,49 +28,67 @@ import Socket from '../../lib/socket.js';
 
 export default {
 
-  // State variables.
-  // ================
+  // State Variables
+  // ===============
   data: function () {
     return {
       room: window.location.pathname.split('/')[2], // Room name
-      socket: null,         // Socket.io instance, set by startSocketIO().
-      socketReady: false,   // State of connection to signal server, set by startSocketIO().
+      socket: null,         // Socket.io instance, set by startSocket()
       signalServerURL: '/', // URL to signal server
-      verbose: true         // Set to true for debug logging
+      verbose: true,        // Set to true for debug logging
+      socketReady: false,   // Status of connection to signal server, set by startSocket()
+      roomJoined: false,    // Status of connection to room, set by joinRoom()
+      componentStatus: {    // Status of child components, set by joinRoom()
+        ChatsPanel: false,
+        VideoStream: false
+      }
     };
   },
 
-  // Controller methods.
-  // ===================
+  // Controller Methods
+  // ==================
   methods: {
 
-    startSocketIO: function() {
-      this.socket.join(this.room);
+    log: function() {
+      this.verbose && console.log.apply(console, ['Video:', ...arguments]);
+    },
+
+    // Initialize the socket
+    // Called on 'RTCPCReady' event from VideoStream component
+    startSocket: function() {
+      this.log('Initializing the socket...')
+      this.socket = Socket(this.signalServerURL, this.verbose);
+      // Signal child components
       this.socketReady = true;
+    },
+
+    // Update status of components
+    // If all are ready, join the room
+    // Called on 'Ready' event of VideoStream or ChatsPanel
+    joinRoom: function(componentName) {
+      this.log(`${componentName} component ready. Checking status of child components...`);
+      this.componentStatus[componentName] = true;
+      if(Object.keys(this.componentStatus).reduce((acc, val) => acc && this.componentStatus[val], true)) {
+        this.log('All components ready. Joining room...');
+        this.socket.join(this.room);
+        this.roomJoined = true;
+      } else {
+        this.log('Some components not ready!');
+      }
     }
 
   },
 
-  // Custom components.
-  // ==================
+  // Custom Components
+  // =================
   components: {
     ChatsPanel,
     TranslationsPanel,
     VideoStream
   },
 
-  // Lifecycle hooks
+  // Lifecycle Hooks
   // ===============
-  created: function() {
-    // Initialize socket. Normally this would be done directly in the data function,
-    // but this requires parameters from the data function itself.
-    this.socket = Socket(this.signalServerURL, this.verbose);
-  },
-
-  mounted: function () {
-
-  },
-
   beforeDestroy: function () {
     // Invoke hangup in case of component unload with no page exit or unload
     // this.hangup();
