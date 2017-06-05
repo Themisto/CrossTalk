@@ -12,18 +12,17 @@
 
 
 <script>
+
 import TextBox from './TextBox.vue'
-import io from '../../../../node_modules/socket.io-client/dist/socket.io.js';
 
 export default {
 
-  props: ['socket', 'room'],
+  props: ['socket'],
 
   watch: {
     socket: function() {
       this.startSocketIO();
     }
-
   },
 
   // State variables.
@@ -55,25 +54,17 @@ export default {
     },
 
     sendMessage: function() {
-
       if (this.socket !== null) {
-
-        this.log('Sending chat message: ', this.chat);
-
-        var data = {
-          room: this.room,
-          message: {
-            id: this.messages.length,
-            text: this.chat
-          }
+        let message = {
+          id: this.messages.length,
+          text: this.chat
         };
-
-        this.socket.emit('message', data);
-        this.messages.push(data.message);
+        this.log('Sending chat message: ', message.text);
+        this.socket.message(message);
+        this.messages.push(message);
       } else {
         console.log('WARNING! FAIL!!');
       }
-
       this.chat = '';
     }
   },

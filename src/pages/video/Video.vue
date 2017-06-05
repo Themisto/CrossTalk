@@ -1,6 +1,6 @@
 <template>
 <div id="video-page">
-  <chats-panel :socket="socket" :room="room"></chats-panel>
+  <chats-panel :socket="socket"></chats-panel>
   <div id="videos">
     <div>
       <video id="remote-video" autoplay="true"></video>
@@ -21,7 +21,7 @@
 import ChatsPanel from './components/ChatsPanel.vue';
 import TranslationsPanel from './components/TranslationsPanel.vue';
 import TextBox from './components/TextBox.vue';
-import io from '../../../node_modules/socket.io-client/dist/socket.io.js';
+import Socket from '../../lib/socket.js';
 
 export default {
   // State variables.
@@ -34,8 +34,9 @@ export default {
       remoteVideoStream: null,  // Set by handleAddStream().
       rtcpc: null, // The RTCPeerConnection, set by createPeerConnection().
       isCaller: null, // Caller or Callee, set by startSocketIO().
-      socket: false,  // Socket.io connection to signal server, set by startSocketIO().
+      socket: null,  // Socket.io connection to signal server, set by startSocketIO().
       room: window.location.pathname.split('/')[2], // Room name
+      signalServerURL: '/', // URL to signal server
       verbose: true // Set to true for debug logging
     };
   },
@@ -44,36 +45,25 @@ export default {
   // ===================
   methods: {
 
-    // Socket.IO
-    // =========
-    startSocketIO: function() {
-      // Should point to deployed signal server, or http://localhost:8001 for local testing
-      let SignalServerURL = '/';
-      // var room = window.location.pathname.split('/')[2];
-      // console.log('room: ', room);
+    log: function() {
+      this.verbose && console.log.apply(console, arguments);
+    },
 
-      this.log(`Connecting to signal server at ${SignalServerURL}...`);
-      this.socket = io(SignalServerURL);
+    // ====================================
+    // ==============SocketIO==============
+    // ====================================
 
-      // Signal intent to join or create the room
-      this.log(`Attempting to join or create room "${this.room}"...`);
-      this.socket.emit('enter room', this.room);
-
-      //this.$emit('CONNECTED!');
-
-      // LISTENERS
+    registerListeners: function() {
 
       // Occurs if we are the first client in the room
       this.socket.on('created room', (room) => {
         this.log(`Created room "${room}", we are the Caller`);
-        // We must be the caller
         this.isCaller = true;
       });
 
       // Occurs if we are not the first client in the room
       this.socket.on('joined room', (room) => {
         this.log(`Joined room "${room}", we are the Callee`);
-        // We must be the callee
         this.isCaller = false;
       });
 
@@ -98,23 +88,11 @@ export default {
         }
       });
 
+      this.socket.join(this.room);
     },
 
     // WebRTC
     // ======
-    // Convenience method for logging debugging messages
-    log: function() {
-      this.verbose && console.log.apply(console, arguments);
-    },
-
-    // Convenience method for including room name with every 'relay' message
-    relay: function(message) {
-      let data = {
-        message: message,
-        room: this.room
-      };
-      this.socket.emit('relay', data);
-    },
 
     startVideoCapture: function () {
       this.log('Starting video capture...');
@@ -159,8 +137,9 @@ export default {
         this.rtcpc.onaddstream = this.handleAddStream;
         // Listen for and handle a hangup from recipient
         this.rtcpc.onremovestream = this.handleRemoveStream;
-        // Initiate communication with signal server
-        this.startSocketIO();
+        // Ready to begin communication with signal server
+        this.socket = Socket(this.signalServerURL, this.verbose);
+        this.registerListeners();
       } catch (err) {
         console.error('Failed to create RTCPeerConnection.\n', err);
       }
@@ -177,7 +156,7 @@ export default {
           candidate: event.candidate.candidate
         };
         // Send ICE Candidate to counterpart
-        this.relay(candidateMessage);
+        this.socket.relay(candidateMessage);
       } else {
         this.log('Finished generating ICE Candidates');
       }
@@ -217,11 +196,11 @@ export default {
     handleRemoveStream: function(event) {
       this.log('Remote stream has ended');
       this.remoteVideoStream = this.remoteVideo.src = '';
-      // TODO: Handle resetting environment in case of counterpart reconnect
-      this.socket.disconnect();
-      this.socket = null;
-      this.rtcpc = null;
-      this.createPeerConnection();
+      // TODO: Handle resetting WebRTC environment in case of counterpart reconnect
+      // this.rtcpc = null;
+      // this.createPeerConnection();
+      // must reset RTCPeerConnection to reset ice candidate listener/generator
+      this.socket.reset();
     },
 
     // Create offer, set local description, and send to Callee
@@ -230,7 +209,7 @@ export default {
       this.rtcpc.createOffer()
       .then( (localSession) => {
         this.rtcpc.setLocalDescription(localSession);
-        this.relay({
+        this.socket.relay({
           type: 'Offer',
           sdp: localSession
         });
@@ -246,7 +225,7 @@ export default {
       this.rtcpc.createAnswer()
       .then( (localSession) => {
         this.rtcpc.setLocalDescription(localSession);
-        this.relay({
+        this.socket.relay({
           type: 'Answer',
           sdp: localSession
         });
@@ -259,7 +238,7 @@ export default {
     hangup: function() {
       this.stopVideoCapture();
       if (this.socket) {
-        this.relay({type: 'Bye'});
+        this.socket.relay({type: 'Bye'});
         this.socket.disconnect();
       }
     }
