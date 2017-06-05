@@ -72,7 +72,11 @@ export default function(URL, verbose) {
     log(`Resetting connection to signal server at "${serverURL}"...`);
     this.disconnect();
     this.connect();
-    if (join && this._room) { this.join(this._room); }
+    if (join && this._room) {
+      let room = this._room;
+      this._room = null;
+      this.join(room);
+    }
   };
 
   return socket;
