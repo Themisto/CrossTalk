@@ -14,11 +14,10 @@
 <script>
 
 import TextBox from './TextBox.vue'
-import io from '../../../../node_modules/socket.io-client/dist/socket.io.js';
 
 export default {
 
-  props: ['socket', 'room'],
+  props: ['socket'],
 
   watch: {
     socket: function() {
