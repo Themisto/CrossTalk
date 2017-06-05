@@ -17,13 +17,10 @@ import TextBox from './TextBox.vue'
 
 export default {
 
-  props: ['socket'],
-
-  watch: {
-    socket: function() {
-      this.startSocketIO();
-    }
-  },
+  props: [
+  'socket',
+  'socketReady'
+  ],
 
   // State variables.
   // ================
@@ -32,6 +29,12 @@ export default {
       messages: [],
       chat: '',
       verbose: true // On/off flag for log() method
+    }
+  },
+
+  watch: {
+    socketReady: function() {
+      socketReady && this.registerListeners();
     }
   },
 
@@ -45,7 +48,7 @@ export default {
     },
 
     // Connect to Signal Server and initiate listeners
-    startSocketIO: function() {
+    registerListeners: function() {
       this.socket.on('message', (message) => {
         this.log('Received chat message: ', message);
         this.messages.push(message);
@@ -54,7 +57,7 @@ export default {
     },
 
     sendMessage: function() {
-      if (this.socket !== null) {
+      if (this.socketReady) {
         let message = {
           id: this.messages.length,
           text: this.chat
@@ -63,7 +66,7 @@ export default {
         this.socket.message(message);
         this.messages.push(message);
       } else {
-        console.log('WARNING! FAIL!!');
+        console.log('Warning: Socket not ready for use. Please wait before sending a chat message.');
       }
       this.chat = '';
     }
