@@ -19,29 +19,43 @@ import TextBox from './TextBox.vue';
 export default {
 
   props: [
-  'socket'
+  'socket',
+  'socketReady',
+  'verbose'
   ],
 
-  data: {
-    localVideo,
-    remoteVideo,
-    localVideoStream,
-    remoteVideoStream
+  data: function() {
+    return {
+      localVideo: null,         // Video element displaying local stream
+      remoteVideo: null,        // Video element displaying remote stream
+      localVideoStream: null,   // Video/audio stream from webcam
+      remoteVideoStream: null,  // Video/audio stream from counterpart
+      rtcpc: null,              // RTCPeerConnection instance
+    };
+  },
+
+  watch: {
+    socketReady: function() {
+      this.socketReady && this.registerListeners();
+    }
   },
 
   methods: {
 
     // Convenience method for logging debugging messages
     log: function() {
-      this.verbose && console.log.apply(console, arguments);
+      this.verbose && console.log.apply(console, ['VideoStream:', ...arguments]);
     },
 
     registerListeners: function() {
+
+      this.log('Registering listeners...');
 
       // Occurs if we are the first client in the room
       this.socket.on('created room', (room) => {
         this.log(`Created room "${room}", we are the Caller`);
         this.isCaller = true;
+        this.log(`Waiting for callee to join...`);
       });
 
       // Occurs if we are not the first client in the room
@@ -71,6 +85,9 @@ export default {
         }
       });
 
+      // Signal parent component that we are ready to receive messages
+      this.$emit('Ready', 'VideoStream');
+
     },
 
     // ====================================
@@ -81,7 +98,7 @@ export default {
 
     startVideoCapture: function () {
       this.log('Starting video capture...');
-      var constraints = {audio: true, video: true};
+      let constraints = {audio: true, video: true};
 
       navigator.mediaDevices.getUserMedia(constraints)
       .then((stream) => {
@@ -99,7 +116,7 @@ export default {
       this.log('Ending video capture...');
       if (this.localVideoStream) {
         // Need to call stop() on each track in stream.
-        var tracks = this.localVideoStream.getTracks();
+        let tracks = this.localVideoStream.getTracks();
         tracks.forEach(function (track) {
           track.stop();
         });
@@ -117,14 +134,12 @@ export default {
         // Add local stream to send to recipient
         this.rtcpc.addStream(this.localVideoStream);
         // Listen for and handle our own local ICE Candidate
-        this.rtcpc.onicecandidate = this.handleGenerateIceCandidate;
+        this.rtcpc.onicecandidate = this.handleGatherIceCandidate;
         // Listen for and handle the remote stream
         this.rtcpc.onaddstream = this.handleAddStream;
         // Listen for and handle a hangup from recipient
         this.rtcpc.onremovestream = this.handleRemoveStream;
-        // Initiate communication with signal server
-        // this.startSocketIO();
-        // Signal parent component to begin
+        // Signal parent component to prepare the socket
         this.$emit('RTCPCReady');
       } catch (err) {
         console.error('Failed to create RTCPeerConnection.\n', err);
@@ -132,7 +147,10 @@ export default {
     },
 
     // Receive a local ICE Candidate
-    handleGenerateIceCandidate: function(event) {
+    handleGatherIceCandidate: function(event) {
+      // If we ever need to reduce traffic to the signal server for performance reasons,
+      // we could accumulate candidates and only send once we have finished gathering.
+      // https://stackoverflow.com/questions/38533288/how-to-begin-gathering-ice-candidates-for-peer-connection
       if (event.candidate) {
         this.log('Local ICE Candidate acquired, sending ICE Candidate...');
         let candidateMessage = {
@@ -142,9 +160,9 @@ export default {
           candidate: event.candidate.candidate
         };
         // Send ICE Candidate to counterpart
-        this.relay(candidateMessage);
+        this.socket.relay(candidateMessage);
       } else {
-        this.log('Finished generating ICE Candidates');
+        this.log('Finished gathering ICE Candidates');
       }
     },
 
@@ -183,10 +201,12 @@ export default {
       this.log('Remote stream has ended');
       this.remoteVideoStream = this.remoteVideo.src = '';
       // TODO: Handle resetting environment in case of counterpart reconnect
-      this.socket.disconnect();
-      this.socket = null;
-      this.rtcpc = null;
-      this.createPeerConnection();
+      // this.socket.reset();
+      // this.socket.disconnect();
+      // this.socket = null;
+      // this.rtcpc = null;
+      // this.createPeerConnection();
+      this.caller = true;
     },
 
     // Create offer, set local description, and send to Callee
@@ -195,7 +215,7 @@ export default {
       this.rtcpc.createOffer()
       .then( (localSession) => {
         this.rtcpc.setLocalDescription(localSession);
-        this.relay({
+        this.socket.relay({
           type: 'Offer',
           sdp: localSession
         });
@@ -211,7 +231,7 @@ export default {
       this.rtcpc.createAnswer()
       .then( (localSession) => {
         this.rtcpc.setLocalDescription(localSession);
-        this.relay({
+        this.socket.relay({
           type: 'Answer',
           sdp: localSession
         });
@@ -224,8 +244,8 @@ export default {
     hangup: function() {
       this.stopVideoCapture();
       if (this.socket) {
-        this.relay({type: 'Bye'});
-        this.socket.disconnect();
+        this.socket.relay({type: 'Bye'});
+        this.socket.reset(false);
       }
     }
   },
@@ -240,7 +260,6 @@ export default {
     this.remoteVideo = document.getElementById('remote-video');
     // Initialize listener for page exit or reload
     window.addEventListener('unload', this.hangup);
-    this.registerListeners();
     // Invoke main entry point
     this.startVideoCapture();
   },
