@@ -11,6 +11,9 @@
     "dev": "webpack --watch & nodemon server/server.js"
   },
   "dependencies": {
+    "EventEmitter": "^1.0.0",
+    "auth0": "^2.6.0",
+    "auth0-js": "^8.7.0",
     "axios": "^0.16.1",
     "body-parser": "^1.17.2",
     "socket.io": "^2.0.1",
