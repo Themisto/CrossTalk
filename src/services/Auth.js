@@ -1,5 +1,4 @@
 import auth0 from 'auth0-js'
-import EventEmitter from 'EventEmitter'
 
 export default class AuthService {
 
@@ -17,7 +16,6 @@ export default class AuthService {
       responseType: 'token id_token',
       scope: 'openid'
     })
-    this.authNotifier = new EventEmitter()
   }
 
   handleAuthentication () {
@@ -40,7 +38,7 @@ export default class AuthService {
     localStorage.setItem('access_token', authResult.accessToken)
     localStorage.setItem('id_token', authResult.idToken)
     localStorage.setItem('expires_at', expiresAt)
-    this.authNotifier.emit('authChange', { authenticated: true })
+    this.authenticated = true
   }
 
   logout () {
@@ -49,9 +47,9 @@ export default class AuthService {
     localStorage.removeItem('id_token')
     localStorage.removeItem('expires_at')
     this.userProfile = null
-    this.authNotifier.emit('authChange', false)
     // navigate to the home route
     // router.replace('home')
+    this.authenticated = false
   }
 
   login () {

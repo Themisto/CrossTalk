@@ -1,8 +1,8 @@
 <template>
 <nav>
   <router-link to="/">Home</router-link>
-  <div v-if="!authenticated" v-on:click="login">Login</div>
-  <div v-if="authenticated" v-on:click="logout">Logout</div>
+  <div v-if="!auth.authenticated" v-on:click="auth.login">Login</div>
+  <div v-if="auth.authenticated" v-on:click="auth.logout">Logout</div>
 </nav>
 </template>
 
@@ -11,26 +11,10 @@
 
 
 <script>
-import Auth from './services/Auth'
-
-const auth = new Auth()
-
-const { login, logout, authenticated, authNotifier } = auth
-
 export default {
+  props: ['auth'],
   data () {
-    authNotifier.on('authChange', authState => {
-      this.authenticated = authState.authenticated
-    })
-    // if (!authenticated) { login(); }
-    return {
-      auth,
-      authenticated
-    }
-  },
-  methods: {
-    login,
-    logout
+    return {}
   }
 }
 </script>
