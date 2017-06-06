@@ -17,7 +17,10 @@ export default {
   data: function () {
     return {
       recognition: null,
-      transcript: [],
+      transcript: [
+        {text: 'Hello, my name is Sam', id: 0},
+        {text: 'And you too, Brutus?', id: 1}
+      ],
       translatedTranscript: [],
       callHasEnded: false,
     }
@@ -74,10 +77,13 @@ export default {
 
     // @todo: get lang params from home page.
     getTranslation: function () {
-      var latestMessage = this.transcript[this.transcript.length - 1]
+      var latestMessage = this.transcript[this.transcript.length - 1];
+      console.log('latestMessage:', latestMessage);
+      window.latestMessage = latestMessage;
+      console.log('message to send for translation:', latestMessage.text);
       axios.post('/api/translate', {
         id: latestMessage.id,  // Not currently used server-side.
-        text: 'Good morning, my name is Sam', // @debug: Rever to latestMessage.text,
+        text: latestMessage.text,
         fromLang: 'en',
         toLang: 'fr'
       })
@@ -104,7 +110,7 @@ export default {
   },
   mounted: function () {
     this.listen();
-    window.getTranslation = this.getTranslation;
+    this.getTranslation();
   },
   beforeDestroy: function () {
     if (this.recognition) {
