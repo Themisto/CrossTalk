@@ -1,7 +1,6 @@
 module.exports = {
-    "extends": "standard",
-    "plugins": [
-        "standard",
-        "promise"
-    ]
+  "extends": "standard",
+  "rules": {
+    "semi": ["error", "always"]
+  }
 };
