@@ -11,7 +11,6 @@
     :socket="socket"
     :socketReady="socketReady"
     :verbose="verbose"
-    v-on:RTCPCReady="startSocket"
     v-on:Ready="joinRoom"
   ></video-stream>
   <translations-panel></translations-panel>
@@ -89,6 +88,10 @@ export default {
 
   // Lifecycle Hooks
   // ===============
+  mounted: function() {
+    this.startSocket();
+  },
+
   beforeDestroy: function () {
     // Invoke hangup in case of component unload with no page exit or unload
     // this.hangup();
