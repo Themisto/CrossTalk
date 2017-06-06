@@ -10,7 +10,7 @@
 <script>
 export default {
   props: ['auth'],
-  data () {
+  data() {
     this.auth.handleAuthentication()
     this.$router.push('/')
     return {}

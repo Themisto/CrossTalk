@@ -2,7 +2,7 @@ import auth0 from 'auth0-js'
 
 export default class AuthService {
 
-  constructor () {
+  constructor() {
     this.login = this.login.bind(this)
     this.setSession = this.setSession.bind(this)
     this.logout = this.logout.bind(this)
@@ -18,7 +18,7 @@ export default class AuthService {
     })
   }
 
-  handleAuthentication () {
+  handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
@@ -30,7 +30,7 @@ export default class AuthService {
     })
   }
 
-  setSession (authResult) {
+  setSession(authResult) {
     // Set the time that the access token will expire at
     let expiresAt = JSON.stringify(
       authResult.expiresIn * 1000 + new Date().getTime()
@@ -41,7 +41,7 @@ export default class AuthService {
     this.authenticated = true
   }
 
-  logout () {
+  logout() {
     // Clear access token and ID token from local storage
     localStorage.removeItem('access_token')
     localStorage.removeItem('id_token')
@@ -52,11 +52,11 @@ export default class AuthService {
     this.authenticated = false
   }
 
-  login () {
+  login() {
     this.auth0.authorize()
   }
 
-  isAuthenticated () {
+  isAuthenticated() {
     // Check whether the current time is past the
     // access token's expiry time
     let expiresAt = JSON.parse(localStorage.getItem('expires_at'))

@@ -13,9 +13,12 @@
 <script>
 export default {
   props: ['auth'],
-  data () {
-    // if (!this.auth.authenticated) { this.auth.login(); }
+  data() {
+    if (!this.auth.authenticated && window.location.pathname !== '/login') { this.auth.login(); }
     return {}
+  },
+  updated() {
+    if (!this.auth.authenticated) { this.auth.login(); }
   }
 }
 </script>
