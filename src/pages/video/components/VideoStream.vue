@@ -15,6 +15,7 @@
 <script>
 
 import TextBox from './TextBox.vue';
+import WebRTC from '../../../lib/webrtc.js';
 
 export default {
 
@@ -26,17 +27,20 @@ export default {
 
   data: function() {
     return {
-      localVideo: null,         // Video element displaying local stream
-      remoteVideo: null,        // Video element displaying remote stream
-      localVideoStream: null,   // Video/audio stream from webcam
-      remoteVideoStream: null,  // Video/audio stream from counterpart
-      rtcpc: null,              // RTCPeerConnection instance
+      localVideo: null, // Video element displaying local stream
+      remoteVideo: null, // Video element displaying remote stream
+      rtcpc: null,
+      localVideoStream: null,     // Video/audio stream from webcam
+      remoteVideoStream: null    // Video/audio stream from counterpart
     };
   },
 
   watch: {
     socketReady: function() {
-      this.socketReady && this.registerListeners();
+      if(this.socketReady) {
+        this.startVideoCapture();
+        // this.registerListeners();
+      }
     }
   },
 
@@ -140,7 +144,8 @@ export default {
         // Listen for and handle a hangup from recipient
         this.rtcpc.onremovestream = this.handleRemoveStream;
         // Signal parent component to prepare the socket
-        this.$emit('RTCPCReady');
+        this.registerListeners();
+        // this.$emit('RTCPCReady');
       } catch (err) {
         console.error('Failed to create RTCPeerConnection.\n', err);
       }
@@ -261,7 +266,8 @@ export default {
     // Initialize listener for page exit or reload
     window.addEventListener('unload', this.hangup);
     // Invoke main entry point
-    this.startVideoCapture();
+    // this.startVideoCapture();
+    // window.myrtc = new WebRTC();
   },
 
   beforeDestroy: function() {
