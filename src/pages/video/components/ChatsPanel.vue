@@ -17,53 +17,63 @@ import TextBox from './TextBox.vue'
 
 export default {
 
-  props: ['socket'],
+  props: [
+  'socket',
+  'socketReady',
+  'roomJoined',
+  'verbose'
+  ],
 
-  watch: {
-    socket: function() {
-      this.startSocketIO();
-    }
-  },
-
-  // State variables.
-  // ================
+  // State Variables
+  // ===============
   data: function () {
     return {
       messages: [],
       chat: '',
-      verbose: true // On/off flag for log() method
     }
   },
 
-  // Controller methods.
-  // ===================
+  watch: {
+    socketReady: function() {
+      this.socketReady && this.registerListeners();
+    }
+  },
+
+  // Controller Methods
+  // ==================
   methods: {
 
     // Convenience method for logging debugging messages
     log: function() {
-      this.verbose && console.log.apply(console, arguments);
+      this.verbose && console.log.apply(console, ['ChatsPanel:', ...arguments]);
     },
 
     // Connect to Signal Server and initiate listeners
-    startSocketIO: function() {
+    registerListeners: function() {
+
+      this.log('Registering listeners...');
+
       this.socket.on('message', (message) => {
-        this.log('Received chat message: ', message);
+        this.log('Received chat message:', message);
         this.messages.push(message);
       });
+
+      // Signal parent component that we are ready to receive messages
+      this.$emit('Ready', 'ChatsPanel');
 
     },
 
     sendMessage: function() {
-      if (this.socket !== null) {
+      if (this.roomJoined) {
         let message = {
           id: this.messages.length,
           text: this.chat
         };
-        this.log('Sending chat message: ', message.text);
+        this.log('Sending chat message:', message.text);
         this.socket.message(message);
         this.messages.push(message);
       } else {
-        console.log('WARNING! FAIL!!');
+        console.log('Warning: Socket not ready for use. Please join a room before sending a chat message.');
       }
       this.chat = '';
     }
