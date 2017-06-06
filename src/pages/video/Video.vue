@@ -13,7 +13,12 @@
     :verbose="verbose"
     v-on:Ready="joinRoom"
   ></video-stream>
-  <translations-panel></translations-panel>
+  <translations-panel 
+    :socket="socket"
+    :socketReady="socketReady"
+    :roomJoined="roomJoined"
+    v-on:Ready="joinRoom"
+  ></translations-panel>
 </div>
 </template>
 
@@ -39,7 +44,8 @@ export default {
       roomJoined: false,    // Status of connection to room, set by joinRoom()
       componentStatus: {    // Status of child components, set by joinRoom()
         ChatsPanel: false,
-        VideoStream: false
+        VideoStream: false,
+        TranslationsPanel: false
       }
     };
   },

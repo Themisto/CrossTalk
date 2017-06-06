@@ -33,6 +33,18 @@ export default function(URL, verbose) {
     } else {
       console.error('Error: Room not set. Has .join(room) been called?');
     }
+  };  
+
+  socket.translateText = function(message) {
+    if (this._room) {
+      let data = {
+        room: this._room,
+        message: message
+      };
+      this.emit('translateText', data);
+    } else {
+      console.error('Error: Room not set. Has .join(room) been called?');
+    }
   };
 
   /**

@@ -59,4 +59,10 @@ io.on('connection', function(socket) {
     socket.to(data.room).emit('message', data.message);
   });
 
+  // User attempt to send text chat message to other user
+  socket.on('translateText', function(data) {
+    console.log(`Relaying chat translateText from socket "${socket.id}" to room "${data.room}"`);
+    socket.to(data.room).emit('translateText', data.message);
+  });
+
 });
