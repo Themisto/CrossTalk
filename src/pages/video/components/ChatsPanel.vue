@@ -12,38 +12,77 @@
 
 
 <script>
+
 import TextBox from './TextBox.vue'
+
 export default {
-  props: {
-    messages: {
-      default: function () {
-        return [
-          {id: 0, text: 'test_message_0'},
-          {id: 1, text: 'test_message_1'},
-          {id: 2, text: 'test_message_2'},
-        ]
-      }
-    }
-  },
+
+  props: [
+  'socket',
+  'socketReady',
+  'roomJoined',
+  'verbose'
+  ],
+
+  // State Variables
+  // ===============
   data: function () {
     return {
-      chat: ''
+      messages: [],
+      chat: '',
     }
   },
-  methods: {
-    sendMessage: function () {
-      var message = {
-        id: this.messages.length,
-        text: this.chat
-      }
 
-      this.chat = ''
-      this.messages.push(message)
-    },
+  watch: {
+    socketReady: function() {
+      this.socketReady && this.registerListeners();
+    }
   },
+
+  // Controller Methods
+  // ==================
+  methods: {
+
+    // Convenience method for logging debugging messages
+    log: function() {
+      this.verbose && console.log.apply(console, ['ChatsPanel:', ...arguments]);
+    },
+
+    // Connect to Signal Server and initiate listeners
+    registerListeners: function() {
+
+      this.log('Registering listeners...');
+
+      this.socket.on('message', (message) => {
+        this.log('Received chat message:', message);
+        this.messages.push(message);
+      });
+
+      // Signal parent component that we are ready to receive messages
+      this.$emit('Ready', 'ChatsPanel');
+
+    },
+
+    sendMessage: function() {
+      if (this.roomJoined) {
+        let message = {
+          id: this.messages.length,
+          text: this.chat
+        };
+        this.log('Sending chat message:', message.text);
+        this.socket.message(message);
+        this.messages.push(message);
+      } else {
+        console.log('Warning: Socket not ready for use. Please join a room before sending a chat message.');
+      }
+      this.chat = '';
+    }
+  },
+
   components: {
     TextBox
   }
+
 }
 
 </script>

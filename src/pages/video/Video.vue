@@ -1,181 +1,100 @@
 <template>
 <div id="video-page">
-  <chats-panel></chats-panel>
-  <div id="videos">
-    <div>
-      <video id="remote-video" autoplay="true"></video>
-      <text-box :message="{text:'Remote'}"></text-box>
-    </div>
-    <div>
-      <video id="local-video" autoplay="true"></video>
-      <text-box :message="{text:'Local'}"></text-box>
-    </div>
-  </div>
+  <chats-panel
+    :socket="socket"
+    :socketReady="socketReady"
+    :roomJoined="roomJoined"
+    :verbose="verbose"
+    v-on:Ready="joinRoom"
+  ></chats-panel>
+  <video-stream
+    :socket="socket"
+    :socketReady="socketReady"
+    :verbose="verbose"
+    v-on:RTCPCReady="startSocket"
+    v-on:Ready="joinRoom"
+  ></video-stream>
   <translations-panel></translations-panel>
 </div>
 </template>
 
 
 <script>
+
 import ChatsPanel from './components/ChatsPanel.vue';
 import TranslationsPanel from './components/TranslationsPanel.vue';
-import TextBox from './components/TextBox.vue';
-// import io from '../../../node_modules/socket.io/lib/socket.js';
-import io from '../../../node_modules/socket.io-client/dist/socket.io.js';
+import VideoStream from './components/VideoStream.vue';
+import Socket from '../../lib/socket.js';
 
 export default {
-  // State variables.
-  // ================
+
+  // State Variables
+  // ===============
   data: function () {
     return {
-      localVideo: '',  // Set in mounted lifecycle hook.
-      remoteVideo: '',  // Set in mounted lifecycle hook.
-      localVideoStream: '',  // Set by startVideoCapture().
-      remoteVideoStream: '',  // Set by handleAddStream().
-      rtcpc: '', // The RTCPeerConnection, set by createPeerConnection().
-      caller: false // Determines role, set by startSocketIO().
-    }
+      room: window.location.pathname.split('/')[2], // Room name
+      socket: null,         // Socket.io instance, set by startSocket()
+      signalServerURL: '/', // URL to signal server
+      verbose: true,        // Set to true for debug logging
+      socketReady: false,   // Status of connection to signal server, set by startSocket()
+      roomJoined: false,    // Status of connection to room, set by joinRoom()
+      componentStatus: {    // Status of child components, set by joinRoom()
+        ChatsPanel: false,
+        VideoStream: false
+      }
+    };
   },
-  // Controller methods.
-  // ===================
+
+  // Controller Methods
+  // ==================
   methods: {
 
-    startSocketIO: function() {
-      let socket = io.connect();
-      let room = null; // TODO: room strategy?
-
-      // Signal intent to join or create the room
-      socket.emit('enter room', room);
-      console.log(`Attempting to join or create room "${room}"`);
-
-      // LISTENERS
-
-      socket.on('created room', (message) => {
-        // If we created the room, we will be the caller.
-        this.caller = true;
-      });
-
-      socket.on('joined room', (message) => {
-        // If we joined the room, we will be the callee.
-        this.caller = false;
-      });
+    log: function() {
+      this.verbose && console.log.apply(console, ['Video:', ...arguments]);
     },
 
-    startVideoCapture: function () {
-      console.log('Starting video capture...');
-      var constraints = {audio: true, video: true};
-
-      navigator.mediaDevices.getUserMedia(constraints)
-      .then((stream) => {
-        // console.dir(stream.getAudioTracks());
-        this.localVideoStream = stream;
-        this.localVideo.src = URL.createObjectURL(stream);
-        this.createPeerConnection();
-      })
-      .catch((err) => {
-        console.error('Failed to acquire local video/audio stream.\n', err)
-      });
+    // Initialize the socket
+    // Called on 'RTCPCReady' event from VideoStream component
+    startSocket: function() {
+      this.log('Initializing the socket...')
+      this.socket = Socket(this.signalServerURL, this.verbose);
+      // Signal child components
+      this.socketReady = true;
     },
 
-    stopVideoCapture: function () {
-      console.log('Ending video capture...');
-      // Need to call stop() on each track in stream.
-      var tracks = this.localVideoStream.getTracks();
-      tracks.forEach(function (track) {
-        track.stop();
-      })
-    },
-
-    createPeerConnection: function() {
-      try {
-        // The addresses to the STUN and/or TURN servers.
-        let STServers = null;
-
-        this.rtcpc = new RTCPeerConnection(STServers);
-        // add local stream to send to recipient
-        this.rtcpc.addStream(this.localVideoStream);
-        // listen for and handle our own local ICE Candidate
-        this.rtcpc.onicecandidate = this.handleNewIceCandidate;
-        // listen for and handle the remote stream
-        this.rtcpc.onaddstream = this.handleAddStream;
-        // listen for and handle a hangup from recipient
-        this.rtcpc.onremovestream = this.handleRemoveStream;
-      } catch (err) {
-        console.error(`Failed to create RTCPeerConnection.\nError: ${err}`);
+    // Update status of components
+    // If all are ready, join the room
+    // Called on 'Ready' event of VideoStream or ChatsPanel
+    joinRoom: function(componentName) {
+      this.log(`${componentName} component ready. Checking status of child components...`);
+      this.componentStatus[componentName] = true;
+      if(Object.keys(this.componentStatus).reduce((acc, val) => acc && this.componentStatus[val], true)) {
+        this.log('All components ready. Joining room...');
+        this.socket.join(this.room);
+        this.roomJoined = true;
+      } else {
+        this.log('Some components not ready!');
       }
-    },
-
-    handleNewIceCandidate: function(event) {
-      if (event.candidate) {
-        // Create candidate object
-        // This is proprietary and can take whatever form we like
-        let candidateMessage = {
-          type: 'ICECandidate',
-          sdpMLineIndex: event.candidate.sdpMLineIndex,
-          sdpMid: event.candidate.sdpMid,
-          candidate: event.candidate.candidate
-        };
-        // TODO: send local ICE candidate data (candidateMessage) to signal server
-      }
-    },
-
-    handleAddStream: function(event) {
-      // Store reference to remote stream
-      this.remoteVideoStream = event.stream;
-      // Display remote stream in video element
-      this.remoteVideo.src = URL.createObjectURL(this.remoteVideoStream);
-    },
-
-    handleRemoveStream: function(event) {
-      // TODO
     }
+
   },
 
-  // create a new RTCPeerConnection
-    // use the getUserMedia method to get local webcam/mic stream
-      // set the local video stream
-    // retrieve local ICE candidate data using the .onicecandidate event listener
-      // send ICE candidate data to signal server using socket.io
-    // when we receive remote ICE candidate data from the signal server, make a new RTCIceCandidate instance using the candidate data
-      // add new ice candidate using the .addIceCandidate() method
-    // on add stream event
-      // set the remote video stream
-
-  // if we are the caller
-    // create an offer (.createOffer())
-      // set local session description (.setLocalDescription())
-      // send local session description to signal server
-    // wait for an answer from the callee
-      // set the remote description with the session data from the callee (.setRemoteDescription())
-
-  // if we are the callee
-    // wait for an offer from the caller
-      // set the remote description with the session data from the caller (.setRemoteDescription())
-    // create an answer (.createAnswer())
-      // set local session description (.setLocalDescription())
-      // send local session description to signal server
-
-  // Custom components.
-  // ==================
+  // Custom Components
+  // =================
   components: {
     ChatsPanel,
     TranslationsPanel,
-    TextBox
-  },
-  // Lifecycle hooks
-  // ===============
-  mounted: function () {
-    this.startSocketIO();
-    // Initialize references to HTML5 video elements
-    this.localVideo = document.getElementById('local-video');
-    this.remoteVideo = document.getElementById('remote-video');
-    this.startVideoCapture();
+    VideoStream
   },
 
+  // Lifecycle Hooks
+  // ===============
   beforeDestroy: function () {
-    this.stopVideoCapture();
-  },
+    // Invoke hangup in case of component unload with no page exit or unload
+    // this.hangup();
+  }
 }
+
 </script>
 
 
@@ -192,6 +111,7 @@ export default {
 }
 
 video {
+  background-color: #303030;
   border-style: groove;
   height: 240px;
   width: 320px;
