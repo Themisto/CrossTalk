@@ -22,7 +22,7 @@ export default {
     authNotifier.on('authChange', authState => {
       this.authenticated = authState.authenticated
     })
-    if (!authenticated) { login(); }
+    // if (!authenticated) { login(); }
     return {
       auth,
       authenticated
