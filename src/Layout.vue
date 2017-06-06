@@ -1,8 +1,8 @@
 <template>
 <div>
-  <navbar></navbar>
+  <navbar :auth="auth"></navbar>
   <div class="body">
-    <router-view :list="list"></router-view>
+    <router-view :auth="auth" :list="list"></router-view>
     <body-footer></body-footer>
   </div>
 </div>
@@ -15,11 +15,15 @@
 <script>
 import Navbar from './Navbar.vue'
 import BodyFooter from './BodyFooter.vue'
+import Auth from './services/Auth'
+
+const auth = new Auth()
 
 export default {
   data() {
     return {
-      list: []
+      list: [],
+      auth
     }
   },
   components: {
