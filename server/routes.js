@@ -24,6 +24,7 @@ app.get('/', handlers.index);
 app.get('/list', handlers.index);
 app.get('/video', handlers.index);
 app.get('/room/:id', handlers.index);
+app.get('/login', handlers.index);
 // -------------------------------------
 
 
