@@ -14,6 +14,7 @@
 export default {
   props: ['auth'],
   data () {
+    // if (!this.auth.authenticated) { this.auth.login(); }
     return {}
   }
 }
