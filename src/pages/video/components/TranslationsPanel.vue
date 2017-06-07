@@ -1,7 +1,7 @@
 <template>
 <div>
   <text-box
-    v-for="message in transcript"
+    v-for="message in translatedTranscript"
     :message="message"
     :key="message.id"
   ></text-box>
@@ -17,10 +17,7 @@ export default {
   data: function () {
     return {
       recognition: null,
-      transcript: [
-        {text: 'Hello, my name is Sam', id: 0},
-        {text: 'And you too, Brutus?', id: 1}
-      ],
+      transcript: [],
       translatedTranscript: [],
       callHasEnded: false,
     }
@@ -57,6 +54,7 @@ export default {
         var timestamp = new Date(Date.now());
         timestamp = timestamp.toLocaleTimeString();
         this.transcript.push({id: timestamp, text: result});
+        this.getTranslation();
       };
       
       this.recognition.start();
@@ -78,9 +76,7 @@ export default {
     // @todo: get lang params from home page.
     getTranslation: function () {
       var latestMessage = this.transcript[this.transcript.length - 1];
-      console.log('latestMessage:', latestMessage);
       window.latestMessage = latestMessage;
-      console.log('message to send for translation:', latestMessage.text);
       axios.post('/api/translate', {
         id: latestMessage.id,  // Not currently used server-side.
         text: latestMessage.text,
@@ -91,7 +87,7 @@ export default {
         var message = {id: latestMessage.id, text: response.data};
         if (this.roomJoined) {
           this.socket.translateText(message);
-          console.log('Translation from server:', message);
+          this.translatedTranscript.push(message);
         }
       })
       .catch(error => {
@@ -110,7 +106,6 @@ export default {
   },
   mounted: function () {
     this.listen();
-    this.getTranslation();
   },
   beforeDestroy: function () {
     if (this.recognition) {
