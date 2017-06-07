@@ -44,3 +44,5 @@ typings/
 public/*
 !public/index.html
 **/.DS_Store
+# API keys and confidential config variables
+config.*
