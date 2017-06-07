@@ -13,7 +13,7 @@
     :verbose="verbose"
     v-on:Ready="joinRoom"
   ></video-stream>
-  <translations-panel 
+  <translations-panel
     :socket="socket"
     :socketReady="socketReady"
     :roomJoined="roomJoined"
@@ -28,7 +28,7 @@
 import ChatsPanel from './components/ChatsPanel.vue';
 import TranslationsPanel from './components/TranslationsPanel.vue';
 import VideoStream from './components/VideoStream.vue';
-import Socket from '../../lib/socket.js';
+import Socket from '../../services/socket.js';
 
 export default {
 

@@ -15,7 +15,7 @@
 <script>
 
 import TextBox from './TextBox.vue';
-import WebRTC from '../../../lib/webrtc.js';
+import WebRTC from '../../../services/webrtc.js';
 
 export default {
 
