@@ -1,5 +1,5 @@
 
-import io from './socket.io.js';
+import io from '../lib/socket.io.js';
 
 export default function(URL, verbose) {
 
@@ -33,7 +33,7 @@ export default function(URL, verbose) {
     } else {
       console.error('Error: Room not set. Has .join(room) been called?');
     }
-  };  
+  };
 
   socket.translateText = function(message) {
     if (this._room) {
