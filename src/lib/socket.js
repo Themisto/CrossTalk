@@ -68,7 +68,7 @@ export default function(URL, verbose) {
   * @param {boolean} [join=true] - Attempt to automatically join last room used?
   */
   socket.reset = function (join) {
-    join = join || true;
+    join = join ? true : false;
     log(`Resetting connection to signal server at "${serverURL}"...`);
     this.disconnect();
     this.connect();
