@@ -29,11 +29,14 @@ CrossTalk is the app that connects users looking to learn a new language in an i
 
 * Server Side
   * Express - server framework
+  * Socket.IO - signaling server
 * Client Side
+  * Google Chrome Speech-To-Text - speech-to-text
+  * Socket.IO - server communication
   * Vue - frontend framework
+  * WebRTC - media stream and user connection management
 * External APIs
-  * Google Speech API - speech-to-text
-  * Google Translate API - language translation
+  * Microsoft Cognitive Services - language translation
 
 ## API Usage
 
