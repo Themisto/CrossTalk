@@ -33,9 +33,9 @@ export default {
     initializeSpeechRecognition: function () {
       console.log('Starting speech recognition...');
       var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
-
       this.recognition = new SpeechRecognition();
-      this.recognition.lang = 'en-US';
+      // @todo: 
+      this.recognition.lang = this.$root.$data.nativeLang;
       this.recognition.interimResults = false;
       this.recognition.maxAlternatives = 5;
       this.recognition.continuous = true;
@@ -55,6 +55,7 @@ export default {
         timestamp = timestamp.toLocaleTimeString();
         this.transcript.push({id: timestamp, text: result});
         this.getTranslation();
+        console.log('You said:', result);
       };
 
       this.recognition.start();
@@ -80,8 +81,8 @@ export default {
       axios.post('/api/translate', {
         id: latestMessage.id,  // Not currently used server-side.
         text: latestMessage.text,
-        fromLang: 'en',
-        toLang: 'fr'
+        fromLang: this.$root.$data.foreignLang,
+        toLang: this.$root.$data.nativeLang
       })
       .then(response => {
         var message = {id: latestMessage.id, text: response.data};

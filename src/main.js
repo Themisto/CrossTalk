@@ -13,7 +13,7 @@ const routes = [
   { path: '/list', component: TodoList },
   { path: '/video', component: Video },
   { path: '/room/:id', component: Video },
-  { path: '/login', component: Login}
+  { path: '/login', component: Login }
 ];
 
 const router = new VueRouter({
@@ -24,14 +24,14 @@ const router = new VueRouter({
 
 Vue.use(router);
 
-
-
 new Vue({
   el: '#app',
   data() {
     return {
-      message: 'test msg'
-    }
+      message: 'test msg',
+      nativeLang: null,
+      foreignLang: null
+    };
   },
   router,
   render(h) {
@@ -39,6 +39,6 @@ new Vue({
       props: {
         parentMsg: this.message
       }
-    })
+    });
   }
 });

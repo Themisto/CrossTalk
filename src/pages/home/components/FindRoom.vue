@@ -28,6 +28,8 @@ import axios from 'axios'
 export default {
   data: function () {
     return {
+      nativeLang: null,
+      foreignLang: null,
       supportedLanguages: [
         'English',
         'Spanish',
@@ -38,9 +40,21 @@ export default {
         'French',
         'Hindi',
         'Arabic'
-      ]
+      ],
+      bcp47tags: {
+        English: 'en',
+        Spanish: 'es',
+        Russian: 'ru',
+        Chinese: 'zh-CHS',
+        Dutch: 'nl',
+        German: 'de',
+        French: 'fr',
+        Hindi: 'hi',
+        Arabic: 'ar',
+      }
     }
   },
+  
   methods: {
     findRoom() {
       axios.post('/api/queue', {
@@ -49,20 +63,20 @@ export default {
       })
       .then(response => {
         this.$router.push(response.data);
+        this.setLanguages();
       })
       .catch(error => {
         console.log(error);
       });
+    },
+
+    setLanguages: function () {
+      this.$root.$data.nativeLang = this.bcp47tags[this.nativeLang];
+      this.$root.$data.foreignLang = this.bcp47tags[this.foreignLang];
     }
   }
 }
-
 </script>
-
-
-
-
-
 
 <style>
   .home-inner {
