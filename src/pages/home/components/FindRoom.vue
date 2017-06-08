@@ -2,30 +2,18 @@
   <div class="home-inner">
     <div>
       <h2>Native Language</h2>
-      <select id="native-lang">
-        <option selected>English</option>
-        <option>Spanish</option>
-        <option>Russian</option>
-        <option>Chinese</option>
-        <option>Dutch</option>
-        <option>German</option>
-        <option>French</option>
-        <option>Hindi</option>
-        <option>Arabic</option>
+      <select id="native-lang" v-model="nativeLang">
+        <option v-for="language in supportedLanguages">
+          {{language}}
+        </option>
       </select>
     </div>
     <div>
       <h2>Foreign Language</h2>
-      <select id="foreign-lang">
-        <option>English</option>
-        <option>Spanish</option>
-        <option selected>Russian</option>
-        <option>Chinese</option>
-        <option>Dutch</option>
-        <option>German</option>
-        <option>French</option>
-        <option>Hindi</option>
-        <option>Arabic</option>
+      <select id="foreign-lang" v-model="foreignLang">
+        <option v-for="language in supportedLanguages">
+          {{language}}
+        </option>
       </select>
     </div>
     <div>
@@ -34,16 +22,24 @@
   </div>
 </template>
 
-
-
-
-
 <script>
 import axios from 'axios'
 
 export default {
-  data() {
-    return {}
+  data: function () {
+    return {
+      supportedLanguages: [
+        'English',
+        'Spanish',
+        'Russian',
+        'Chinese',
+        'Dutch',
+        'German',
+        'French',
+        'Hindi',
+        'Arabic'
+      ]
+    }
   },
   methods: {
     findRoom() {
