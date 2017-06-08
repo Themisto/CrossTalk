@@ -77,7 +77,6 @@ export default {
     // @todo: get lang params from home page.
     getTranslation: function () {
       var latestMessage = this.transcript[this.transcript.length - 1];
-      window.latestMessage = latestMessage;
       axios.post('/api/translate', {
         id: latestMessage.id,  // Not currently used server-side.
         text: latestMessage.text,
@@ -87,7 +86,7 @@ export default {
       .then(response => {
         var message = {id: latestMessage.id, text: response.data};
         if (this.roomJoined) {
-          this.socket.translateText(message);
+          this.socket.translateText(latestMessage);
           this.translatedTranscript.push(message);
         }
       })
