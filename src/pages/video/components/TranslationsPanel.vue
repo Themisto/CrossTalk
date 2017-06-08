@@ -55,7 +55,6 @@ export default {
         timestamp = timestamp.toLocaleTimeString();
         this.transcript.push({id: timestamp, text: result});
         this.getTranslation();
-        console.log('You said:', result);
       };
 
       this.recognition.start();
