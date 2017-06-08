@@ -163,18 +163,11 @@ export default {
 
 #remote-video {
   background: rgba(0,0,0,0.6);
-
-  grid-column: col 8;
-  grid-row: row 8;
-/*  opacity: .2;
-  background-color: red;*/
-  /*background-color: #303030;*/
-  width: auto;
-  /*height: 240px;*/
+  width: 100%;
+  height: 100%;
   box-shadow: 2px 2px 20px 2px #111;
-  z-index:11;
-  margin-bottom: 20px;
-
+  grid-column: col 1 / span  8;
+  grid-row: row 1 / span 8;
 }
 
 
@@ -182,14 +175,13 @@ export default {
 
 #local-video {
   background: rgba(0,0,0,0.6);
-  /*background-color: black;*/
-  /*opacity: 0.5;*/
-  width: 100%;
-  height: 100%;
+  grid-column: col 8;
+  grid-row: row 8;
+  width: auto;
+  height: 150px;
   box-shadow: 2px 2px 20px 2px #111;
-
-  grid-column: col 1 / span  8;
-  grid-row: row 1 / span 8;
+  z-index:11;
+  margin-bottom: 20px;
 }
 
 
