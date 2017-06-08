@@ -34,6 +34,7 @@ app.get('/login', handlers.index);
 // ------------ api routes ------------
 
 app.post('/api/queue', rooms.findMatch);
+app.post('/api/translate', handlers.translate);
 
 // ------------------------------------
 

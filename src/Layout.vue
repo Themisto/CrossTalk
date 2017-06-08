@@ -2,14 +2,13 @@
 
   <div id="main-container">
 
-    <navbar id="navbar"></navbar>
+    <navbar :auth="auth" id="navbar"></navbar>
 
     <div id="body">
-      <router-view :list="list"></router-view>
+      <router-view :auth="auth" :list="list"></router-view>
     </div>
 
     <body-footer id="footer"></body-footer>
-
   </div>
 </template>
 
@@ -20,11 +19,15 @@
 <script>
 import Navbar from './Navbar.vue'
 import BodyFooter from './BodyFooter.vue'
+import Auth from './services/Auth'
+
+const auth = new Auth()
 
 export default {
   data() {
     return {
-      list: []
+      list: [],
+      auth
     }
   },
   components: {

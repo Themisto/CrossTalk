@@ -11,14 +11,15 @@
     "dev": "webpack --watch & nodemon server/server.js"
   },
   "dependencies": {
-    "EventEmitter": "^1.0.0",
     "auth0": "^2.6.0",
     "auth0-js": "^8.7.0",
     "axios": "^0.16.1",
+    "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "socket.io": "^2.0.1",
     "vue": "^2.2.1",
-    "vue-router": "^2.5.3"
+    "vue-router": "^2.5.3",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

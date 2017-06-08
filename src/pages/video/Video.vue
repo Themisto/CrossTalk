@@ -12,11 +12,15 @@
     :socket="socket"
     :socketReady="socketReady"
     :verbose="verbose"
-    v-on:RTCPCReady="startSocket"
     v-on:Ready="joinRoom"
   ></video-stream>
 
-  <translations-panel></translations-panel>
+  <translations-panel
+    :socket="socket"
+    :socketReady="socketReady"
+    :roomJoined="roomJoined"
+    v-on:Ready="joinRoom"
+  ></translations-panel>
 </div>
 </template>
 
@@ -26,7 +30,7 @@
 import ChatsPanel from './components/ChatsPanel.vue';
 import TranslationsPanel from './components/TranslationsPanel.vue';
 import VideoStream from './components/VideoStream.vue';
-import Socket from '../../lib/socket.js';
+import Socket from '../../services/socket.js';
 
 export default {
 
@@ -42,7 +46,8 @@ export default {
       roomJoined: false,    // Status of connection to room, set by joinRoom()
       componentStatus: {    // Status of child components, set by joinRoom()
         ChatsPanel: false,
-        VideoStream: false
+        VideoStream: false,
+        TranslationsPanel: false
       }
     };
   },
@@ -91,6 +96,10 @@ export default {
 
   // Lifecycle Hooks
   // ===============
+  mounted: function() {
+    this.startSocket();
+  },
+
   beforeDestroy: function () {
     // Invoke hangup in case of component unload with no page exit or unload
     // this.hangup();

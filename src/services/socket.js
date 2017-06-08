@@ -1,5 +1,5 @@
 
-import io from './socket.io.js';
+import io from '../lib/socket.io.js';
 
 export default function(URL, verbose) {
 
@@ -30,6 +30,18 @@ export default function(URL, verbose) {
         message: message
       };
       this.emit('relay', data);
+    } else {
+      console.error('Error: Room not set. Has .join(room) been called?');
+    }
+  };
+
+  socket.translateText = function(message) {
+    if (this._room) {
+      let data = {
+        room: this._room,
+        message: message
+      };
+      this.emit('translateText', data);
     } else {
       console.error('Error: Room not set. Has .join(room) been called?');
     }
@@ -68,7 +80,7 @@ export default function(URL, verbose) {
   * @param {boolean} [join=true] - Attempt to automatically join last room used?
   */
   socket.reset = function (join) {
-    join = join || true;
+    join = join ? true : false;
     log(`Resetting connection to signal server at "${serverURL}"...`);
     this.disconnect();
     this.connect();

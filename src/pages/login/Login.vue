@@ -1,6 +1,5 @@
 <template>
 <div>
-login
 </div>
 </template>
 
@@ -9,13 +8,10 @@ login
 
 
 <script>
-import Auth from '../../services/Auth'
-
-const auth = new Auth()
-
 export default {
-  data () {
-    auth.handleAuthentication()
+  props: ['auth'],
+  data() {
+    this.auth.handleAuthentication()
     this.$router.push('/')
     return {}
   }
@@ -27,6 +23,6 @@ export default {
 
 
 
-<style>
+<style scoped>
 
 </style>
