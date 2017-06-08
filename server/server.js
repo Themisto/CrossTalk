@@ -1,3 +1,4 @@
+require('./config');
 var server = require('./routes.js');
 var https = require('https');
 var http = require('http');

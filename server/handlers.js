@@ -3,8 +3,15 @@ var path = require('path');
 var xmlParser = require('xml2js');
 var config = require('./config.js');
 var utils = require('./utils');
+var jwt = require('jwt-simple');
 
 var public = path.join(__dirname + '/../public/');
+
+
+// jwt example, gets TOKEN from request
+// jwt.decode(TOKEN, process.env.AUTH0_SECRET);
+
+
 
 module.exports = {
   index: (req, res) => {
