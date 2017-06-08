@@ -4,6 +4,7 @@ var xmlParser = require('xml2js');
 var config = require('./config.js');
 var utils = require('./utils');
 var jwt = require('jwt-simple');
+var User = require('../database/models/user.js');
 
 var public = path.join(__dirname + '/../public/');
 
