@@ -2,30 +2,18 @@
   <div class="home-inner">
     <div>
       <h2>Native Language</h2>
-      <select id="native-lang">
-        <option selected>English</option>
-        <option>Spanish</option>
-        <option>Russian</option>
-        <option>Chinese</option>
-        <option>Dutch</option>
-        <option>German</option>
-        <option>French</option>
-        <option>Hindi</option>
-        <option>Arabic</option>
+      <select id="native-lang" v-model="nativeLang">
+        <option v-for="language in supportedLanguages">
+          {{language}}
+        </option>
       </select>
     </div>
     <div>
       <h2>Foreign Language</h2>
-      <select id="foreign-lang">
-        <option>English</option>
-        <option>Spanish</option>
-        <option selected>Russian</option>
-        <option>Chinese</option>
-        <option>Dutch</option>
-        <option>German</option>
-        <option>French</option>
-        <option>Hindi</option>
-        <option>Arabic</option>
+      <select id="foreign-lang" v-model="foreignLang">
+        <option v-for="language in supportedLanguages">
+          {{language}}
+        </option>
       </select>
     </div>
     <div>
@@ -34,17 +22,39 @@
   </div>
 </template>
 
-
-
-
-
 <script>
 import axios from 'axios'
 
 export default {
-  data() {
-    return {}
+  data: function () {
+    return {
+      nativeLang: null,
+      foreignLang: null,
+      supportedLanguages: [
+        'English',
+        'Spanish',
+        'Russian',
+        'Chinese',
+        'Dutch',
+        'German',
+        'French',
+        'Hindi',
+        'Arabic'
+      ],
+      bcp47tags: {
+        English: 'en',
+        Spanish: 'es',
+        Russian: 'ru',
+        Chinese: 'zh-CHS',
+        Dutch: 'nl',
+        German: 'de',
+        French: 'fr',
+        Hindi: 'hi',
+        Arabic: 'ar',
+      }
+    }
   },
+  
   methods: {
     findRoom() {
       axios.post('/api/queue', {
@@ -53,20 +63,20 @@ export default {
       })
       .then(response => {
         this.$router.push(response.data);
+        this.setLanguages();
       })
       .catch(error => {
         console.log(error);
       });
+    },
+
+    setLanguages: function () {
+      this.$root.$data.nativeLang = this.bcp47tags[this.nativeLang];
+      this.$root.$data.foreignLang = this.bcp47tags[this.foreignLang];
     }
   }
 }
-
 </script>
-
-
-
-
-
 
 <style>
   .home-inner {
