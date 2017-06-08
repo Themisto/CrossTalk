@@ -9,8 +9,14 @@ var userSchema = new mongoose.Schema({
   },
   friends: [String],
   rating: {
-    upvotes: Number,
-    downvotes: Number
+    upvotes: {
+      type: Number,
+      default: 0
+    },
+    downvotes: {
+      type: Number,
+      default: 0
+    }
   },
   settings: {
     knownLanguages: [String]
