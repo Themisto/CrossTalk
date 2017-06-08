@@ -7,12 +7,14 @@
     :verbose="verbose"
     v-on:Ready="joinRoom"
   ></chats-panel>
+
   <video-stream
     :socket="socket"
     :socketReady="socketReady"
     :verbose="verbose"
     v-on:Ready="joinRoom"
   ></video-stream>
+
   <translations-panel
     :socket="socket"
     :socketReady="socketReady"
@@ -109,21 +111,60 @@ export default {
 
 <style>
 #video-page {
-  background-color: #7aa2e2;
-  display: flex;
-  justify-content: space-around;
+  width: 100%;
+
+  height: 100%;
+  display: grid;
+  grid-gap: 20px;
+  margin: 20px;
+
+  /*justify-content: space-around;*/
+  grid-template-areas:
+
+    "translations-panel videos chats-panel";
+
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 4fr 1fr;
+
 }
 
-#videos {
+.video-page > * {
+
+  font-size: 30px;
+  display: flex;
+/*  align-items: center;
+  justify-content: center;
+  text-align: center;*/
+}
+
+/*#videos {
+  border: 1px solid lime;
   display: flex;
   flex-wrap: wrap;
+}*/
+
+#videos {
+  grid-area: videos;
+  /*border: 3px solid lime;*/
 }
 
-video {
-  background-color: #303030;
-  border-style: groove;
-  height: 240px;
-  width: 320px;
+/*#local-container {
+  grid-area: local-container;
+  border: 3px solid pink;
+}*/
+
+#chats-panel {
+  grid-area: chats-panel;
+  /*border: 3px solid green;*/
 }
+
+
+#translations-panel {
+  grid-area: translations-panel;
+  /*border: 3px solid green;*/
+
+}
+
+
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="translations-panel">
   <text-box
     v-for="message in translatedTranscript"
     :message="message"
@@ -56,10 +56,10 @@ export default {
         this.transcript.push({id: timestamp, text: result});
         this.getTranslation();
       };
-      
+
       this.recognition.start();
     },
-    
+
     listen: function () {
       if (this.callHasEnded) {
         this.recognition.stop();
@@ -67,7 +67,7 @@ export default {
         this.initializeSpeechRecognition();
       }
     },
-    
+
     toggleListen: function () {
       this.callHasEnded = !this.callHasEnded;
       this.listen();
@@ -122,5 +122,11 @@ export default {
 
 
 <style>
+  #translations-panel {
+    background-color: black;
+    opacity: 0.6;
+    box-shadow: 2px 2px 20px 2px black;
+  }
+
 
 </style>

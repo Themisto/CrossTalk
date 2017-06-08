@@ -1,12 +1,16 @@
 <template>
-<div>
-  <text-box
-    v-for="message in messages"
-    :message="message"
-    :key="message.id"
-  ></text-box>
-  <input placeholder="Enter chat here" v-model="chat">
-  <button v-on:click="sendMessage"> Send </button>
+<div id="chats-panel">
+  <div id="text-box">
+    <text-box
+      v-for="message in messages"
+      :message="message"
+      :key="message.id"
+    ></text-box>
+  </div>
+  <div>
+    <input placeholder="Enter chat here" v-model="chat">
+    <button v-on:click="sendMessage"> Send </button>
+  </div>
 </div>
 </template>
 
@@ -89,5 +93,27 @@ export default {
 
 
 <style>
+
+#text-box {
+  margin-top: auto;
+
+}
+
+
+
+
+ #chats-panel {
+  background-color: black;
+  opacity: 0.6;
+  box-shadow: 2px 2px 20px 2px black;
+/*  justify-content: left;
+  display: flex;
+  flex-direction: column;*/
+/*  align-items: right;
+  padding-top: auto;*/
+ }
+
+
+
 
 </style>

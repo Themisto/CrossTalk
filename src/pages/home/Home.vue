@@ -31,6 +31,6 @@ export default {
 
 <style>
   .home-body {
-    background-color: white;
+    /*background-color: white;*/
   }
 </style>
