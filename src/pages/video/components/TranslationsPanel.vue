@@ -55,7 +55,6 @@ export default {
         timestamp = timestamp.toLocaleTimeString();
         this.transcript.push({id: timestamp, text: result});
         this.getTranslation();
-        console.log('You said:', result);
       };
 
       this.recognition.start();
@@ -77,7 +76,6 @@ export default {
     // @todo: get lang params from home page.
     getTranslation: function () {
       var latestMessage = this.transcript[this.transcript.length - 1];
-      window.latestMessage = latestMessage;
       axios.post('/api/translate', {
         id: latestMessage.id,  // Not currently used server-side.
         text: latestMessage.text,
@@ -87,8 +85,9 @@ export default {
       .then(response => {
         var message = {id: latestMessage.id, text: response.data};
         if (this.roomJoined) {
-          this.socket.translateText(message);
-          this.translatedTranscript.push(message);
+          this.socket.translateText(latestMessage);
+          // Uncomment to display local transcript.
+          // this.translatedTranscript.push(message);
         }
       })
       .catch(error => {
