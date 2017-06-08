@@ -42,17 +42,21 @@ export default {
 
 <style scoped>
 nav {
-  margin-top: -50px;
+/*  margin-top: -50px;
+  margin-bottom: 50px;
+  position: fixed;*/
+
   display: flex;
-  position: fixed;
   justify-content: space-between;
   width: 100%;
-  background-color: lightgrey;
+  background-color: black;
+  opacity: 0.6;
+  box-shadow: 2px 2px 20px 2px black;
 }
 
 nav * {
   text-decoration: none;
-  color: black;
+  color: white;
   padding: 14px;
 }
 

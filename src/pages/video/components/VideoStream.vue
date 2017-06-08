@@ -1,13 +1,16 @@
 <template>
 <div id="videos">
-  <div>
+
+  <!-- <div id="remote-container"> -->
     <video id="remote-video" autoplay="true"></video>
-    <text-box :message="{text:'Remote'}"></text-box>
-  </div>
-  <div>
+    <!-- <text-box :message="{text:'Remote'}"></text-box> -->
+  <!-- </div> -->
+
+  <!-- <div id="local-container"> -->
     <video id="local-video" autoplay="true" muted></video>
-    <text-box :message="{text:'Local'}"></text-box>
-  </div>
+    <!-- <text-box :message="{text:'Local'}"></text-box> -->
+  <!-- </div> -->
+
 </div>
 </template>
 
@@ -275,19 +278,74 @@ export default {
 
 <style>
 
-#videos {
-  display: flex;
-  flex-wrap: wrap;
-}
 
-video {
+
+#videos {
   /*-webkit-flex: 1 0 0;
   flex: 1 0 0;*/
-  background-color: #303030;
-  border-style: groove;
-  height: 480px;
-  width: 640px;
+  /*margin: 10px;*/
+  /*justify-content: space-around;*/
+  display: grid;
+  grid-gap: 10px;
+
+  grid-template-columns: repeat(8, [col] auto ) ;
+  grid-template-rows: repeat(8, [row] auto  );
+
 }
+
+#videos > * {
+/*  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;*/
+
+    color: #fff;
+
+
+
+    z-index:10;
+}
+
+#remote-video {
+  background: rgba(0,0,0,0.6);
+
+  grid-column: col 8;
+  grid-row: row 8;
+/*  opacity: .2;
+  background-color: red;*/
+  /*background-color: #303030;*/
+  width: auto;
+  /*height: 240px;*/
+  box-shadow: 2px 2px 20px 2px #111;
+  z-index:11;
+  margin-bottom: 20px;
+
+}
+
+
+
+
+#local-video {
+  background: rgba(0,0,0,0.6);
+  /*background-color: black;*/
+  /*opacity: 0.5;*/
+  width: 100%;
+  height: 100%;
+  box-shadow: 2px 2px 20px 2px #111;
+
+  grid-column: col 1 / span  8;
+  grid-row: row 1 / span 8;
+}
+
+
+
+
+
+
+
+
+
 
 </style>
 

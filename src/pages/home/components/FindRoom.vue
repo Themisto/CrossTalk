@@ -72,9 +72,10 @@ export default {
   .home-inner {
     height: 200px;
     display: flex;
-    /*align-items: center;*/
+    align-items: bottom;
     justify-content: center;
-    background-color: #7aa2e2;
+/*    background-color: black;
+    opacity: 0.5;*/
   }
 
   .home-inner select {
