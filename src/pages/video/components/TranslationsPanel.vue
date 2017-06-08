@@ -87,7 +87,8 @@ export default {
         var message = {id: latestMessage.id, text: response.data};
         if (this.roomJoined) {
           this.socket.translateText(latestMessage);
-          this.translatedTranscript.push(message);
+          // Uncomment to display local transcript.
+          // this.translatedTranscript.push(message);
         }
       })
       .catch(error => {
