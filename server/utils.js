@@ -6,10 +6,10 @@ module.exports = {
     // POST to Microsoft's auth service every 9 minutes because
     // auth token expires every 10 minutes.
     // Documentation: http://docs.microsofttranslator.com/oauth-token.html.
-    var query = `?Subscription-Key=${process.env.TRANSLATOR_KEY}`;
+    var query = `?Subscription-Key=${process.env.TRANSLATOR_KEY || config.TRANSLATOR_KEY}`;
 
     // Returns a promise to caller.
-    return axios.post(process.env.TRANSLATOR_AUTH_URL + query);
+    return axios.post(process.env.TRANSLATOR_AUTH_URL || config.TRANSLATOR_AUTH_URL + query);
   },
 
   translateText: function (text, fromLang, toLang) {
@@ -23,7 +23,7 @@ module.exports = {
       console.log(error);
     })
     .then((translatorToken) => {
-      return axios.get(process.env.TRANSLATOR_SERVICE_URL, {
+      return axios.get(process.env.TRANSLATOR_SERVICE_URL || config.TRANSLATOR_SERVICE_URL, {
         params: {
           appid: `Bearer ${translatorToken}`,
           text: text,
