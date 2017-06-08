@@ -95,12 +95,12 @@ body {
 
 #body {
   grid-area: body;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  /*margin-top: 20px;*/
+  margin-bottom: 40px;
 
   font-size: 20px;
   display: flex;
-  align-items: center;
+  /*align-items: center;*/
   justify-content: center;
   text-align: center;
 /*  height: 100vh;
