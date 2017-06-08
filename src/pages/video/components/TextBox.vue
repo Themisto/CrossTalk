@@ -17,5 +17,8 @@ export default {
 
 
 <style>
+  p {
+    color: white;
+  }
 
 </style>
