@@ -1,6 +1,11 @@
 <template>
 <nav>
+<div>
   <router-link to="/">Home</router-link>
+  <router-link to="/profile">Profile</router-link>
+
+</div>
+
   <div v-if="!auth.authenticated" v-on:click="auth.login">Login</div>
   <div v-if="auth.authenticated" v-on:click="auth.logout">Logout</div>
 </nav>
@@ -48,7 +53,7 @@ nav * {
   padding: 14px;
 }
 
-nav *:hover {
+nav > div > *:hover {
   background-color: grey;
 }
 
