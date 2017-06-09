@@ -1,6 +1,6 @@
 <template>
-<div>
-Friends
+<div id="friends-list">
+
 </div>
 </template>
 
@@ -28,5 +28,9 @@ export default {
 
 
 <style scoped>
+
+#friends-list {
+
+}
 
 </style>
