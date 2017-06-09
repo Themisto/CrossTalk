@@ -6,7 +6,7 @@ mongoose.Promise = require('bluebird');
 // ========================
 
 var userSchema = new mongoose.Schema({
-  id: {
+  _id: {
     type: String,
     required: true,
     unique: true
@@ -15,7 +15,7 @@ var userSchema = new mongoose.Schema({
   // May add an email syntax validator in the future
   email: String,
   // TODO: Look into turning friends into a mongoose Population
-  friends: [String],
+  friends: [{type: String, ref: 'User'}],
   rating: {
     upvotes: {
       type: Number,
