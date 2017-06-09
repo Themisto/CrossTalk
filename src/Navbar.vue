@@ -1,6 +1,6 @@
 <template>
 <nav>
-<div>
+<div id="group">
   <router-link to="/">Home</router-link>
   <router-link to="/profile">Profile</router-link>
 
@@ -53,7 +53,14 @@ nav * {
   padding: 14px;
 }
 
-nav > div > *:hover {
+
+
+#group > *:hover {
+  background-color: grey;
+}
+
+
+nav > *:not(#group):hover {
   background-color: grey;
 }
 
