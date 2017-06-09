@@ -5,13 +5,15 @@ mongoose.Promise = require('bluebird');
 // =========Schema=========
 // ========================
 
-//TODO: Add name and email?
 var userSchema = new mongoose.Schema({
   id: {
     type: String,
     required: true,
     unique: true
   },
+  name: String,
+  // May add an email syntax validator in the future
+  email: String,
   // TODO: Look into turning friends into a mongoose Population
   friends: [String],
   rating: {
