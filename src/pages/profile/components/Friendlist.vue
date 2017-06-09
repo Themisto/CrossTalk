@@ -1,6 +1,6 @@
 <template>
-<div id="profile-page">
-  <h1>Profile</h1>
+<div id="friendlist">
+  <h1>Friendlist</h1>
 </div>
 
 </template>

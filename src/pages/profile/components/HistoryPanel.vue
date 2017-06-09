@@ -1,6 +1,6 @@
 <template>
-<div id="profile-page">
-  <h1>Profile</h1>
+<div id="history-panel">
+  <h1>History</h1>
 </div>
 
 </template>

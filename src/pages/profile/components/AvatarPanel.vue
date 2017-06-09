@@ -1,6 +1,6 @@
 <template>
-<div id="profile-page">
-  <h1>Profile</h1>
+<div id="avatar-panel">
+  <h1>Avatar</h1>
 </div>
 
 </template>

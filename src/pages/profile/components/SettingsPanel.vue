@@ -1,6 +1,6 @@
 <template>
-<div id="profile-page">
-  <h1>Profile</h1>
+<div id="settings-panel">
+  <h1>Settings</h1>
 </div>
 
 </template>
