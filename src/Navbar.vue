@@ -1,21 +1,22 @@
 <template>
 <nav>
-<div id="group">
   <router-link to="/">Home</router-link>
+<div id="group">
   <router-link to="/profile">Profile</router-link>
-
-</div>
-
+  <FriendsList v-if="auth.authenticated"></FriendsList>
   <div v-if="!auth.authenticated" v-on:click="auth.login">Login</div>
   <div v-if="auth.authenticated" v-on:click="auth.logout">Logout</div>
+</div>
+
 </nav>
 </template>
 
 
 
-
-
 <script>
+
+import FriendsList from './FriendsList.vue';
+
 export default {
   props: ['auth'],
   data() {
@@ -24,16 +25,18 @@ export default {
   },
   updated() {
     if (!this.auth.authenticated) { this.auth.login(); }
+  },
+  components: {
+    FriendsList
   }
 }
+
 </script>
 
 
 
-
-
-
 <style scoped>
+
 nav {
 /*  margin-top: -50px;
   margin-bottom: 50px;
