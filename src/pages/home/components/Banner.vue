@@ -1,6 +1,6 @@
 <template>
   <div class="home-banner">
-    <img src="../banner.png">
+    <img src="../img/banner.png">
   </div>
 </template>
 
@@ -24,10 +24,15 @@
 <style>
  .home-banner {
     height: 400px;
+    width: 100vw;
     overflow: hidden;
+    align-items: center;
+    background: rgba(0,0,0,0.6);
   }
 
   .home-banner img {
-    width: 100%;
+    margin: 20px;
+    height: calc(100% - 40px);
+    /*width: 100%;*/
   }
 </style>
