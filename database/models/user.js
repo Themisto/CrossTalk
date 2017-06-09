@@ -1,19 +1,23 @@
 var mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+var Promise = require('bluebird');
+mongoose.Promise = Promise;
 
 // ========================
 // =========Schema=========
 // ========================
 
-//TODO: Add name and email?
 var userSchema = new mongoose.Schema({
-  id: {
+  // '_id', as opposed to 'id', overwrites the default mongoose document id
+  _id: {
     type: String,
     required: true,
     unique: true
   },
+  name: String,
+  // May add an email syntax validator in the future
+  email: String,
   // TODO: Look into turning friends into a mongoose Population
-  friends: [String],
+  friends: [{type: String, ref: 'User'}],
   rating: {
     upvotes: {
       type: Number,
@@ -57,26 +61,53 @@ userSchema.virtual('rating.net').get(function() {
 // =========Methods=========
 // =========================
 
+// returns a promise with the user's friends
+userSchema.methods.getFriends = function() {
+  // Currently returns all fields of each friend
+  // See http://mongoosejs.com/docs/api.html#document_Document-populate for options
+  return new Promise((resolve, reject) => {
+    this.populate('friends').execPopulate()
+    .then(user => {
+      resolve(user.friends);
+    })
+    .catch(reject);
+  });
+};
+
+// Add the user matching the given id to the current user's friends list
+// Returns a promise
+userSchema.methods.addFriendById = function(id) {
+  return new Promise((resolve, reject) => {
+    // console.log(this.constructor);
+    this.constructor.findOne({_id: id})
+    .then(user => {
+      this.friends.push(user);
+      this.save().then(resolve).catch(reject);
+    })
+    .catch(reject);
+  });
+};
+
 // Increment ratings.upvotes and returns the updated document in a query
 // Usage: User.upvoteById(user_id).then((doc) => {}) or User.upvoteById(user_id).exec()
 userSchema.statics.upvoteById = function(id) {
-  return this.findOneAndUpdate({id: id}, { $inc: { "rating.upvotes": 1 } }, {new: true});
+  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.upvotes": 1 } }, {new: true});
 };
 
 // Increment ratings.downvotes and returns the updated document in a query
 // Usage: User.downvoteById(user_id).then((doc) => {}) or User.downvoteById(user_id).exec()
 userSchema.statics.downvoteById = function(id) {
-  return this.findOneAndUpdate({id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
+  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
 };
 
 userSchema.statics.newUser = function(id) {
-  return this.find({id: id}, (err, user) => {
+  return this.find({_id: id}, (err, user) => {
     if (err) {
       console.error(err);
     } else {
       if (user.length === 0) {
         var account = new this({
-          id: id
+          _id: id
         });
 
         account.save((err, account) => {
@@ -92,7 +123,7 @@ userSchema.statics.newUser = function(id) {
       }
     }
   })
-}
+};
 
 var User = mongoose.model('User', userSchema);
 
