@@ -11,9 +11,11 @@
 export default {
   props: ['auth'],
   data() {
-    this.auth.handleAuthentication()
-    this.$router.push('/')
     return {}
+  },
+  created() {
+    this.auth.handleAuthentication();
+    this.$router.push('/');
   }
 }
 </script>

@@ -1,4 +1,5 @@
 import auth0 from 'auth0-js'
+import axios from 'axios'
 
 export default class AuthService {
 
@@ -39,6 +40,14 @@ export default class AuthService {
     localStorage.setItem('id_token', authResult.idToken)
     localStorage.setItem('expires_at', expiresAt)
     this.authenticated = true
+
+    axios.post('/api/new_user', {
+      token: authResult.idToken
+    }).then(response => {
+      console.log(response);
+    }).catch(e => {
+      this.errors.push(e)
+    });
   }
 
   logout() {
