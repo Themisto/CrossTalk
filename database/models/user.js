@@ -6,6 +6,7 @@ mongoose.Promise = require('bluebird');
 // ========================
 
 var userSchema = new mongoose.Schema({
+  // '_id', as opposed to 'id', overwrites the default mongoose document id
   _id: {
     type: String,
     required: true,
@@ -62,23 +63,23 @@ userSchema.virtual('rating.net').get(function() {
 // Increment ratings.upvotes and returns the updated document in a query
 // Usage: User.upvoteById(user_id).then((doc) => {}) or User.upvoteById(user_id).exec()
 userSchema.statics.upvoteById = function(id) {
-  return this.findOneAndUpdate({id: id}, { $inc: { "rating.upvotes": 1 } }, {new: true});
+  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.upvotes": 1 } }, {new: true});
 };
 
 // Increment ratings.downvotes and returns the updated document in a query
 // Usage: User.downvoteById(user_id).then((doc) => {}) or User.downvoteById(user_id).exec()
 userSchema.statics.downvoteById = function(id) {
-  return this.findOneAndUpdate({id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
+  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
 };
 
 userSchema.statics.newUser = function(id) {
-  return this.find({id: id}, (err, user) => {
+  return this.find({_id: id}, (err, user) => {
     if (err) {
       console.error(err);
     } else {
       if (user.length === 0) {
         var account = new this({
-          id: id
+          _id: id
         });
 
         account.save((err, account) => {
