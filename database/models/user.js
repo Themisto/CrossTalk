@@ -69,6 +69,31 @@ userSchema.statics.downvoteById = function(id) {
   return this.findOneAndUpdate({id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
 };
 
+userSchema.statics.newUser = function(id) {
+  return this.find({id: id}, (err, user) => {
+    if (err) {
+      console.error(err);
+    } else {
+      if (user.length === 0) {
+        var account = new this({
+          id: id
+        });
+
+        account.save((err, account) => {
+          if(err) {
+            console.log(err);
+            console.log("Could not create user.");
+          } else {
+            console.log("New User Created.");
+          }
+        });
+      } else {
+        console.log('User Already Exists.');
+      }
+    }
+  })
+}
+
 var User = mongoose.model('User', userSchema);
 
 module.exports = User;
