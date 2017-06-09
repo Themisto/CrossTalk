@@ -1,5 +1,6 @@
 require('./config');
 var server = require('./routes.js');
+var db =require('../database/db.js');
 var https = require('https');
 var http = require('http');
 var fs = require('fs');
