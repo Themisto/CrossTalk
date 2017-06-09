@@ -20,7 +20,6 @@ export default class AuthService {
 
   handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
-      console.log(authResult);
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
         // router.replace('home')
