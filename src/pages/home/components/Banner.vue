@@ -33,6 +33,5 @@
   .home-banner img {
     margin: 20px;
     height: calc(100% - 40px);
-    /*width: 100%;*/
   }
 </style>
