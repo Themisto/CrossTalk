@@ -2,16 +2,14 @@
 <nav>
   <router-link to="/">Home</router-link>
   <div id="group">
+    <div id="friends-btn" v-if="auth.authenticated" v-on:click="toggleFriends">
+      Friends
+      <FriendsList v-if="showFriends"></FriendsList>
+    </div>
     <router-link to="/profile">Profile</router-link>
-    <FriendsList v-if="auth.authenticated"></FriendsList>
     <div v-if="!auth.authenticated" v-on:click="auth.login">Login</div>
     <div v-if="auth.authenticated" v-on:click="auth.logout">Logout</div>
   </div>
-
-  <!-- <div id="friends-btn" v-if="auth.authenticated" v-on:click="toggleFriends">
-    Friends
-    <FriendsList v-if="showFriends"></FriendsList>
-  </div> -->
 
 </nav>
 </template>
