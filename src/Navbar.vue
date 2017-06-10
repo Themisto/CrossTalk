@@ -8,10 +8,10 @@
     <div v-if="auth.authenticated" v-on:click="auth.logout">Logout</div>
   </div>
 
-    <!-- <div id="friends-button" v-if="auth.authenticated" v-on:click="toggleFriends">
-      Friends
-      <FriendsList v-if="showFriends"></FriendsList>
-    </div> -->
+  <!-- <div id="friends-btn" v-if="auth.authenticated" v-on:click="toggleFriends">
+    Friends
+    <FriendsList v-if="showFriends"></FriendsList>
+  </div> -->
 
 </nav>
 </template>
@@ -78,6 +78,10 @@ nav * {
 
 nav > *:not(#group):hover {
   background-color: grey;
+}
+
+#friends-btn {
+  position: relative;
 }
 
 </style>
