@@ -1,7 +1,7 @@
 <template>
 <div id="friends-list-item">
   <img src="https://ca.slack-edge.com/T0455847Q-U048WUTPW-c9aad4cb38d9-48">
-  {{user.name}}
+  {{user._id}}
 </div>
 </template>
 
