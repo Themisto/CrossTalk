@@ -1,12 +1,14 @@
 <template>
 <div id="friends-list">
-  <div v-for="friend in friends">{{friend.name}}</div>
+  <FriendsListItem v-for="friend in friends" :user="friend" :key="friend.id"></FriendsListItem>
 </div>
 </template>
 
 
 
 <script>
+
+import FriendsListItem from './FriendsListItem.vue';
 
 export default {
 
@@ -25,7 +27,7 @@ export default {
 
   },
   components: {
-
+    FriendsListItem
   }
 
 }
@@ -37,15 +39,16 @@ export default {
 <style scoped>
 
 #friends-list {
-  background-color: black;
+  background-color: rgba(100, 100, 100, .7);
   position: absolute;
   display: block;
   top: 54px;
   left: 0px;
   min-width: 300px;
   z-index: 100;
+  padding: 2px 7px 7px 7px;
   /*Opacity doesn't seem to override Navbar styling*/
-  opacity: 1;
+  /*opacity: 1;*/
 }
 
 </style>
