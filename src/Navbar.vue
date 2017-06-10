@@ -1,6 +1,11 @@
 <template>
 <nav>
+<div id="group">
   <router-link to="/">Home</router-link>
+  <router-link to="/profile">Profile</router-link>
+
+</div>
+
   <div v-if="!auth.authenticated" v-on:click="auth.login">Login</div>
   <div v-if="auth.authenticated" v-on:click="auth.logout">Logout</div>
 </nav>
@@ -48,7 +53,14 @@ nav * {
   padding: 14px;
 }
 
-nav *:hover {
+
+
+#group > *:hover {
+  background-color: grey;
+}
+
+
+nav > *:not(#group):hover {
   background-color: grey;
 }
 

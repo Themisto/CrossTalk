@@ -46,5 +46,30 @@ module.exports = {
       console.log('Error serving translate request.');
       console.log(error);
     });
+  },
+
+  getRating: (req, res) => {
+    let id = getID(req.header('x-access-token').split(' ')[1]);
+    User.getRatingById(id)
+    .then((rating) => {
+      res.send(rating);
+    })
+    .catch((err) => {
+      console.error('Failed to get rating!', err);
+      res.sendStatus(500);
+    });
+  },
+
+  getFriends: (req, res) => {
+    let id = getID(req.header('x-access-token').split(' ')[1]);
+    User.getFriendsById(id)
+    .then((friends) => {
+      res.send(friends);
+    })
+    .catch((err) => {
+      console.error('Failed to get friends!', err);
+      res.sendStatus(500);
+    });
   }
+
 };

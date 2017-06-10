@@ -1,5 +1,6 @@
 <template>
 <div class="body-footer">
+  <p>&copy; 2017 Themisto</p>
   <ul>
 <!--     <li>stuff</li>
     <li>stuff</li>
@@ -34,7 +35,19 @@
   display: flex;
   /*justify-content: space-around;*/
   /*margin-top: 50px;*/
+  align-items: center;
+  justify-content: center;
+
+
+}
+
+p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   font-size: 18px;
+  color: white;
 }
 
 ul {
