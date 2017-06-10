@@ -88,6 +88,24 @@ userSchema.methods.addFriendById = function(id) {
   });
 };
 
+
+userSchema.statics.getRatingById = function(id) {
+  return new Promise((resolve, reject) => {
+    this.findOne({_id: id}).then(user => {
+      let rating = {
+        upvotes: user.rating.upvotes,
+        downvotes: user.rating.downvotes,
+        percentage: user.rating.percentage,
+        net: user.rating.net
+      };
+      resolve(rating);
+    }).catch(reject);
+  };
+};
+
+
+
+
 // Increment ratings.upvotes and returns the updated document in a query
 // Usage: User.upvoteById(user_id).then((doc) => {}) or User.upvoteById(user_id).exec()
 userSchema.statics.upvoteById = function(id) {
