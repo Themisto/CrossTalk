@@ -61,8 +61,7 @@ module.exports = {
   },
 
   getFriends: (req, res) => {
-    // let id = getID(req.header('x-access-token').split(' ')[1]);
-    let id = req.header('x-access-token').split(' ')[1];
+    let id = getID(req.header('x-access-token').split(' ')[1]);
     User.getFriendsById(id)
     .then((friends) => {
       res.send(friends);
@@ -71,9 +70,6 @@ module.exports = {
       console.error('Failed to get friends!', err);
       res.sendStatus(500);
     });
-
-
   }
-
 
 };

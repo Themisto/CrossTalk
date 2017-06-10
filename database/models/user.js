@@ -104,8 +104,7 @@ userSchema.statics.getRatingById = function(id) {
 };
 
 userSchema.statics.getFriendsById = function(id) {
-  // Currently returns all fields of each friend
-  // See http://mongoosejs.com/docs/api.html#document_Document-populate for options
+
   return new Promise((resolve, reject) => {
     this.findOne({_id: id})
     .then(user => {
@@ -159,9 +158,5 @@ userSchema.statics.newUser = function(id) {
 };
 
 var User = mongoose.model('User', userSchema);
-// User.newUser('potato');
-// User.newUser('tomato');
-// User.newUser('carrot');
-// User.upvoteById('potato').exec();
-// User.downvoteById('potato').exec();
+
 module.exports = User;
