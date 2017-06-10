@@ -57,15 +57,16 @@ nav {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  background-color: black;
-  opacity: 0.6;
+  background-color: rgba(0,0,0,0.6);
+  /*background-color: black;*/
+  /*opacity: 0.6;*/
   box-shadow: 2px 2px 20px 2px black;
 
 }
 
 nav * {
   text-decoration: none;
-  color: white;
+  color: rgba(255, 255, 255, 0.6);
   padding: 14px;
 }
 
