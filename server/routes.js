@@ -26,6 +26,7 @@ app.get('/video', handlers.index);
 app.get('/room/:id', handlers.index);
 app.get('/login', handlers.index);
 app.get('/profile', handlers.index);
+
 // -------------------------------------
 
 
@@ -33,6 +34,8 @@ app.get('/profile', handlers.index);
 
 
 // ------------ api routes ------------
+
+app.get('/api/users/rating', handlers.getRating);
 
 app.post('/api/new_user', handlers.login);
 app.post('/api/queue', rooms.findMatch);

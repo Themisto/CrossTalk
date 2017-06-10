@@ -46,5 +46,10 @@ module.exports = {
       console.log('Error serving translate request.');
       console.log(error);
     });
+  },
+
+  getRating: (req, res) => {
+
+
   }
 };
