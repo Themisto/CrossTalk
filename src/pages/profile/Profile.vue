@@ -64,31 +64,41 @@ export default {
   background-color: black;
   color: white;
   opacity: 0.5;
+  box-shadow: 2px 2px 20px 2px black;
 }
+
+#profile-page > *:hover {
+  background-color: black;
+  color: white;
+  opacity: 0.5;
+  box-shadow: 2px 2px 2px 2px black;
+}
+
+
 
 #avatar-panel {
   grid-area: avatar-panel;
-  border: 2px solid lime;
+
 }
 
 #settings-panel {
   grid-area: settings-panel;
-  border: 2px solid lime;
+
 }
 
 #info-panel {
   grid-area: info-panel;
-  border: 2px solid lime;
+
 }
 
 #history-panel {
   grid-area: history-panel;
-  border: 2px solid lime;
 }
+
 
 #friendslist {
   grid-area: friendslist;
-  border: 2px solid lime;
+
 }
 
 
