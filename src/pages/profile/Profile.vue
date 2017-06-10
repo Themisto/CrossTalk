@@ -16,7 +16,7 @@
 <script>
 
 import AvatarPanel from './components/AvatarPanel.vue';
-import Friendslist from './components/Friendslist.vue';
+import Friendslist from './components/FriendsList.vue';
 import HistoryPanel from './components/HistoryPanel.vue';
 import InfoPanel from './components/InfoPanel.vue';
 import SettingsPanel from './components/SettingsPanel.vue';
