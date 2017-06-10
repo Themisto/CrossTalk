@@ -46,3 +46,5 @@ public/*
 **/.DS_Store
 # API keys and confidential config variables
 config.*
+
+mongod.exe
