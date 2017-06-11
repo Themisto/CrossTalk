@@ -8,7 +8,7 @@
 
 <script>
 
-import FriendsListItem from './FriendsListItem.vue';
+import FriendsListItem from './components/FriendsListItem.vue';
 import axios from 'axios';
 
 export default {

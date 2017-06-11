@@ -33,7 +33,7 @@
 
 <script>
 
-import FriendsList from './FriendsList.vue';
+import FriendsList from './friends_list/FriendsList.vue';
 
 export default {
   props: ['auth'],
