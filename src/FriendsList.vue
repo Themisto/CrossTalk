@@ -55,14 +55,11 @@ export default {
 #friends-list {
   background-color: rgba(100, 100, 100, .7);
   position: absolute;
-  display: block;
-  top: 54px;
-  left: 0px;
-  min-width: 300px;
+  top: 49px;
+  right: 0px;
+  min-width: 240px;
   z-index: 100;
-  padding: 2px 7px 7px 7px;
-  /*Opacity doesn't seem to override Navbar styling*/
-  /*opacity: 1;*/
+  padding: 1px 5px 5px 5px;
 }
 
 </style>
