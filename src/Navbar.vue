@@ -1,15 +1,30 @@
 <template>
 <nav>
-  <router-link to="/">Home</router-link>
-  <div id="group">
-    <div id="friends-btn" v-if="auth.authenticated" v-on:click="toggleFriends">
+
+  <router-link class="hover-button" to="/">Home</router-link>
+
+  <!-- User Actions (right side) -->
+  <div id="group" v-if="auth.authenticated">
+
+    <!-- Friends List Button -->
+    <div class="hover-button" id="friends-btn" v-on:click="showFriends = !showFriends">
       Friends
-      <FriendsList v-if="showFriends"></FriendsList>
     </div>
-    <router-link to="/profile">Profile</router-link>
-    <div v-if="!auth.authenticated" v-on:click="auth.login">Login</div>
-    <div v-if="auth.authenticated" v-on:click="auth.logout">Logout</div>
+    <transition name="friends-list">
+      <!-- v-if, as opposed to v-show, will query the server everytime we open the list -->
+      <FriendsList v-show="showFriends"></FriendsList>
+    </transition>
+
+    <!-- Profile Link -->
+    <router-link class="hover-button" to="/profile">Profile</router-link>
+
+    <!-- Logout Button -->
+    <div class="hover-button" v-on:click="auth.logout">Logout</div>
+
   </div>
+
+  <!-- Login Button -->
+  <div class="hover-button" v-if="!auth.authenticated" v-on:click="auth.login">Login</div>
 
 </nav>
 </template>
@@ -29,9 +44,6 @@ export default {
     }
   },
   methods: {
-    toggleFriends() {
-      this.showFriends = !this.showFriends;
-    }
   },
   updated() {
     if (!this.auth.authenticated) { this.auth.login(); }
@@ -56,8 +68,6 @@ nav {
   justify-content: space-between;
   width: 100%;
   background-color: rgba(0,0,0,0.6);
-  /*background-color: black;*/
-  /*opacity: 0.6;*/
   box-shadow: 2px 2px 20px 2px black;
 
 }
@@ -68,19 +78,34 @@ nav * {
   padding: 14px;
 }
 
+/*nav > *:not(#group):hover {
+  background-color: grey;
+}*/
 
-
-#group > *:hover {
+.hover-button:hover {
   background-color: grey;
 }
 
-
-nav > *:not(#group):hover {
-  background-color: grey;
+#group {
+  display: flex;
+  padding: 0px;
 }
+
+/*#group > *:hover {
+  background-color: grey;
+}*/
 
 #friends-btn {
   position: relative;
+}
+
+/*FriendsList Animation*/
+.friends-list-enter-active, .friends-list-leave-active {
+  transition: all .5s;
+}
+.friends-list-enter, .friends-list-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 </style>
