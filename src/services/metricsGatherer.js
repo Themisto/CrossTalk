@@ -4,20 +4,29 @@ export default class Gatherer {
   constructor(socket, userID) {
     if (!socket) { throw 'Gatherer requires a socket!'; };
     this.socket = socket;
-    this.start = null;
+    this.userID = userID;
+    this.startTime = null;
+    this.fromLang = null;
+    this.toLang = null;
   };
 
-  startTimer(remoteVideoElement) {
-    this.start = new Date;
+  startCallTimer(fromLang, toLang) {
+    this.startTime = new Date;
+    this.fromLang = fromLang;
+    this.toLang = toLang;
   };
 
   sendTimeData() {
     if (this.start) {
-      let end = new Date;
+      let endTime = new Date;
       this.socket.emit('metric', {
         type: 'callTime',
         userID: this.userID,
-        data: end - this.start  // The duration of the call
+        data: {
+          duration: endTime - this.startTime,
+          fromLang: this.fromLang,
+          toLang: this.toLang
+        }
       });
       this.start = null;  // Reset start time, just in case
     } else {
