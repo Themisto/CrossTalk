@@ -52,9 +52,12 @@ module.exports = {
     });
   },
 
+  // Process, transcribe, and translate video chat audio file that client is trying to upload.
+  // Streams audio to translation service, gets translated text back.
+  // Triggered by toggling button on video page (from false to true), speaking into the mic, then toggling the button again (from true to false).
+  // Client-side code is in /src/pages/video/components/VideoStream.vue.
   transcribe: (req, res) => {
-    // Process video chat audio file that client is trying to upload.
-    var transcriberToken;
+    var accessToken;
     var audioStream = new formidable.IncomingForm();
 
     audioStream.on('error', function (error) {
@@ -77,76 +80,66 @@ module.exports = {
 
       axios.post(process.env.TRANSCRIBER_AUTH_URL + query)
       .then(({data}) => {
-        transcriberToken = data;
+        accessToken = data;
 
+        // This is the file uploaded by the client.
         var file = __dirname + '/uploads/test.wav';
-        // var file = __dirname + '/uploads/test0.wav';
+
+        // This is a sample of a properly-encoded .wav file.
         // var file = __dirname + '/uploads/helloworld.wav';
 
-        // once we get the access token, we hook up the necessary websocket events for sending audio and processing the response          
-        // get the access token
-        var accessToken = transcriberToken;
+        // Hook up the necessary websocket events for sending audio and processing the response.
+        // Language is set in the query string as 'from=' and 'to='
         var transcriptionURL = process.env.TRANSCRIBER_SERVICE_URL + '?api-version=1.0&from=en&to=es';
         
-        // connect to the speech translate api
+        // Socket for connecting to the speech translate service.
         var ws = new wsClient();
         
-        // event for connection failure
+        // Event for connection failure.
         ws.on('connectFailed', function (error) {
           console.log('Initial connection failed: ' + error.toString());
         });
                     
-        // event for connection succeed
+        // Event for connection success.
         ws.on('connect', function (connection) {
           console.log('Websocket client connected');
 
-          // process message that is returned
+          // Process message that is returned.
           connection.on('message', processMessage);
           
           connection.on('close', function (reasonCode, description) {
             console.log('Connection closed: ' + reasonCode);
-            res.end();
+            res.send();
           });
 
-          // print out the error
           connection.on('error', function (error) {
             console.log('Connection error: ' + error.toString());
           });
           
-          // send the file to the websocket endpoint
+          // Send audio file to the websocket endpoint.
           sendData(connection, file);
         });
         
-        // connect to the service
-        ws.connect(transcriptionURL, null, null, {Authorization: 'Bearer ' + accessToken
-        });
+        // Connect to the service.
+        ws.connect(transcriptionURL, null, null, {Authorization: 'Bearer ' + accessToken});
       })
       .catch(error => {
         console.log(error);
         console.log('Error getting auth token for transcription');
       });
-
-
     });
 
     audioStream.parse(req);
     
-
     // ========================================================================
-    // == Stream audio file to transcriber ====================================
+    // == Helper functions. Will move to utils.js =============================
     // ========================================================================
-
-
-
-
-
-    // process the respond from the service
+    // Process the response from the service
     function processMessage(message) {
       if (message.type == 'utf8') {
         var result = JSON.parse(message.utf8Data)
         console.log('type:%s recognition:%s translation:%s', result.type, result.recognition, result.translation);
-      }
-      else {
+      } else {
         // text to speech binary audio data if features=texttospeech is passed in the url
         // the format will be PCM 16bit 16kHz mono
         console.log(message.type);
@@ -183,6 +176,5 @@ module.exports = {
         connection.close(1000);
       });
     }
-    
   }
 };
