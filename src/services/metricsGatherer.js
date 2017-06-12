@@ -10,17 +10,17 @@ export default class Gatherer {
     this.toLang = null;
   };
 
-  startCallTimer(fromLang, toLang) {
+  startCallWatcher(fromLang, toLang) {
     this.startTime = new Date;
     this.fromLang = fromLang;
     this.toLang = toLang;
   };
 
-  sendTimeData() {
+  sendCallData() {
     if (this.start) {
       let endTime = new Date;
       this.socket.emit('metric', {
-        type: 'callTime',
+        type: 'call',
         userID: this.userID,
         data: {
           duration: endTime - this.startTime,
@@ -30,7 +30,7 @@ export default class Gatherer {
       });
       this.start = null;  // Reset start time, just in case
     } else {
-      console.error('MetricsGatherer: No data to send. Was .startTimer() called?');
+      console.error('MetricsGatherer: No data to send. Was .startCallWatcher() called?');
     }
   };
 
