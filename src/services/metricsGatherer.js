@@ -1,10 +1,10 @@
 
 export default class Gatherer {
 
-  constructor(socket, userID) {
+  constructor(socket, idToken) {
     if (!socket) { throw 'Gatherer requires a socket!'; };
     this.socket = socket;
-    this.userID = userID;
+    this.idToken = idToken;
     this.startTime = null;
     this.fromLang = null;
     this.toLang = null;
@@ -21,9 +21,9 @@ export default class Gatherer {
       let endTime = new Date;
       this.socket.emit('metric', {
         type: 'call',
-        userID: this.userID,
+        idToken: this.idToken,
         data: {
-          duration: endTime - this.startTime,
+          duration: endTime - this.startTime / 1000,  // The call duration in seconds
           fromLang: this.fromLang,
           toLang: this.toLang
         }
