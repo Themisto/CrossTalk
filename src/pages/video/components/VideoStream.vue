@@ -11,6 +11,8 @@
     <!-- <text-box :message="{text:'Local'}"></text-box> -->
   <!-- </div> -->
 
+  <!-- @debug: Remove. -->
+  <button id="recorder" v-on:click="toggleRecording"> {{continueRecording}} </button>
 </div>
 </template>
 
@@ -19,6 +21,8 @@
 
 import TextBox from './TextBox.vue';
 import WebRTC from '../../../services/webrtc.js';
+import recordrtc from 'recordrtc';
+import axios from 'axios';
 
 export default {
 
@@ -33,8 +37,11 @@ export default {
       localVideo: null,         // Video element displaying local stream
       remoteVideo: null,        // Video element displaying remote stream
       rtc: null,                // WebRTC instance
-      localVideoStream: null,   // Video/audio stream from webcam
-      remoteVideoStream: null   // Video/audio stream from counterpart
+      // @debug: Streams encapsulated in WebRTC service. No longer needed here.
+      // localVideoStream: null,   // Video/audio stream from webcam
+      // remoteVideoStream: null   // Video/audio stream from counterpart
+      continueRecording: false,
+      recorder: null
     };
   },
 
@@ -54,6 +61,47 @@ export default {
   },
 
   methods: {
+    // ========================================================================
+    // == Begin RecordRTC =====================================================
+    // ========================================================================
+    postAudioClip: function () {
+      let rawAudio = this.recorder.getBlob();
+      let audioFile = new File([rawAudio], 'test.wav', {type: 'audio/wav'});
+
+      let formData = new FormData();
+      formData.append('file', audioFile);
+
+      axios.post('/api/transcribe', formData)
+      .then(response => {
+        let message = {id: Date.now(), text: response.data};
+
+      })
+      .catch(error => {
+        console.log('Error getting transcript from server');
+        console.log(error);
+      });
+    },
+
+    startRecording: function () {
+      if (this.continueRecording) {
+        // Start recording.
+        this.recorder = recordrtc(this.rtc.localVideoStream, {type: 'audio', mimeType: 'audio/wav'});
+        this.recorder.startRecording();
+        console.log('Started recording.');
+      } else {
+        // Stop recording and send audio clip to server.
+        this.recorder.stopRecording(this.postAudioClip);
+        console.log('Stopped recording.');
+      }
+    },
+
+    toggleRecording: function () {
+      this.continueRecording = !this.continueRecording;
+      this.startRecording();
+    },
+    // ========================================================================
+    // == End RecordRTC =======================================================
+    // ========================================================================
 
     // Convenience method for logging debugging messages
     log: function() {
@@ -184,7 +232,10 @@ export default {
   margin-bottom: 20px;
 }
 
-
+/* @debug: Remove.*/
+#recorder {
+  color: black;
+}
 
 
 

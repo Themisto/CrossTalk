@@ -5,6 +5,10 @@ var config = require('./config.js');
 var utils = require('./utils');
 var jwt = require('jwt-simple');
 var User = require('../database/models/user.js');
+var formidable = require('formidable');
+var wsClient = require('websocket').client;
+var fs = require('fs');
+var streamBuffers = require('stream-buffers');
 
 var public = path.join(__dirname + '/../public/');
 
@@ -46,5 +50,139 @@ module.exports = {
       console.log('Error serving translate request.');
       console.log(error);
     });
+  },
+
+  transcribe: (req, res) => {
+    // Process video chat audio file that client is trying to upload.
+    var transcriberToken;
+    var audioStream = new formidable.IncomingForm();
+
+    audioStream.on('error', function (error) {
+      console.log(error);
+      console.log('Error parsing file for transcription.');
+    });
+
+    audioStream.on('fileBegin', function (name, file) {
+      console.log('Starting upload...');
+      file.path = __dirname + '/uploads/test.wav';
+      console.log('saved to:', file.path);
+    });
+
+    audioStream.on('end', function () {
+      // @debug
+      console.log('Upload complete.');
+      
+      // Get auth token
+      var query = `?Subscription-Key=${process.env.TRANSCRIBER_KEY}`;
+
+      axios.post(process.env.TRANSCRIBER_AUTH_URL + query)
+      .then(({data}) => {
+        transcriberToken = data;
+
+        var file = __dirname + '/uploads/test.wav';
+        // var file = __dirname + '/uploads/test0.wav';
+        // var file = __dirname + '/uploads/helloworld.wav';
+
+        // once we get the access token, we hook up the necessary websocket events for sending audio and processing the response          
+        // get the access token
+        var accessToken = transcriberToken;
+        var transcriptionURL = process.env.TRANSCRIBER_SERVICE_URL + '?api-version=1.0&from=en&to=es';
+        
+        // connect to the speech translate api
+        var ws = new wsClient();
+        
+        // event for connection failure
+        ws.on('connectFailed', function (error) {
+          console.log('Initial connection failed: ' + error.toString());
+        });
+                    
+        // event for connection succeed
+        ws.on('connect', function (connection) {
+          console.log('Websocket client connected');
+
+          // process message that is returned
+          connection.on('message', processMessage);
+          
+          connection.on('close', function (reasonCode, description) {
+            console.log('Connection closed: ' + reasonCode);
+            res.end();
+          });
+
+          // print out the error
+          connection.on('error', function (error) {
+            console.log('Connection error: ' + error.toString());
+          });
+          
+          // send the file to the websocket endpoint
+          sendData(connection, file);
+        });
+        
+        // connect to the service
+        ws.connect(transcriptionURL, null, null, {Authorization: 'Bearer ' + accessToken
+        });
+      })
+      .catch(error => {
+        console.log(error);
+        console.log('Error getting auth token for transcription');
+      });
+
+
+    });
+
+    audioStream.parse(req);
+    
+
+    // ========================================================================
+    // == Stream audio file to transcriber ====================================
+    // ========================================================================
+
+
+
+
+
+    // process the respond from the service
+    function processMessage(message) {
+      if (message.type == 'utf8') {
+        var result = JSON.parse(message.utf8Data)
+        console.log('type:%s recognition:%s translation:%s', result.type, result.recognition, result.translation);
+      }
+      else {
+        // text to speech binary audio data if features=texttospeech is passed in the url
+        // the format will be PCM 16bit 16kHz mono
+        console.log(message.type);
+      }
+    }
+
+    // load the file and send the data to the websocket connection in chunks
+    function sendData(connection, filename) {
+      
+      // the streambuffer will raise the 'data' event based on the frequency and chunksize
+      var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
+        frequency: 100,   // in milliseconds. 
+        chunkSize: 32000  // 32 bytes per millisecond for PCM 16 bit, 16 khz, mono.  So we are sending 1 second worth of audio every 100ms
+      });
+      
+      // read the file and put it to the buffer
+      myReadableStreamBuffer.put(fs.readFileSync(filename));
+      
+        // silence bytes.  If the audio file is too short after the user finished speeaking,
+        // we need to add some silences at the end to tell the service that it is the end of the sentences
+        // 32 bytes / ms, so 3200000 = 100 seconds of silences
+      myReadableStreamBuffer.put(new Buffer(3200000));
+      
+      // no more data to send
+      myReadableStreamBuffer.stop();
+      
+      // send data to underlying connection
+      myReadableStreamBuffer.on('data', function (data) {
+        connection.sendBytes(data);
+      });
+
+      myReadableStreamBuffer.on('end', function () {
+        console.log('All data sent, closing connection');
+        connection.close(1000);
+      });
+    }
+    
   }
 };

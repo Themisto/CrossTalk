@@ -31,26 +31,31 @@ export default {
       nativeLang: null,
       foreignLang: null,
       supportedLanguages: [
+        'Arabic',
+        'Chinese (Simplified)',
+        'Chinese (Traditional)',
         'English',
-        'Spanish',
-        'Russian',
-        'Chinese',
-        'Dutch',
-        'German',
         'French',
-        'Hindi',
-        'Arabic'
+        'German',
+        'Italian',
+        'Japanese',
+        'Portuguese',
+        'Russian',
+        'Spanish'
       ],
+
       bcp47tags: {
-        English: 'en',
-        Spanish: 'es',
-        Russian: 'ru',
-        Chinese: 'zh-CHS',
-        Dutch: 'nl',
-        German: 'de',
-        French: 'fr',
-        Hindi: 'hi',
-        Arabic: 'ar',
+        'Arabic': 'ar',
+        'Chinese (Simplified)': 'zh-Hans',
+        'Chinese (Traditional)': 'zh-Hant',
+        'English': 'en',
+        'French': 'fr',
+        'German': 'de',
+        'Italian': 'it',
+        'Japanese': 'ja',
+        'Portuguese': 'pt',
+        'Russian': 'ru',
+        'Spanish': 'es'
       }
     }
   },
