@@ -28,8 +28,9 @@ export default class Gatherer {
       this.socket.emit('metric', {
         type: 'call',
         idToken: this.idToken,
-        data: {
-          duration: ( endTime - this.startTime ) / 1000,  // The call duration in seconds
+        sessionData: {
+          date: this.startTime,
+          duration: Math.round(( endTime - this.startTime ) / 1000),  // The call duration in seconds
           fromLang: this.fromLang,
           toLang: this.toLang
         }
