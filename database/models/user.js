@@ -3,7 +3,7 @@ var utils = require('../../server/utils.js');
 // There seems to be a bug in certain situations (namely saving in the updateCallMetricsById method)
 // when using mongoose with bluebird promises
 // var Promise = require('bluebird');
-// mongoose.Promise = Promise;
+mongoose.Promise = Promise;
 
 // ========================
 // =========Schema=========
