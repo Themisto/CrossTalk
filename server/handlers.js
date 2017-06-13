@@ -97,6 +97,10 @@ module.exports = {
   transcribe: (req, res) => {
     var accessToken;
     var audioStream = new formidable.IncomingForm();
+    // var [fromLang, toLang] = req.params.fromLang_toLang.split('_');
+    
+    // @debug
+    console.log('Reequest params:', req.params);
 
     audioStream.on('error', function (error) {
       console.log(error);

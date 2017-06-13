@@ -16,7 +16,6 @@
 
 
 <script>
-
   import TextBox from './TextBox.vue';
   import RemoteControls from './RemoteControls.vue';
   import LocalControls from './LocalControls.vue';
@@ -26,7 +25,6 @@
   import MetricsGatherer from '../../../services/metricsGatherer.js';
 
   export default {
-
     props: [
     'socket',
     'socketReady',
@@ -67,11 +65,12 @@
       postAudioClip: function () {
         let rawAudio = this.recorder.getBlob();
         let audioFile = new File([rawAudio], 'test.wav', {type: 'audio/wav'});
+        let fromLang_toLang = `${this.$root.$data.nativeLang}_${this.$root.$data.foreignLang}`;
 
         let formData = new FormData();
         formData.append('file', audioFile);
 
-        axios.post('/api/transcribe', formData)
+        axios.post(`/api/transcribe/${fromLang_toLang}`, formData)
         .then(response => {
           let message = {id: Date.now(), text: response.data};
 
@@ -164,9 +163,7 @@
 
         // Signal parent component that we are ready to receive messages
         this.$emit('Ready', 'VideoStream');
-
       }
-
     },
 
     components: {
@@ -187,7 +184,6 @@
       this.gatherer && this.gatherer.sendCallData();
       this.rtc && this.rtc.hangup();
     }
-
   }
 
 </script>
