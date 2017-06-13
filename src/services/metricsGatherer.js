@@ -8,16 +8,22 @@ export default class Gatherer {
     this.startTime = null;
     this.fromLang = null;
     this.toLang = null;
+
+    // Class Method Bindings
+    this.startCallWatcher = this.startCallWatcher.bind(this);
+    this.sendCallData = this.sendCallData.bind(this);
   };
 
   startCallWatcher(fromLang, toLang) {
     this.startTime = new Date;
     this.fromLang = fromLang;
     this.toLang = toLang;
+    console.log('MetricsGatherer: Started watching video call');
   };
 
   sendCallData() {
-    if (this.start) {
+    console.log('MetricsGatherer: Sending call data');
+    if (this.startTime) {
       let endTime = new Date;
       this.socket.emit('metric', {
         type: 'call',
