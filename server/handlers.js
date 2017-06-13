@@ -19,11 +19,8 @@ module.exports = {
   },
 
   login: (req, res) => {
-    // req.body = {
-    //   token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3hvc2suYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTA4MzU4MTMyNzk4ODgxNzc2ODg4IiwiYXVkIjoieDdJdGk3MUpKVjZhcHBZN3BwT0w2WGFqaTFoSDRGbUIiLCJleHAiOjE0OTQzODM3OTMsImlhdCI6MTQ5NDM0Nzc5M30.piHQCL1aHMlzgTZGzdkzm1s3lOvmlisn036MZkOp0Xc'
-    // }
     console.log();
-    User.newUser( utils.idFromToken(req.body.token) );
+    User.newUser(utils.idFromToken(req.body.token));
     res.end();
   },
 
@@ -69,6 +66,19 @@ module.exports = {
       res.sendStatus(500);
     });
   },
+
+  getData: (req, res) => {
+    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
+    User.getDataById(id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.error('Failed to get metrics data!', err);
+      res.sendStatus(500);
+    });
+  },
+
   // Process, transcribe, and translate video chat audio file that client is trying to upload.
   // Streams audio to translation service, gets translated text back.
   // Triggered by toggling button on video page (from false to true), speaking into the mic, then toggling the button again (from true to false).
