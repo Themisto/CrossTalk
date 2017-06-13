@@ -2,7 +2,7 @@
 export default class Gatherer {
 
   constructor(socket, idToken) {
-    if (!socket) { throw 'Gatherer requires a socket!'; };
+    if (arguments.length < 2) { throw 'Gatherer requires a socket and and id token'; };
     this.socket = socket;
     this.idToken = idToken;
     this.startTime = null;
@@ -29,12 +29,12 @@ export default class Gatherer {
         type: 'call',
         idToken: this.idToken,
         data: {
-          duration: endTime - this.startTime / 1000,  // The call duration in seconds
+          duration: ( endTime - this.startTime ) / 1000,  // The call duration in seconds
           fromLang: this.fromLang,
           toLang: this.toLang
         }
       });
-      this.start = null;  // Reset start time, just in case
+      this.startTime = null;  // Reset start time, just in case
     } else {
       console.error('MetricsGatherer: No data to send. Was .startCallWatcher() called?');
     }
