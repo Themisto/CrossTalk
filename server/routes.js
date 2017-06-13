@@ -30,6 +30,7 @@ app.get('/profile', handlers.index);
 
 app.get('/api/users/rating', handlers.getRating);
 app.get('/api/users/friends', handlers.getFriends);
+app.get('/api/users/data', handlers.getData);
 
 app.post('/api/new_user', handlers.login);
 app.post('/api/queue', rooms.findMatch);
