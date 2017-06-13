@@ -44,30 +44,34 @@ module.exports = {
 
   tagToLang: function (tag) {
     let tags = {
+      'ar': 'Arabic',
+      'zh-hans': 'Chinese (Simplified)',
+      'zh-hant': 'Chinese (Traditional)',
       'en': 'English',
-      'es': 'Spanish',
-      'ru': 'Russian',
-      'zh-chs': 'Chinese',
-      'nl': 'Dutch',
-      'de': 'German',
       'fr': 'French',
-      'hi': 'Hindi',
-      'ar': 'Arabic'
+      'de': 'German',
+      'it': 'Italian',
+      'ja': 'Japanese',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'es': 'Spanish'
     };
     return tags[tag.toLowerCase()] || null;
   },
 
   langToTag: function (lang) {
     let langs = {
+      'arabic': 'ar',
+      'chinese (simplified)': 'zh-Hans',
+      'chinese (traditional)': 'zh-Hant',
       'english': 'en',
-      'spanish': 'es',
-      'russian': 'ru',
-      'chinese': 'zh-CHS',
-      'dutch': 'nl',
-      'german': 'de',
       'french': 'fr',
-      'hindi': 'hi',
-      'arabic': 'ar'
+      'german': 'de',
+      'italian': 'it',
+      'japanese': 'ja',
+      'portuguese': 'pt',
+      'russian': 'ru',
+      'spanish': 'es'
     };
     return langs[lang.toLowerCase()] || null;
   }
