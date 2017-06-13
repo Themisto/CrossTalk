@@ -60,6 +60,8 @@ userSchema.virtual('rating.net').get(function() {
 // =========Methods=========
 // =========================
 
+// =========Getters=========
+
 // returns a promise with the user's friends
 userSchema.methods.getFriends = function() {
   // Currently returns all fields of each friend
@@ -73,21 +75,7 @@ userSchema.methods.getFriends = function() {
   });
 };
 
-// Add the user matching the given id to the current user's friends list
-// Returns a promise
-userSchema.methods.addFriendById = function(id) {
-  return new Promise((resolve, reject) => {
-    // console.log(this.constructor);
-    this.constructor.findOne({_id: id})
-    .then(user => {
-      this.friends.push(user);
-      this.save().then(resolve).catch(reject);
-    })
-    .catch(reject);
-  });
-};
-
-
+// Returns a promise with the user's rating data
 userSchema.statics.getRatingById = function(id) {
   return new Promise((resolve, reject) => {
     this.findOne({_id: id}).then(user => {
@@ -102,8 +90,8 @@ userSchema.statics.getRatingById = function(id) {
   });
 };
 
+// Populate and retrieve a user's friends list
 userSchema.statics.getFriendsById = function(id) {
-
   return new Promise((resolve, reject) => {
     this.findOne({_id: id})
     .then(user => {
@@ -112,6 +100,48 @@ userSchema.statics.getFriendsById = function(id) {
         resolve(user.friends);
       })
       .catch(reject);
+    })
+    .catch(reject);
+  });
+};
+
+// =========Setters=========
+
+// Add a new user with the given id to the database, unless a user with that id exists
+userSchema.statics.newUser = function(id) {
+  return this.find({_id: id}, (err, user) => {
+    if (err) {
+      console.error(err);
+    } else {
+      if (user.length === 0) {
+        var account = new this({
+          _id: id
+        });
+
+        account.save((err, account) => {
+          if(err) {
+            console.log(err);
+            console.log("Could not create user.");
+          } else {
+            console.log("New User Created.");
+          }
+        });
+      } else {
+        console.log('User Already Exists.');
+      }
+    }
+  });
+};
+
+// Add the user matching the given id to the current user's friends list
+// Returns a promise
+userSchema.methods.addFriendById = function(id) {
+  return new Promise((resolve, reject) => {
+    // console.log(this.constructor);
+    this.constructor.findOne({_id: id})
+    .then(user => {
+      this.friends.push(user);
+      this.save().then(resolve).catch(reject);
     })
     .catch(reject);
   });
@@ -147,31 +177,6 @@ userSchema.statics.upvoteById = function(id) {
 // Usage: User.downvoteById(user_id).then((doc) => {}) or User.downvoteById(user_id).exec()
 userSchema.statics.downvoteById = function(id) {
   return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
-};
-
-userSchema.statics.newUser = function(id) {
-  return this.find({_id: id}, (err, user) => {
-    if (err) {
-      console.error(err);
-    } else {
-      if (user.length === 0) {
-        var account = new this({
-          _id: id
-        });
-
-        account.save((err, account) => {
-          if(err) {
-            console.log(err);
-            console.log("Could not create user.");
-          } else {
-            console.log("New User Created.");
-          }
-        });
-      } else {
-        console.log('User Already Exists.');
-      }
-    }
-  })
 };
 
 var User = mongoose.model('User', userSchema);
