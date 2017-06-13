@@ -11,6 +11,8 @@
     <!-- <text-box :message="{text:'Local'}"></text-box> -->
   <!-- </div> -->
 
+  <!-- @debug: Remove. -->
+  <button id="recorder" v-on:click="toggleRecording"> {{continueRecording}} </button>
 </div>
 </template>
 
@@ -19,6 +21,9 @@
 
 import TextBox from './TextBox.vue';
 import WebRTC from '../../../services/webrtc.js';
+import recordrtc from 'recordrtc';
+import axios from 'axios';
+import MetricsGatherer from '../../../services/metricsGatherer.js';
 
 export default {
 
@@ -30,11 +35,12 @@ export default {
 
   data: function() {
     return {
-      localVideo: null,         // Video element displaying local stream
-      remoteVideo: null,        // Video element displaying remote stream
-      rtc: null,                // WebRTC instance
-      localVideoStream: null,   // Video/audio stream from webcam
-      remoteVideoStream: null   // Video/audio stream from counterpart
+      localVideo: null,           // Video element displaying local stream
+      remoteVideo: null,          // Video element displaying remote stream
+      rtc: null,                  // WebRTC instance
+      continueRecording: false,
+      recorder: null,
+      gatherer: null              // Video/audio stream from counterpart
     };
   },
 
@@ -49,11 +55,58 @@ export default {
         );
         this.rtc.start()
         .then(this.registerListeners);
+        this.gatherer = new MetricsGatherer(this.socket, localStorage.id_token);
       }
     }
   },
 
   methods: {
+    // ========================================================================
+    // == Begin RecordRTC =====================================================
+    // ========================================================================
+    postAudioClip: function () {
+      let rawAudio = this.recorder.getBlob();
+      let audioFile = new File([rawAudio], 'test.wav', {type: 'audio/wav'});
+
+      let formData = new FormData();
+      formData.append('file', audioFile);
+
+      axios.post('/api/transcribe', formData)
+      .then(response => {
+        let message = {id: Date.now(), text: response.data};
+
+      })
+      .catch(error => {
+        console.log('Error getting transcript from server');
+        console.log(error);
+      });
+    },
+
+    startRecording: function () {
+      if (this.continueRecording) {
+        // Start recording.
+        // console.log(recordrtc.StereoAudioRecorder);
+        this.recorder = recordrtc(this.rtc.localVideoStream, {
+          type: 'audio',
+          recorderType: recordrtc.StereoAudioRecorder,
+          numberOfAudioChannels: 1
+        });
+        this.recorder.startRecording();
+        console.log('Started recording.');
+      } else {
+        // Stop recording and send audio clip to server.
+        this.recorder.stopRecording(this.postAudioClip);
+        console.log('Stopped recording.');
+      }
+    },
+
+    toggleRecording: function () {
+      this.continueRecording = !this.continueRecording;
+      this.startRecording();
+    },
+    // ========================================================================
+    // == End RecordRTC =======================================================
+    // ========================================================================
 
     // Convenience method for logging debugging messages
     log: function() {
@@ -91,17 +144,23 @@ export default {
           this.rtc.handleReceiveIceCandidate(data);
         } else if (data.type === 'Offer') {   // Offer received from Caller
           this.rtc.handleReceiveOffer(data.sdp);
+          this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
         } else if (data.type === 'Answer') {  // Answer received from Callee
           this.rtc.handleReceiveAnswer(data.sdp);
+          this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
         } else if (data.type === 'Bye') {     // Hangup received from counterpart
           this.log('Partner has hung up');
+          this.gatherer.sendCallData();
           this.rtc.handleRemoveStream();
         } else {
           console.error(`Warning: Invalid message type '${data.type}' received`);
         }
       });
 
-      window.addEventListener('unload', this.rtc.hangup);
+      window.addEventListener('beforeunload', () => {
+        this.gatherer.sendCallData();
+        this.rtc.hangup();
+      });
 
       // Signal parent component that we are ready to receive messages
       this.$emit('Ready', 'VideoStream');
@@ -119,9 +178,11 @@ export default {
     this.log('Mounted');
     this.localVideo = document.getElementById('local-video');
     this.remoteVideo = document.getElementById('remote-video');
+    window.localVideo = this.localVideo;
   },
 
   beforeDestroy: function() {
+    this.gatherer && this.gatherer.sendCallData();
     this.rtc && this.rtc.hangup();
   }
 
@@ -131,7 +192,6 @@ export default {
 
 
 <style>
-
 
 
 #videos {
@@ -144,21 +204,19 @@ export default {
 
   grid-template-columns: repeat(8, [col] auto ) ;
   grid-template-rows: repeat(8, [row] auto  );
-
 }
 
 #videos > * {
-/*  font-size: 20px;
+  /*
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;*/
+  text-align: center;
+  */
 
-    color: #fff;
-
-
-
-    z-index:10;
+  color: #fff;
+  z-index:10;
 }
 
 #remote-video {
@@ -169,9 +227,6 @@ export default {
   grid-column: col 1 / span  8;
   grid-row: row 1 / span 8;
 }
-
-
-
 
 #local-video {
   background: rgba(0,0,0,0.6);
@@ -184,14 +239,10 @@ export default {
   margin-bottom: 20px;
 }
 
-
-
-
-
-
-
-
+/* @debug: Remove.*/
+#recorder {
+  color: black;
+}
 
 
 </style>
-

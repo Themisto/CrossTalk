@@ -1,5 +1,8 @@
 var mongoose = require('mongoose');
-var Promise = require('bluebird');
+var utils = require('../../server/utils.js');
+// There seems to be a bug in certain situations (namely saving in the updateCallMetricsById method)
+// when using mongoose with bluebird promises
+// var Promise = require('bluebird');
 mongoose.Promise = Promise;
 
 // ========================
@@ -32,14 +35,10 @@ var userSchema = new mongoose.Schema({
     knownLanguages: [String]
   },
   data: {
-    languageHistory: {
-      // This appears to be the only way of storing classical objects/
-      // hashtables in mongoose. A .markModified('data.languageHistory')
-      // will be required before any .save()
-      type: mongoose.Schema.Types.Mixed
-    }
+    languageTime: Object,
+    callHistory: [{date: Date, duration: Number, fromLang: String, toLang: String}]
   }
-});
+}, {toObject: { virtuals: true }, toJSON: { virtuals: true }});
 
 // ========================
 // ========Virtuals========
@@ -61,6 +60,8 @@ userSchema.virtual('rating.net').get(function() {
 // =========Methods=========
 // =========================
 
+// =========Getters=========
+
 // returns a promise with the user's friends
 userSchema.methods.getFriends = function() {
   // Currently returns all fields of each friend
@@ -74,21 +75,7 @@ userSchema.methods.getFriends = function() {
   });
 };
 
-// Add the user matching the given id to the current user's friends list
-// Returns a promise
-userSchema.methods.addFriendById = function(id) {
-  return new Promise((resolve, reject) => {
-    // console.log(this.constructor);
-    this.constructor.findOne({_id: id})
-    .then(user => {
-      this.friends.push(user);
-      this.save().then(resolve).catch(reject);
-    })
-    .catch(reject);
-  });
-};
-
-
+// Returns a promise with the user's rating data
 userSchema.statics.getRatingById = function(id) {
   return new Promise((resolve, reject) => {
     this.findOne({_id: id}).then(user => {
@@ -103,8 +90,8 @@ userSchema.statics.getRatingById = function(id) {
   });
 };
 
+// Populate and retrieve a user's friends list
 userSchema.statics.getFriendsById = function(id) {
-
   return new Promise((resolve, reject) => {
     this.findOne({_id: id})
     .then(user => {
@@ -118,20 +105,20 @@ userSchema.statics.getFriendsById = function(id) {
   });
 };
 
-
-
-// Increment ratings.upvotes and returns the updated document in a query
-// Usage: User.upvoteById(user_id).then((doc) => {}) or User.upvoteById(user_id).exec()
-userSchema.statics.upvoteById = function(id) {
-  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.upvotes": 1 } }, {new: true});
+// Returns a promise with the user's metrics data
+userSchema.statics.getDataById = function(id) {
+  return new Promise((resolve, reject) => {
+    this.findOne({_id: id})
+    .then(user => {
+      resolve(user.data);
+    })
+    .catch(reject);
+  });
 };
 
-// Increment ratings.downvotes and returns the updated document in a query
-// Usage: User.downvoteById(user_id).then((doc) => {}) or User.downvoteById(user_id).exec()
-userSchema.statics.downvoteById = function(id) {
-  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
-};
+// =========Setters=========
 
+// Add a new user with the given id to the database, unless a user with that id exists
 userSchema.statics.newUser = function(id) {
   return this.find({_id: id}, (err, user) => {
     if (err) {
@@ -154,7 +141,53 @@ userSchema.statics.newUser = function(id) {
         console.log('User Already Exists.');
       }
     }
-  })
+  });
+};
+
+// Add the user matching the given id to the current user's friends list
+// Returns a promise
+userSchema.methods.addFriendById = function(id) {
+  return new Promise((resolve, reject) => {
+    // console.log(this.constructor);
+    this.constructor.findOne({_id: id})
+    .then(user => {
+      this.friends.push(user);
+      this.save().then(resolve).catch(reject);
+    })
+    .catch(reject);
+  });
+};
+
+// Update languageTime and callHistory data
+userSchema.statics.updateCallMetricsById = function(id, sessionData) {
+  sessionData.toLang = utils.tagToLang(sessionData.toLang);
+  sessionData.fromLang = utils.tagToLang(sessionData.fromLang);
+  this.findOne({_id: id})
+  .then(user => {
+    if (!user.data.languageTime) {
+      user.data.languageTime = {};
+    }
+    if (!user.data.languageTime[sessionData.toLang]) {
+      user.data.languageTime[sessionData.toLang] = 0;
+    }
+    user.data.languageTime[sessionData.toLang] += sessionData.duration;
+    user.markModified('data.languageTime');
+    // Consider using an update query with the $push operator instead for performance benefits
+    user.data.callHistory.unshift(sessionData);
+    user.save().then();
+  });
+}
+
+// Increment ratings.upvotes and returns the updated document in a query
+// Usage: User.upvoteById(user_id).then((doc) => {}) or User.upvoteById(user_id).exec()
+userSchema.statics.upvoteById = function(id) {
+  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.upvotes": 1 } }, {new: true});
+};
+
+// Increment ratings.downvotes and returns the updated document in a query
+// Usage: User.downvoteById(user_id).then((doc) => {}) or User.downvoteById(user_id).exec()
+userSchema.statics.downvoteById = function(id) {
+  return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
 };
 
 var User = mongoose.model('User', userSchema);
