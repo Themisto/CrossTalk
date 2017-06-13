@@ -16,11 +16,15 @@
     "axios": "^0.16.1",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
+    "formidable": "^1.1.1",
     "jwt-simple": "^0.5.1",
     "mongoose": "^4.10.5",
+    "recordrtc": "^5.4.1",
     "socket.io": "^2.0.1",
+    "stream-buffers": "^3.0.1",
     "vue": "^2.2.1",
     "vue-router": "^2.5.3",
+    "websocket": "^1.0.24",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
