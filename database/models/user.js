@@ -105,6 +105,17 @@ userSchema.statics.getFriendsById = function(id) {
   });
 };
 
+// Returns a promise with the user's metrics data
+userSchema.statics.getDataById = function(id) {
+  return new Promise((resolve, reject) => {
+    this.findOne({_id: id})
+    .then(user => {
+      resolve(user.data);
+    })
+    .catch(reject);
+  });
+};
+
 // =========Setters=========
 
 // Add a new user with the given id to the database, unless a user with that id exists
