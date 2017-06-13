@@ -5,6 +5,8 @@ var server = require('./routes.js');
 var https = require('https');
 var http = require('http');
 var fs = require('fs');
+var utils = require('./utils.js');
+var User = require('../database/models/user.js');
 
 // For deployment use port 80
 // var port = process.env.PORT || 80;
@@ -66,6 +68,14 @@ io.on('connection', function(socket) {
   socket.on('translateText', function(data) {
     console.log(`Relaying chat translateText from socket "${socket.id}" to room "${data.room}"`);
     socket.to(data.room).emit('translateText', data.message);
+  });
+
+  socket.on('metric', function(data) {
+    console.log(`"${data.type}" type metrics data received from client`);
+    let userID = utils.idFromToken(data.idToken);
+    console.log(`  JWT: ${userID}\n  Duration: ${data.sessionData.duration}\n  fromLang: ${data.sessionData.fromLang}\n  toLang: ${data.sessionData.toLang}\n`);
+    // Store data in database
+    User.updateCallMetricsById(userID, data.sessionData);
   });
 
 });
