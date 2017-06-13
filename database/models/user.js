@@ -1,6 +1,9 @@
 var mongoose = require('mongoose');
-var Promise = require('bluebird');
-mongoose.Promise = Promise;
+var utils = require('../../server/utils.js');
+// There seems to be a bug in certain situations (namely saving in the updateCallMetricsById method)
+// when using mongoose with bluebird promises
+// var Promise = require('bluebird');
+// mongoose.Promise = Promise;
 
 // ========================
 // =========Schema=========
@@ -32,16 +35,10 @@ var userSchema = new mongoose.Schema({
     knownLanguages: [String]
   },
   data: {
-    // languageTime: {
-    //   // This appears to be the only way of storing classical objects/
-    //   // hashtables in mongoose. A .markModified('data.callHistory')
-    //   // will be required before any .save()
-    //   type: mongoose.Schema.Types.Mixed
-    // },
     languageTime: Object,
     callHistory: [{date: Date, duration: Number, fromLang: String, toLang: String}]
   }
-});
+}, {toObject: { virtuals: true }, toJSON: { virtuals: true }});
 
 // ========================
 // ========Virtuals========
@@ -120,20 +117,12 @@ userSchema.statics.getFriendsById = function(id) {
   });
 };
 
-// data: {
-//     languageTime: {
-//       // This appears to be the only way of storing classical objects/
-//       // hashtables in mongoose. A .markModified('data.callHistory')
-//       // will be required before any .save()
-//       type: mongoose.Schema.Types.Mixed
-//     },
-//     callHistory: [{date: Date, duration: Number, fromLang: String, toLang: String}]
-//   }
-
+// Update languageTime and callHistory data
 userSchema.statics.updateCallMetricsById = function(id, sessionData) {
+  sessionData.toLang = utils.tagToLang(sessionData.toLang);
+  sessionData.fromLang = utils.tagToLang(sessionData.fromLang);
   this.findOne({_id: id})
   .then(user => {
-    // Update languageTime
     if (!user.data.languageTime) {
       user.data.languageTime = {};
     }
@@ -142,8 +131,7 @@ userSchema.statics.updateCallMetricsById = function(id, sessionData) {
     }
     user.data.languageTime[sessionData.toLang] += sessionData.duration;
     user.markModified('data.languageTime');
-    // Update callHistory
-    // Consider using an update query with the $push operator instead for performance
+    // Consider using an update query with the $push operator instead for performance benefits
     user.data.callHistory.unshift(sessionData);
     user.save().then();
   });
