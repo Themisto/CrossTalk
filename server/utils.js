@@ -1,5 +1,5 @@
 var axios = require('axios');
-varjwt = require('jwt-simple');
+var jwt = require('jwt-simple');
 
 module.exports = {
   getTranslatorToken: function () {
@@ -39,7 +39,7 @@ module.exports = {
   },
 
   idFromToken: function (token) {
-    return jwt.decode(data.idToken, process.env.AUTH0_SECRET, 'RS256').sub.split('|')[1];
+    return jwt.decode(token, process.env.AUTH0_SECRET, 'RS256').sub.split('|')[1];
   },
 
   tagToLang: function (tag) {
