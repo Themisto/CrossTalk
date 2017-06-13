@@ -35,12 +35,12 @@ export default {
 
   data: function() {
     return {
-      localVideo: null,         // Video element displaying local stream
-      remoteVideo: null,        // Video element displaying remote stream
-      rtc: null,                // WebRTC instance
+      localVideo: null,           // Video element displaying local stream
+      remoteVideo: null,          // Video element displaying remote stream
+      rtc: null,                  // WebRTC instance
       continueRecording: false,
-      recorder: null
-      gatherer: null      // Video/audio stream from counterpart
+      recorder: null,
+      gatherer: null              // Video/audio stream from counterpart
     };
   },
 
