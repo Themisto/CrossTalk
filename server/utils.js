@@ -1,4 +1,5 @@
 var axios = require('axios');
+varjwt = require('jwt-simple');
 
 module.exports = {
   getTranslatorToken: function () {
@@ -35,5 +36,39 @@ module.exports = {
       console.log('Error translating text.');
       console.log(error);
     });
+  },
+
+  idFromToken: function (token) {
+    return jwt.decode(data.idToken, process.env.AUTH0_SECRET, 'RS256').sub.split('|')[1];
+  },
+
+  tagToLang: function (tag) {
+    let tags = {
+      'en': 'English',
+      'es': 'Spanish',
+      'ru': 'Russian',
+      'zh-chs': 'Chinese',
+      'nl': 'Dutch',
+      'de': 'German',
+      'fr': 'French',
+      'hi': 'Hindi',
+      'ar': 'Arabic'
+    };
+    return tags[tag.toLowerCase()] || null;
+  },
+
+  langToTag: function (lang) {
+    let langs = {
+      'english': 'en',
+      'spanish': 'es',
+      'russian': 'ru',
+      'chinese': 'zh-CHS',
+      'dutch': 'nl',
+      'german': 'de',
+      'french': 'fr',
+      'hindi': 'hi',
+      'arabic': 'ar'
+    };
+    return langs[lang.toLowerCase()] || null;
   }
 };
