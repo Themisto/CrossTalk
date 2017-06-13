@@ -32,12 +32,14 @@ var userSchema = new mongoose.Schema({
     knownLanguages: [String]
   },
   data: {
-    languageHistory: {
-      // This appears to be the only way of storing classical objects/
-      // hashtables in mongoose. A .markModified('data.languageHistory')
-      // will be required before any .save()
-      type: mongoose.Schema.Types.Mixed
-    }
+    // languageTime: {
+    //   // This appears to be the only way of storing classical objects/
+    //   // hashtables in mongoose. A .markModified('data.callHistory')
+    //   // will be required before any .save()
+    //   type: mongoose.Schema.Types.Mixed
+    // },
+    languageTime: Object,
+    callHistory: [{date: Date, duration: Number, fromLang: String, toLang: String}]
   }
 });
 
@@ -118,7 +120,34 @@ userSchema.statics.getFriendsById = function(id) {
   });
 };
 
+// data: {
+//     languageTime: {
+//       // This appears to be the only way of storing classical objects/
+//       // hashtables in mongoose. A .markModified('data.callHistory')
+//       // will be required before any .save()
+//       type: mongoose.Schema.Types.Mixed
+//     },
+//     callHistory: [{date: Date, duration: Number, fromLang: String, toLang: String}]
+//   }
 
+userSchema.statics.updateCallMetricsById = function(id, sessionData) {
+  this.findOne({_id: id})
+  .then(user => {
+    // Update languageTime
+    if (!user.data.languageTime) {
+      user.data.languageTime = {};
+    }
+    if (!user.data.languageTime[sessionData.toLang]) {
+      user.data.languageTime[sessionData.toLang] = 0;
+    }
+    user.data.languageTime[sessionData.toLang] += sessionData.duration;
+    user.markModified('data.languageTime');
+    // Update callHistory
+    // Consider using an update query with the $push operator instead for performance
+    user.data.callHistory.unshift(sessionData);
+    user.save().then();
+  });
+}
 
 // Increment ratings.upvotes and returns the updated document in a query
 // Usage: User.upvoteById(user_id).then((doc) => {}) or User.upvoteById(user_id).exec()
