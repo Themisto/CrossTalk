@@ -120,15 +120,24 @@ userSchema.statics.getDataById = function(id) {
 // =========Setters=========
 
 // Add a new user with the given id to the database, unless a user with that id exists
-userSchema.statics.newUser = function(id) {
+userSchema.statics.newUser = function(id, profileData) {
   return this.find({_id: id}, (err, user) => {
     if (err) {
       console.error(err);
     } else {
       if (user.length === 0) {
-        var account = new this({
-          _id: id
-        });
+
+        let newUserProfile = {
+          _id: id,
+          name: profileData.name,
+          email: profileData.email,
+          data: {
+            languageTime: {}
+          }
+        };
+        if (profileData.picture) { newUserProfile.data.imageURL = profileData.picture; }
+
+        var account = new this(newUserProfile);
 
         account.save((err, account) => {
           if(err) {
