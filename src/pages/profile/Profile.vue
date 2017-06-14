@@ -21,18 +21,45 @@ import HistoryPanel from './components/HistoryPanel.vue';
 import InfoPanel from './components/InfoPanel.vue';
 import SettingsPanel from './components/SettingsPanel.vue';
 import FriendsList from '../../friends_list/FriendsList.vue';
+import axios from 'axios';
 
 
 export default {
   data() {
-    return {}
+    return {
+      data: null
+    }
   },
+
+  methods: {
+    populateData: function() {
+      if (localStorage.id_token) {
+        axios.get('/api/users/data', {
+          headers: {'x-access-token': `Bearer ${localStorage.id_token}`}
+        })
+        .then(response => {
+          console.log('Response from data endpoint:', response);
+          this.data = response.data;
+        })
+        .catch(err => {
+          console.error('Failure retrieving data:', err);
+        })
+      } else {
+        console.error('Failure retrieving data: no auth token found in local storage');
+      }
+    }
+  },
+
   components: {
     AvatarPanel,
     FriendsList,
     HistoryPanel,
     InfoPanel,
     SettingsPanel
+  },
+
+  mounted: function() {
+    this.populateData();
   }
 }
 
@@ -42,7 +69,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 #profile-page {
   width: 100%;
   height: 100%;
@@ -99,6 +126,7 @@ export default {
 
 #friends-list {
   grid-area: friends-list;
+  position: relative;
   border: 1px solid lime;
 
 }
