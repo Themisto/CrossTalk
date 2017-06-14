@@ -191,6 +191,10 @@ userSchema.statics.downvoteById = function(id) {
   return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
 };
 
+userSchema.statics.updateAvatar = function(id, imageURL) {
+  return this.findOneAndUpdate({_id: id}, { $set: { "data.imageURL": imageURL } }, {new: true});
+};
+
 var User = mongoose.model('User', userSchema);
 User.newUser('114564650432586843127');
 

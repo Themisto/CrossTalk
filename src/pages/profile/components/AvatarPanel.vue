@@ -26,6 +26,7 @@
 
 
 <script>
+import axios from 'axios';
 
 export default {
   props: ['data'],
@@ -51,13 +52,15 @@ export default {
   methods: {
 
     uploadImage() {
-      console.log("TRIGGERING INTENSIFIES!", this.imageURL, " NEW ==> ", this.newImageURL);
+
       this.imageURL = this.newImageURL;
 
-      console.log(this.imageURL, this.newImageURL);
+      axios.put('/api/users/avatar', {imageURL: this.imageURL},
+        {headers: {'x-access-token': `Bearer ${localStorage.id_token}`} })
+        .then(() => {console.log('Slightly triggered')})
+        .catch(() => { console.log('FAIL!')});
 
       this.newImageURL = null;
-
       this.showUpdateForm = false;
     },
 

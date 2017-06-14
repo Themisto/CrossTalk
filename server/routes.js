@@ -32,6 +32,8 @@ app.get('/api/users/rating', handlers.getRating);
 app.get('/api/users/friends', handlers.getFriends);
 app.get('/api/users/data', handlers.getData);
 
+app.put('/api/users/avatar', handlers.updateAvatar);
+
 app.post('/api/new_user', handlers.login);
 app.post('/api/queue', rooms.findMatch);
 app.post('/api/translate', handlers.translate);
