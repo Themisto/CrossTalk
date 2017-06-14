@@ -48,3 +48,4 @@ public/*
 config.*
 
 mongod.exe
+server/uploads/*
