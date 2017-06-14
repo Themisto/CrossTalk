@@ -1,5 +1,7 @@
 <template>
 <div id="friends-list">
+  <h1>FRIENDS!</h1>
+
   <FriendsListItem v-for="friend in friends" :user="friend" :key="friend._id"></FriendsListItem>
 </div>
 </template>
@@ -52,14 +54,6 @@ export default {
 
 <style scoped>
 
-#friends-list {
-  background-color: rgba(100, 100, 100, .7);
-  position: absolute;
-  top: 49px;
-  right: 0px;
-  min-width: 240px;
-  z-index: 100;
-  padding: 1px 5px 5px 5px;
-}
+
 
 </style>

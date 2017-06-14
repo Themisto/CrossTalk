@@ -1,11 +1,11 @@
 <template>
 <div id="profile-page">
 
-  <avatar-panel></avatar-panel>
+  <avatar-panel :data="data"></avatar-panel>
   <info-panel></info-panel>
-  <settings-panel></settings-panel>
+
   <history-panel></history-panel>
-  <friendslist></friendslist>
+  <friends-list></friends-list>
 
 </div>
 
@@ -16,22 +16,49 @@
 <script>
 
 import AvatarPanel from './components/AvatarPanel.vue';
-import Friendslist from './components/FriendsList.vue';
+// import Friendslist from './components/FriendsList.vue';
 import HistoryPanel from './components/HistoryPanel.vue';
 import InfoPanel from './components/InfoPanel.vue';
-import SettingsPanel from './components/SettingsPanel.vue';
+
+import FriendsList from '../../friends_list/FriendsList.vue';
+import axios from 'axios';
 
 
 export default {
   data() {
-    return {}
+    return {
+      data: null
+    }
   },
+
+  methods: {
+    populateData: function() {
+      if (localStorage.id_token) {
+        axios.get('/api/users/data', {
+          headers: {'x-access-token': `Bearer ${localStorage.id_token}`}
+        })
+        .then(response => {
+          console.log('Response from data endpoint:', response);
+          this.data = response.data;
+        })
+        .catch(err => {
+          console.error('Failure retrieving data:', err);
+        })
+      } else {
+        console.error('Failure retrieving data: no auth token found in local storage');
+      }
+    }
+  },
+
   components: {
     AvatarPanel,
-    Friendslist,
+    FriendsList,
     HistoryPanel,
-    InfoPanel,
-    SettingsPanel
+    InfoPanel
+  },
+
+  mounted: function() {
+    this.populateData();
   }
 }
 
@@ -41,7 +68,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 #profile-page {
   width: 100%;
   height: 100%;
@@ -52,8 +79,8 @@ export default {
 
   grid-template-areas:
 
-    "avatar-panel settings-panel friendslist"
-    "info-panel history-panel friendslist";
+    "avatar-panel history-panel friends-list"
+    "info-panel history-panel friends-list";
 
   grid-template-rows: 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr;
@@ -61,18 +88,18 @@ export default {
 }
 
 #profile-page > * {
-  background-color: black;
+  /*background: rgba(0,0,0,0.7);*/
   color: white;
-  opacity: 0.5;
+  /*opacity: 0.5;*/
   box-shadow: 2px 2px 20px 2px black;
 }
 
-#profile-page > *:hover {
+/*#profile-page > *:hover {
   background-color: black;
   color: white;
-  opacity: 0.5;
+  opacity: 0.55;
   box-shadow: 2px 2px 2px 2px black;
-}
+}*/
 
 
 
@@ -81,10 +108,7 @@ export default {
 
 }
 
-#settings-panel {
-  grid-area: settings-panel;
 
-}
 
 #info-panel {
   grid-area: info-panel;
@@ -96,8 +120,10 @@ export default {
 }
 
 
-#friendslist {
-  grid-area: friendslist;
+#friends-list {
+  grid-area: friends-list;
+  position: relative;
+  border: 1px solid lime;
 
 }
 

@@ -9,6 +9,7 @@ var wsClient = require('websocket').client;
 var fs = require('fs');
 var streamBuffers = require('stream-buffers');
 
+// @todo: 'public' is a reserved keyword. Consider refactoring.
 var public = path.join(__dirname + '/../public/');
 
 module.exports = {
@@ -78,6 +79,18 @@ module.exports = {
     });
   },
 
+  updateAvatar: (req, res) => {
+    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
+    User.updateAvatar(id, req.body.imageURL)
+    .then((user) => {
+      res.send(user.data.imageURL);
+    })
+    .catch((err) => {
+      console.error('Failed to update avatar!', err);
+      res.sendStatus(500);
+    });
+  },
+
   // Process, transcribe, and translate video chat audio file that client is trying to upload.
   // Streams audio to translation service, gets translated text back.
   // Triggered by toggling button on video page (from false to true), speaking into the mic, then toggling the button again (from true to false).
@@ -85,6 +98,8 @@ module.exports = {
   transcribe: (req, res) => {
     var accessToken;
     var audioStream = new formidable.IncomingForm();
+    var [fromLang, toLang] = req.params.fromLang_toLang.split('_');
+    var filePath = __dirname + `/uploads/snippet.wav`;
 
     audioStream.on('error', function (error) {
       console.log(error);
@@ -93,14 +108,11 @@ module.exports = {
 
     audioStream.on('fileBegin', function (name, file) {
       console.log('Starting upload...');
-      file.path = __dirname + '/uploads/test.wav';
+      file.path = filePath;
       console.log('saved to:', file.path);
     });
 
     audioStream.on('end', function () {
-      // @debug
-      console.log('Upload complete.');
-
       // Get auth token
       var query = `?Subscription-Key=${process.env.TRANSCRIBER_KEY}`;
 
@@ -109,14 +121,14 @@ module.exports = {
         accessToken = data;
 
         // This is the file uploaded by the client.
-        var file = __dirname + '/uploads/test.wav';
+        var file = filePath;
 
         // This is a sample of a properly-encoded .wav file.
         // var file = __dirname + '/uploads/helloworld.wav';
 
         // Hook up the necessary websocket events for sending audio and processing the response.
         // Language is set in the query string as 'from=' and 'to='
-        var transcriptionURL = process.env.TRANSCRIBER_SERVICE_URL + '?api-version=1.0&from=en&to=es';
+        var transcriptionURL = process.env.TRANSCRIBER_SERVICE_URL + `?api-version=1.0&from=${fromLang}&to=${toLang}`;
 
         // Socket for connecting to the speech translate service.
         var ws = new wsClient();
@@ -135,7 +147,6 @@ module.exports = {
 
           connection.on('close', function (reasonCode, description) {
             console.log('Connection closed: ' + reasonCode);
-            res.send();
           });
 
           connection.on('error', function (error) {
@@ -162,14 +173,11 @@ module.exports = {
     // ========================================================================
     // Process the response from the service
     function processMessage(message) {
-      if (message.type == 'utf8') {
-        var result = JSON.parse(message.utf8Data)
-        console.log('type:%s recognition:%s translation:%s', result.type, result.recognition, result.translation);
-      } else {
-        // text to speech binary audio data if features=texttospeech is passed in the url
-        // the format will be PCM 16bit 16kHz mono
-        console.log(message.type);
-      }
+      // result has two properties we care about:
+      //   - recognition: speech-to-text, not translated.
+      //   - translation: speech-to-text, translated.
+      var result = JSON.parse(message.utf8Data);
+      res.end(result.translation);
     }
 
     // load the file and send the data to the websocket connection in chunks

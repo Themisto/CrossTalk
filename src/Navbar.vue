@@ -95,6 +95,20 @@ nav * {
   background-color: grey;
 }*/
 
+
+#friends-list {
+  background-color: rgba(100, 100, 100, .7);
+  position: absolute;
+  top: 49px;
+  right: 0px;
+  min-width: 240px;
+  z-index: 100;
+  padding: 1px 5px 5px 5px;
+  /*border: 1px solid orange;*/
+}
+
+
+
 #friends-btn {
   position: relative;
 }

@@ -9,8 +9,6 @@
     <video id="local-video" autoplay="true" v-if="showLocal" muted></video>
     <local-controls :socket="socket" :toggle="toggleLocalVideo"></local-controls>
   </div>
-
-  <!-- <button id="recorder" v-on:click="toggleRecording"> {{continueRecording}} </button> -->
 </div>
 </template>
 
@@ -72,15 +70,17 @@
       // ========================================================================
       postAudioClip: function () {
         let rawAudio = this.recorder.getBlob();
-        let audioFile = new File([rawAudio], 'test.wav', {type: 'audio/wav'});
+        let audioFile = new File([rawAudio], 'snippet.wav', {type: 'audio/wav'});
+        let fromLang_toLang = `${this.$root.$data.nativeLang}_${this.$root.$data.foreignLang}`;
 
         let formData = new FormData();
         formData.append('file', audioFile);
 
-        axios.post('/api/transcribe', formData)
+        axios.post(`/api/transcribe/${fromLang_toLang}`, formData)
         .then(response => {
           let message = {id: Date.now(), text: response.data};
-
+          this.socket.translateText(message);
+          console.log('You sent:', message);
         })
         .catch(error => {
           console.log('Error getting transcript from server');
@@ -91,25 +91,35 @@
       startRecording: function () {
         if (this.continueRecording) {
           // Start recording.
-          // console.log(recordrtc.StereoAudioRecorder);
           this.recorder = recordrtc(this.rtc.localVideoStream, {
             type: 'audio',
             recorderType: recordrtc.StereoAudioRecorder,
             numberOfAudioChannels: 1
           });
+
+          // Sends 3-second snippets for translation.
+          this.recorder.setRecordingDuration(3000, () => {
+            this.postAudioClip();
+            this.continueRecording = false;
+            this.toggleRecording();
+          });
           this.recorder.startRecording();
           console.log('Started recording.');
         } else {
-          // Stop recording and send audio clip to server.
-          this.recorder.stopRecording(this.postAudioClip);
-          console.log('Stopped recording.');
+          // Stop recording.
+          this.recorder.stopRecording(function () {
+            console.log('Stopped recording.');
+          });
         }
       },
 
+      // Triggers an infinite loop...
+      // ...should probably figure out a better way to do this.
       toggleRecording: function () {
         this.continueRecording = !this.continueRecording;
         this.startRecording();
       },
+
       // ========================================================================
       // == End RecordRTC =======================================================
       // ========================================================================
@@ -153,6 +163,7 @@
             this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
           } else if (data.type === 'Answer') {  // Answer received from Callee
             this.rtc.handleReceiveAnswer(data.sdp);
+            this.toggleRecording();
             this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
           } else if (data.type === 'Bye') {     // Hangup received from counterpart
             this.log('Partner has hung up');
@@ -185,9 +196,7 @@
 
         // Signal parent component that we are ready to receive messages
         this.$emit('Ready', 'VideoStream');
-
       }
-
     },
 
     components: {
@@ -205,12 +214,13 @@
     },
 
     beforeDestroy: function() {
+      this.recorder.stopRecording(function () {
+        console.log('Stopped recording.');
+      });
       this.gatherer && this.gatherer.sendCallData();
       this.rtc && this.rtc.hangup();
     }
-
   }
-
 </script>
 
 
