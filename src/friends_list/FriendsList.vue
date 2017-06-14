@@ -1,5 +1,6 @@
 <template>
 <div id="friends-list">
+
   <FriendsListItem v-for="friend in friends" :user="friend" :key="friend._id"></FriendsListItem>
 </div>
 </template>
@@ -60,6 +61,7 @@ export default {
   min-width: 240px;
   z-index: 100;
   padding: 1px 5px 5px 5px;
+  /*border: 1px solid orange;*/
 }
 
 </style>

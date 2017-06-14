@@ -2,7 +2,7 @@
 
 <div id="avatar-panel">
 
-  <h1>Avatar</h1>
+
 
   <div v-if="!image">
     <h2>Select an image</h2>
@@ -67,14 +67,21 @@ export default {
 
 #avatar-panel {
   text-align: center;
+  background: rgba(0,0,0,0.5);
+
+  padding: 20px;
+
 }
 
 #avatar-panel img {
-  width: 90%;
+  width: 80%;
+  height: 80%;
   margin: auto;
-  display: block;
+  display: flex;
   margin-bottom: 10px;
-  opacity: 1;
+  border: 1px solid lime;
+  /*background: rgba(0,0,0,0.9);*/
+  /*opacity: 1;*/
 }
 
 button {
