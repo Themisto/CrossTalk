@@ -41,6 +41,19 @@ app.post('/api/queue', rooms.findMatch);
 app.post('/api/translate', handlers.translate);
 app.post('/api/transcribe/:fromLang_toLang', handlers.transcribe);
 
+// Add handlers.authenticate middleware to protected routes
+// Requests to protected endpoints will require an 'x-access-token'
+// header like so: x-access-token: Bearer jwt-token-here
+// app.get('/api/users/rating', handlers.authenticate, handlers.getRating);
+// app.get('/api/users/friends', handlers.authenticate, handlers.getFriends);
+// app.get('/api/users/data', handlers.authenticate, handlers.getData);
+
+// app.post('/api/new_user', handlers.authenticate, handlers.login);
+// app.post('/api/queue', rooms.findMatch);
+// app.post('/api/translate', handlers.translate);
+// app.post('/api/transcribe', handlers.transcribe);
+// app.post('/api/users/friends', handlers.authenticate, handlers.addFriend);
+
 // ------------------------------------
 
 module.exports = app;
