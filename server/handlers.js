@@ -9,6 +9,7 @@ var wsClient = require('websocket').client;
 var fs = require('fs');
 var streamBuffers = require('stream-buffers');
 
+// @todo: 'public' is a reserved keyword. Consider refactoring.
 var public = path.join(__dirname + '/../public/');
 
 module.exports = {
@@ -97,10 +98,7 @@ module.exports = {
   transcribe: (req, res) => {
     var accessToken;
     var audioStream = new formidable.IncomingForm();
-    // var [fromLang, toLang] = req.params.fromLang_toLang.split('_');
-    
-    // @debug
-    console.log('Reequest params:', req.params);
+    var [fromLang, toLang] = req.params.fromLang_toLang.split('_');
 
     audioStream.on('error', function (error) {
       console.log(error);
@@ -114,9 +112,6 @@ module.exports = {
     });
 
     audioStream.on('end', function () {
-      // @debug
-      console.log('Upload complete.');
-
       // Get auth token
       var query = `?Subscription-Key=${process.env.TRANSCRIBER_KEY}`;
 
@@ -132,7 +127,7 @@ module.exports = {
 
         // Hook up the necessary websocket events for sending audio and processing the response.
         // Language is set in the query string as 'from=' and 'to='
-        var transcriptionURL = process.env.TRANSCRIBER_SERVICE_URL + '?api-version=1.0&from=en&to=es';
+        var transcriptionURL = process.env.TRANSCRIBER_SERVICE_URL + `?api-version=1.0&from=${fromLang}&to=${toLang}`;
 
         // Socket for connecting to the speech translate service.
         var ws = new wsClient();
@@ -151,7 +146,6 @@ module.exports = {
 
           connection.on('close', function (reasonCode, description) {
             console.log('Connection closed: ' + reasonCode);
-            res.send();
           });
 
           connection.on('error', function (error) {
@@ -178,14 +172,11 @@ module.exports = {
     // ========================================================================
     // Process the response from the service
     function processMessage(message) {
-      if (message.type == 'utf8') {
-        var result = JSON.parse(message.utf8Data)
-        console.log('type:%s recognition:%s translation:%s', result.type, result.recognition, result.translation);
-      } else {
-        // text to speech binary audio data if features=texttospeech is passed in the url
-        // the format will be PCM 16bit 16kHz mono
-        console.log(message.type);
-      }
+      // result has two properties we care about:
+      //   - recognition: speech-to-text, not translated.
+      //   - translation: speech-to-text, translated.
+      var result = JSON.parse(message.utf8Data);
+      res.send(result.translation);
     }
 
     // load the file and send the data to the websocket connection in chunks
