@@ -196,6 +196,5 @@ userSchema.statics.updateAvatar = function(id, imageURL) {
 };
 
 var User = mongoose.model('User', userSchema);
-User.newUser('114564650432586843127');
 
 module.exports = User;
