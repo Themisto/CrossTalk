@@ -43,6 +43,7 @@ app.post('/api/new_user', handlers.authenticate, handlers.login);
 app.post('/api/queue', rooms.findMatch);
 app.post('/api/translate', handlers.translate);
 app.post('/api/transcribe/:fromLang_toLang', handlers.transcribe);
+app.post('/api/users/friends', handlers.authenticate, handlers.addFriend);
 
 // ------------------------------------
 

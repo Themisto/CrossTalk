@@ -101,6 +101,16 @@ module.exports = {
     });
   },
 
+  addFriend: (req, res) => {
+    User.addFriendByPublicId(req.body.userID, req.body.friendID)
+    .then(() => {
+      res.status(201).send(req.body.friendID);
+    })
+    .catch((err) => {
+
+    });
+  },
+
   // Process, transcribe, and translate video chat audio file that client is trying to upload.
   // Streams audio to translation service, gets translated text back.
   // Triggered by toggling button on video page (from false to true), speaking into the mic, then toggling the button again (from true to false).
