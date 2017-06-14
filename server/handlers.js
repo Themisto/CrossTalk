@@ -45,7 +45,7 @@ module.exports = {
 
   authenticate: (req, res, next) => {
     try {
-      let token = req.header('x-access-token').split(' ')[1];
+      let token = req.body.token || req.header('x-access-token').split(' ')[1];
       let payload = jwt.decode(token, process.env.AUTH0_SECRET, 'RS256');
       req.body.tokenPayload = payload;
       req.body.userID = payload.user_id.split('|')[1];
@@ -79,7 +79,6 @@ module.exports = {
   },
 
   getData: (req, res) => {
-    // let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
     User.getDataById(req.body.userID)
     .then((data) => {
       res.send(data);
