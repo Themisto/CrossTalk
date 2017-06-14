@@ -99,6 +99,7 @@ module.exports = {
     var accessToken;
     var audioStream = new formidable.IncomingForm();
     var [fromLang, toLang] = req.params.fromLang_toLang.split('_');
+    var filePath = __dirname + `/uploads/snippet.wav`;
 
     audioStream.on('error', function (error) {
       console.log(error);
@@ -107,7 +108,7 @@ module.exports = {
 
     audioStream.on('fileBegin', function (name, file) {
       console.log('Starting upload...');
-      file.path = __dirname + '/uploads/test.wav';
+      file.path = filePath;
       console.log('saved to:', file.path);
     });
 
@@ -120,7 +121,7 @@ module.exports = {
         accessToken = data;
 
         // This is the file uploaded by the client.
-        var file = __dirname + '/uploads/test.wav';
+        var file = filePath;
 
         // This is a sample of a properly-encoded .wav file.
         // var file = __dirname + '/uploads/helloworld.wav';
@@ -176,7 +177,7 @@ module.exports = {
       //   - recognition: speech-to-text, not translated.
       //   - translation: speech-to-text, translated.
       var result = JSON.parse(message.utf8Data);
-      res.send(result.translation);
+      res.end(result.translation);
     }
 
     // load the file and send the data to the websocket connection in chunks

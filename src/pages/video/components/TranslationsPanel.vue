@@ -17,10 +17,7 @@ export default {
 
   data: function () {
     return {
-      recognition: null,
-      transcript: [],
       translatedTranscript: [],
-      callHasEnded: false,
     }
   },
 
@@ -37,17 +34,6 @@ export default {
       });
 
       this.$emit('Ready', 'TranslationsPanel');
-    }
-  },
-
-  mounted: function () {
-    this.listen();
-  },
-
-  beforeDestroy: function () {
-    if (this.recognition) {
-      this.callHasEnded = true;
-      this.recognition.stop();
     }
   },
 
