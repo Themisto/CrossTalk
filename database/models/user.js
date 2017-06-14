@@ -35,6 +35,7 @@ var userSchema = new mongoose.Schema({
     knownLanguages: [String]
   },
   data: {
+    imageURL: {type: String, default: 'https://ca.slack-edge.com/T0455847Q-U048WUTPW-c9aad4cb38d9-48'},
     languageTime: Object,
     callHistory: [{date: Date, duration: Number, fromLang: String, toLang: String}]
   }
@@ -191,5 +192,6 @@ userSchema.statics.downvoteById = function(id) {
 };
 
 var User = mongoose.model('User', userSchema);
+User.newUser('114564650432586843127');
 
 module.exports = User;

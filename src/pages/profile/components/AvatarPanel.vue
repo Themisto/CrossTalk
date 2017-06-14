@@ -2,16 +2,14 @@
 
 <div id="avatar-panel">
 
-
-
-  <div v-if="!image">
+<!--   <div v-if="!image">
     <h2>Select an image</h2>
     <input type="file" @change="onFileChange">
-  </div>
+  </div> -->
 
-  <div v-else>
-    <img :src="image" />
-    <button @click="removeImage">Remove image</button>
+  <div>
+    <img v-if="data" :src="data.imageURL" />
+    <!-- <button @click="removeImage">Remove image</button> -->
   </div>
 
 </div>
@@ -26,6 +24,7 @@
 <script>
 
 export default {
+  props: ['data'],
 
   data() {
     return {

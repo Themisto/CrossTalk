@@ -1,7 +1,7 @@
 <template>
 <div id="profile-page">
 
-  <avatar-panel></avatar-panel>
+  <avatar-panel :data="data"></avatar-panel>
   <info-panel></info-panel>
   <settings-panel></settings-panel>
   <history-panel></history-panel>
