@@ -8,7 +8,7 @@ var signal = require('./signalRoutes.js');
 
 // For deployment use port 80
 var port = process.env.PORT || 8000;
-var server;
+var sslServer;
 
 if (port === 80) {
   // More deployment stuff, for https connections use port 443 and credentials
@@ -16,11 +16,11 @@ if (port === 80) {
     key: fs.readFileSync('/etc/pki/tls/private/localhost.key', 'utf8'),
     cert: fs.readFileSync('/etc/pki/tls/certs/localhost.crt', 'utf8')
   };
-  server = https.createServer(options, server).listen(443);
-} else {
-  server = http.createServer(server).listen(port);
+  sslServer = https.createServer(options, server).listen(443);
 }
 
-var io = require('socket.io').listen(server);
+var server = http.createServer(server).listen(port);
+
+var io = require('socket.io').listen(sslServer || server);
 console.log(`Signal server listening on port ${port}`);
 signal(io);

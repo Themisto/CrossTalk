@@ -1,13 +1,13 @@
 <template>
 <div id="videos">
   <div class="remote-video-container">
-    <video id="remote-video" autoplay="true"></video>
+    <video id="remote-video" autoplay="true" v-if="showRemote"></video>
     <remote-controls></remote-controls>
   </div>
 
   <div class="local-video-container">
-    <video id="local-video" autoplay="true" muted></video>
-    <local-controls></local-controls>
+    <video id="local-video" autoplay="true" v-if="showLocal" muted></video>
+    <local-controls :socket="socket" :toggle="toggleLocalVideo"></local-controls>
   </div>
 
   <!-- <button id="recorder" v-on:click="toggleRecording"> {{continueRecording}} </button> -->
@@ -40,7 +40,9 @@
         rtc: null,                  // WebRTC instance
         continueRecording: false,
         recorder: null,
-        gatherer: null              // Video/audio stream from counterpart
+        gatherer: null,              // Video/audio stream from counterpart
+        showRemote: true,
+        showLocal: true
       };
     },
 
@@ -61,6 +63,10 @@
     },
 
     methods: {
+
+      toggleLocalVideo: function() {
+        this.showLocal = !this.showLocal;
+      },
       // ========================================================================
       // == Begin RecordRTC =====================================================
       // ========================================================================
@@ -154,6 +160,21 @@
             this.rtc.handleRemoveStream();
           } else {
             console.error(`Warning: Invalid message type '${data.type}' received`);
+          }
+        });
+
+        this.socket.on('control', (message) => {
+          this.log('control recived: ', message);
+          if (message === 'cam') {
+            this.showRemote = !this.showRemote;
+          }
+
+          if (message === 'mic') {
+            if (this.remoteVideo.muted) {
+              this.remoteVideo.muted = false;
+            } else {
+              this.remoteVideo.muted = true;
+            }
           }
         });
 

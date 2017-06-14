@@ -25,6 +25,12 @@ module.exports = {
     socket.to(data.room).emit('relay', data.message);
   },
 
+  control: (data, socket, io) => {
+    // console.log(`Relaying "${data.message.type}" message from socket "${socket.id}" to room "${data.room}"`);
+    console.log('control');
+    socket.to(data.room).emit('control', data.message);
+  },
+
   // User attempt to send text chat message to other user
   message: (data, socket, io) => {
     console.log(`Relaying chat message from socket "${socket.id}" to room "${data.room}"`);

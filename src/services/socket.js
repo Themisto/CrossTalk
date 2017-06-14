@@ -35,6 +35,18 @@ export default function(URL, verbose) {
     }
   };
 
+  socket.control = function(message) {
+    if (this._room) {
+      let data = {
+        room: this._room,
+        message: message
+      };
+      this.emit('control', data);
+    } else {
+      console.error('control error');
+    }
+  };
+
   socket.translateText = function(message) {
     if (this._room) {
       let data = {
