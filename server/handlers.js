@@ -78,6 +78,18 @@ module.exports = {
     });
   },
 
+  updateAvatar: (req, res) => {
+    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
+    User.updateAvatar(id, req.body.imageURL)
+    .then((user) => {
+      res.send(user.data.imageURL);
+    })
+    .catch((err) => {
+      console.error('Failed to update avatar!', err);
+      res.sendStatus(500);
+    });
+  },
+
   // Process, transcribe, and translate video chat audio file that client is trying to upload.
   // Streams audio to translation service, gets translated text back.
   // Triggered by toggling button on video page (from false to true), speaking into the mic, then toggling the button again (from true to false).
