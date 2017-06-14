@@ -7,10 +7,14 @@
     <input type="file" @change="onFileChange">
   </div> -->
 
-  <div>
-    <img v-if="data" :src="data.imageURL" />
+  <!-- <div> -->
+    <img id="avatar" v-if="data" :src="imageURL" />
     <!-- <button @click="removeImage">Remove image</button> -->
-  </div>
+  <!-- </div> -->
+  <button v-on:click="showUpdateForm = !showUpdateForm">Update</button>
+
+  <input v-on:keyup.enter="uploadImage" v-model="newImageURL" v-show="showUpdateForm" placeholder="Update your avatar">
+
 
 </div>
 
@@ -28,12 +32,36 @@ export default {
 
   data() {
     return {
-      image: ''
+      showUpdateForm: false,
+      newImageURL: null,
+      // image: null,
+      imageURL: null
+    }
+
+  },
+
+  watch: {
+    data: function() {
+      this.imageURL = this.data.imageURL;
+      console.log('NOT TRIGGERED!');
     }
 
   },
 
   methods: {
+
+    uploadImage() {
+      console.log("TRIGGERING INTENSIFIES!", this.imageURL, " NEW ==> ", this.newImageURL);
+      this.imageURL = this.newImageURL;
+
+      console.log(this.imageURL, this.newImageURL);
+
+      this.newImageURL = null;
+
+      this.showUpdateForm = false;
+    },
+
+
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
@@ -53,6 +81,10 @@ export default {
     removeImage: function (e) {
       this.image = '';
     }
+  },
+
+  mounted: function() {
+
   }
 
 }
@@ -73,10 +105,10 @@ export default {
 }
 
 #avatar-panel img {
-  width: 80%;
-  height: 80%;
+  /*width: 50%;*/
+  height: 70%;
   margin: auto;
-  display: flex;
+  /*display: flex;*/
   margin-bottom: 10px;
   border: 1px solid lime;
   /*background: rgba(0,0,0,0.9);*/

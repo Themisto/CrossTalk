@@ -3,7 +3,7 @@
 
   <avatar-panel :data="data"></avatar-panel>
   <info-panel></info-panel>
-  <settings-panel></settings-panel>
+
   <history-panel></history-panel>
   <friends-list></friends-list>
 
@@ -19,7 +19,7 @@ import AvatarPanel from './components/AvatarPanel.vue';
 // import Friendslist from './components/FriendsList.vue';
 import HistoryPanel from './components/HistoryPanel.vue';
 import InfoPanel from './components/InfoPanel.vue';
-import SettingsPanel from './components/SettingsPanel.vue';
+
 import FriendsList from '../../friends_list/FriendsList.vue';
 import axios from 'axios';
 
@@ -54,8 +54,7 @@ export default {
     AvatarPanel,
     FriendsList,
     HistoryPanel,
-    InfoPanel,
-    SettingsPanel
+    InfoPanel
   },
 
   mounted: function() {
@@ -80,7 +79,7 @@ export default {
 
   grid-template-areas:
 
-    "avatar-panel settings-panel friends-list"
+    "avatar-panel history-panel friends-list"
     "info-panel history-panel friends-list";
 
   grid-template-rows: 1fr 1fr;
@@ -109,10 +108,7 @@ export default {
 
 }
 
-#settings-panel {
-  grid-area: settings-panel;
 
-}
 
 #info-panel {
   grid-area: info-panel;
