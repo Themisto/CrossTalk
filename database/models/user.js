@@ -99,16 +99,16 @@ userSchema.statics.getRatingById = function(id) {
 
 // Populate and retrieve a user's friends list
 userSchema.statics.getFriendsById = function(id) {
+  let user;
   return new Promise((resolve, reject) => {
     this.findOne({_id: id})
+    .then(user => user.populate('friends').execPopulate())
     .then(user => {
-      user.populate('friends').execPopulate()
-      .then(user => {
-        resolve(user.friends);
-      })
-      .catch(reject);
+      resolve(user.friends);
     })
     .catch(reject);
+    // })
+    // .catch(reject);
   });
 };
 
@@ -176,8 +176,6 @@ userSchema.statics.addFriendByPublicId = function(id, publicID) {
     })
     .then(resolve)
     .catch(reject);
-    // })
-    // .catch(reject);
   });
 };
 
