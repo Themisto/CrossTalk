@@ -16,6 +16,12 @@ var userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  publicID: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    unique: true,
+    auto: true
+  },
   name: String,
   // May add an email syntax validator in the future
   email: String,
