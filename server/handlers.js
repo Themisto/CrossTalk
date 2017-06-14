@@ -12,6 +12,15 @@ var streamBuffers = require('stream-buffers');
 // @todo: 'public' is a reserved keyword. Consider refactoring.
 var public = path.join(__dirname + '/../public/');
 
+var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+var randomID = function(length) {
+  var text = '';
+  for (var i = 0; i < length; i++) {
+    text += possible.charAt( Math.floor(Math.random() * possible.length) );
+  }
+  return text;
+};
+
 module.exports = {
 
   index: (req, res) => {
@@ -99,7 +108,7 @@ module.exports = {
     var accessToken;
     var audioStream = new formidable.IncomingForm();
     var [fromLang, toLang] = req.params.fromLang_toLang.split('_');
-    var filePath = __dirname + `/uploads/snippet.wav`;
+    var filePath = __dirname + `/uploads/${randomID(20)}.wav`;
 
     audioStream.on('error', function (error) {
       console.log(error);

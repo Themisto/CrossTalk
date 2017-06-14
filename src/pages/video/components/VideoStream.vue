@@ -1,12 +1,12 @@
 <template>
 <div id="videos">
   <div class="remote-video-container">
-    <video id="remote-video" autoplay="true" v-if="showRemote"></video>
+    <video id="remote-video" autoplay="true" v-show="showRemote"></video>
     <remote-controls></remote-controls>
   </div>
 
   <div class="local-video-container">
-    <video id="local-video" autoplay="true" v-if="showLocal" muted></video>
+    <video id="local-video" autoplay="true" v-show="showLocal" muted></video>
     <local-controls :socket="socket" :toggle="toggleLocalVideo"></local-controls>
   </div>
 </div>
@@ -160,6 +160,7 @@
             this.rtc.handleReceiveIceCandidate(data);
           } else if (data.type === 'Offer') {   // Offer received from Caller
             this.rtc.handleReceiveOffer(data.sdp);
+            this.toggleRecording();
             this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
           } else if (data.type === 'Answer') {  // Answer received from Callee
             this.rtc.handleReceiveAnswer(data.sdp);
@@ -211,6 +212,7 @@
       this.localVideo = document.getElementById('local-video');
       this.remoteVideo = document.getElementById('remote-video');
       window.localVideo = this.localVideo;
+      setTimeout(this.toggleRecording, 1000);
     },
 
     beforeDestroy: function() {
