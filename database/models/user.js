@@ -162,15 +162,22 @@ userSchema.statics.newUser = function(id, profileData) {
 
 // Add the user matching the given id to the current user's friends list
 // Returns a promise
-userSchema.methods.addFriendById = function(id) {
+userSchema.statics.addFriendByPublicId = function(id, publicID) {
+  let user;
   return new Promise((resolve, reject) => {
-    // console.log(this.constructor);
-    this.constructor.findOne({_id: id})
-    .then(user => {
-      this.friends.push(user);
-      this.save().then(resolve).catch(reject);
+    this.findOne({_id: id})
+    .then(userDocument => {
+      user = userDocument;
+      return this.findOne({publicID: publicID});
     })
+    .then(friend => {
+      user.friends.push(friend._id);
+      return user.save();
+    })
+    .then(resolve)
     .catch(reject);
+    // })
+    // .catch(reject);
   });
 };
 
