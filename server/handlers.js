@@ -90,8 +90,8 @@ module.exports = {
   },
 
   updateAvatar: (req, res) => {
-    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
-    User.updateAvatar(id, req.body.imageURL)
+    // let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
+    User.updateAvatar(req.body.userID, req.body.imageURL)
     .then((user) => {
       res.send(user.data.imageURL);
     })
