@@ -1,12 +1,12 @@
 <template>
 <div id="videos">
   <div class="remote-video-container">
-    <video id="remote-video" autoplay="true" v-if="showRemote"></video>
+    <video id="remote-video" autoplay="true" v-show="showRemote"></video>
     <remote-controls :socket="socket" :socketReady="socketReady" :inCall="inCall" :verbose="verbose"></remote-controls>
   </div>
 
   <div class="local-video-container">
-    <video id="local-video" autoplay="true" v-if="showLocal" muted></video>
+    <video id="local-video" autoplay="true" v-show="showLocal" muted></video>
     <local-controls :socket="socket" :toggle="toggleLocalVideo"></local-controls>
   </div>
 </div>
@@ -37,8 +37,6 @@
         localVideo: null,           // Video element displaying local stream
         remoteVideo: null,          // Video element displaying remote stream
         rtc: null,                  // WebRTC instance
-        continueRecording: false,
-        recorder: null,
         gatherer: null,              // Video/audio stream from counterpart
         showRemote: true,
         showLocal: true,
@@ -70,8 +68,8 @@
       // ========================================================================
       // == Begin RecordRTC =====================================================
       // ========================================================================
-      postAudioClip: function () {
-        let rawAudio = this.recorder.getBlob();
+      postAudioClip: function (recorder) {
+        let rawAudio = recorder.getBlob();
         let audioFile = new File([rawAudio], 'snippet.wav', {type: 'audio/wav'});
         let fromLang_toLang = `${this.$root.$data.nativeLang}_${this.$root.$data.foreignLang}`;
 
@@ -90,36 +88,22 @@
         });
       },
 
-      startRecording: function () {
-        if (this.continueRecording) {
-          // Start recording.
-          this.recorder = recordrtc(this.rtc.localVideoStream, {
-            type: 'audio',
-            recorderType: recordrtc.StereoAudioRecorder,
-            numberOfAudioChannels: 1
-          });
+      recordSnippet: function() {
+        console.log('record');
+        var recorder = recordrtc(this.rtc.localVideoStream, {
+          type: 'audio',
+          recorderType: recordrtc.StereoAudioRecorder,
+          numberOfAudioChannels: 1
+        });
 
-          // Sends 3-second snippets for translation.
-          this.recorder.setRecordingDuration(3000, () => {
-            this.postAudioClip();
-            this.continueRecording = false;
-            this.toggleRecording();
-          });
-          this.recorder.startRecording();
-          console.log('Started recording.');
-        } else {
-          // Stop recording.
-          this.recorder.stopRecording(function () {
-            console.log('Stopped recording.');
-          });
-        }
-      },
+        recorder.setRecordingDuration(3000, () => {
+          setTimeout(this.recordSnippet, 0);
+          setTimeout(() => {
+            this.postAudioClip(recorder);
+          }, 0);
+        });
 
-      // Triggers an infinite loop...
-      // ...should probably figure out a better way to do this.
-      toggleRecording: function () {
-        this.continueRecording = !this.continueRecording;
-        this.startRecording();
+        recorder.startRecording();
       },
 
       // ========================================================================
@@ -167,7 +151,6 @@
             this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
           } else if (data.type === 'Answer') {  // Answer received from Callee
             this.rtc.handleReceiveAnswer(data.sdp);
-            this.toggleRecording();
             this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
           } else if (data.type === 'Bye') {     // Hangup received from counterpart
             this.log('Partner has hung up');
@@ -214,12 +197,13 @@
       this.localVideo = document.getElementById('local-video');
       this.remoteVideo = document.getElementById('remote-video');
       window.localVideo = this.localVideo;
+      setTimeout(this.recordSnippet, 1000);
     },
 
     beforeDestroy: function() {
-      this.recorder.stopRecording(function () {
-        console.log('Stopped recording.');
-      });
+      // this.recorder.stopRecording(function () {
+      //   console.log('Stopped recording.');
+      // });
       this.gatherer && this.gatherer.sendCallData();
       this.rtc && this.rtc.hangup();
     }

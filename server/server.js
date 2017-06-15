@@ -10,7 +10,9 @@ var signal = require('./signalRoutes.js');
 var port = process.env.PORT || 8000;
 var sslServer;
 
-if (port === 80) {
+console.log(process.env.PORT)
+
+if (process.env.PORT == 80) {
   // More deployment stuff, for https connections use port 443 and credentials
   var options = {
     key: fs.readFileSync('/etc/pki/tls/private/localhost.key', 'utf8'),

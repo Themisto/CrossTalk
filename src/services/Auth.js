@@ -12,8 +12,8 @@ export default class AuthService {
     this.auth0 = new auth0.WebAuth({
       domain: 'crosstalk.auth0.com',
       clientID: '1z8l2E4BFbcN2UNXw4MS0zdmWN_W3Y_Y',
-      // redirectUri: 'http://localhost:8000/login',
-      // audience: 'http://localhost:8000/',
+      // redirectUri: 'https://crosstalk.live/login',
+      redirectUri: 'http://localhost:8000/login',
       responseType: 'token id_token',
       scope: 'openid profile email'
     })

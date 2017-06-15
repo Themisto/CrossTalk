@@ -6,7 +6,7 @@ var rooms = require('./roomQueue.js');
 var app = express();
 
 // This is for redirecting unsecure connections to https, not needed for development
-if (process.env.PORT === 80) {
+if (process.env.PORT == 80) {
   app.all('*', function(req, res, next) {
     if (req.secure){
       return next();
