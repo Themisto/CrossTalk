@@ -36,6 +36,7 @@ app.get('/profile', handlers.index);
 app.get('/api/users/rating', handlers.authenticate, handlers.getRating);
 app.get('/api/users/friends', handlers.authenticate, handlers.getFriends);
 app.get('/api/users/data', handlers.authenticate, handlers.getData);
+app.get('/api/users/publicId', handlers.authenticate, handlers.getPublicId);
 
 app.put('/api/users/avatar', handlers.authenticate, handlers.updateAvatar);
 

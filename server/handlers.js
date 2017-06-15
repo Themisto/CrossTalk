@@ -89,6 +89,17 @@ module.exports = {
     });
   },
 
+  getPublicId: (req, res) => {
+    User.getPublicId(req.body.userID)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.error('Failed to get public id!', err);
+      res.sendStatus(500);
+    });
+  },
+
   updateAvatar: (req, res) => {
     // let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
     User.updateAvatar(req.body.userID, req.body.imageURL)
