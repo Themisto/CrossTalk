@@ -67,15 +67,16 @@ nav {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  background-color: rgba(0,0,0,0.6);
-  box-shadow: 2px 2px 20px 2px black;
+  background-color: rgba(0,0,0,0.5);
+  box-shadow: 0px 6px 20px 3px rgba(0,0,0,0.7);
 
 }
 
 nav * {
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 14px;
+  /*text-shadow: 1px 1px black;*/
+  color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
 }
 
 /*nav > *:not(#group):hover {
@@ -83,7 +84,8 @@ nav * {
 }*/
 
 .hover-button:hover {
-  background-color: grey;
+  background-color: #42b883;
+  cursor:pointer;
 }
 
 #group {
