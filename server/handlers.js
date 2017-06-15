@@ -101,10 +101,9 @@ module.exports = {
   },
 
   updateAvatar: (req, res) => {
-    // let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
     User.updateAvatar(req.body.userID, req.body.imageURL)
     .then((user) => {
-      res.send(user.data.imageURL);
+      res.status(202).send(user.data.imageURL);
     })
     .catch((err) => {
       console.error('Failed to update avatar!', err);
@@ -113,13 +112,25 @@ module.exports = {
   },
 
   addFriend: (req, res) => {
-    User.addFriendByPublicId(req.body.userID, req.body.friendID)
+    User.addFriendByPublicId(req.body.userID, req.body.friendId)
     .then(() => {
-      res.status(201).send(req.body.friendID);
+      res.status(201).send(req.body.friendId);
     })
     .catch((err) => {
-
+      console.error('Failed to add friend!', err);
+      res.sendStatus(500);
     });
+  },
+
+  updateRating: (req, res) => {
+    User.updateRating(req.body.partnerId, req.body.votes)
+    .then((user) => {
+      res.status(202).send(req.body.votes);
+    })
+    .catch((err) => {
+      console.error('Failed to update rating!', err);
+      res.sendStatus(500);
+    })
   },
 
   // Process, transcribe, and translate video chat audio file that client is trying to upload.

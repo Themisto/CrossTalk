@@ -39,6 +39,7 @@ app.get('/api/users/data', handlers.authenticate, handlers.getData);
 app.get('/api/users/publicId', handlers.authenticate, handlers.getPublicId);
 
 app.put('/api/users/avatar', handlers.authenticate, handlers.updateAvatar);
+app.put('/api/users/rating', handlers.authenticate, handlers.updateRating);
 
 app.post('/api/new_user', handlers.authenticate, handlers.login);
 app.post('/api/queue', rooms.findMatch);
