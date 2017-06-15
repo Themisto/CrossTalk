@@ -221,6 +221,16 @@ userSchema.statics.downvoteById = function(id) {
   return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
 };
 
+userSchema.statics.updateRating = function(partnerId, votes) {
+  let updateQuery = {
+    $inc: {
+      'rating.upvotes': votes.up,
+      'rating.downvotes': votes.down
+    }
+  };
+  return this.findOneAndUpdate({publicID: partnerId}, updateQuery, {new: true});
+};
+
 userSchema.statics.updateAvatar = function(id, imageURL) {
   return this.findOneAndUpdate({_id: id}, { $set: { "data.imageURL": imageURL } }, {new: true});
 };
