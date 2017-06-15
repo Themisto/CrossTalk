@@ -2,7 +2,7 @@
 <div id="videos">
   <div class="remote-video-container">
     <video id="remote-video" autoplay="true" v-if="showRemote"></video>
-    <remote-controls :socket="socket" :socketReady="socketReady" roomJoined:="roomJoined"></remote-controls>
+    <remote-controls :socket="socket" :socketReady="socketReady" :inCall="inCall" :verbose="verbose"></remote-controls>
   </div>
 
   <div class="local-video-container">
@@ -41,7 +41,8 @@
         recorder: null,
         gatherer: null,              // Video/audio stream from counterpart
         showRemote: true,
-        showLocal: true
+        showLocal: true,
+        inCall: false
       };
     },
 
@@ -146,6 +147,7 @@
         // Occurs if we are not the first client in the room
         this.socket.on('joined room', (room) => {
           this.log(`Joined room "${room}", we are the Callee`);
+          this.inCall = true;
           this.rtc.isCaller = false;
         });
 
@@ -153,6 +155,7 @@
         this.socket.on('callee joined', (room) => {
           this.log(`Callee has joined room "${room}"`);
           // It is now safe to initiate call
+          this.inCall = true;
           this.rtc.sendOffer();
         });
 
@@ -168,13 +171,14 @@
             this.gatherer.startCallWatcher(this.$root.$data.nativeLang, this.$root.$data.foreignLang);
           } else if (data.type === 'Bye') {     // Hangup received from counterpart
             this.log('Partner has hung up');
+            this.inCall = false;
             this.gatherer.sendCallData();
             this.rtc.handleRemoveStream();
           }
         });
 
         this.socket.on('control', (message) => {
-          this.log('control recived: ', message);
+          this.log('control recieved: ', message);
           if (message === 'cam') {
             this.showRemote = !this.showRemote;
           }
