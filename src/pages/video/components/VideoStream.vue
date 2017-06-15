@@ -178,7 +178,7 @@
         });
 
         this.socket.on('control', (message) => {
-          this.log('control recieved: ', message);
+          this.log('control received: ', message);
           if (message === 'cam') {
             this.showRemote = !this.showRemote;
           }
