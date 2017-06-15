@@ -101,7 +101,7 @@ export default {
 
 #avatar-panel {
   text-align: center;
-  background: rgba(0,0,0,0.5);
+
 
   padding: 20px;
 

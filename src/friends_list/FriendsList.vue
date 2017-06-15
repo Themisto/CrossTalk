@@ -1,6 +1,5 @@
 <template>
 <div id="friends-list">
-  <h1>FRIENDS!</h1>
 
   <FriendsListItem v-for="friend in friends" :user="friend" :key="friend._id"></FriendsListItem>
 </div>
