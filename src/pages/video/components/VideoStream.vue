@@ -2,7 +2,7 @@
 <div id="videos">
   <div class="remote-video-container">
     <video id="remote-video" autoplay="true" v-if="showRemote"></video>
-    <remote-controls></remote-controls>
+    <remote-controls :socket="socket" :socketReady="socketReady" roomJoined:="roomJoined"></remote-controls>
   </div>
 
   <div class="local-video-container">
@@ -28,6 +28,7 @@
     props: [
     'socket',
     'socketReady',
+    'roomJoined',
     'verbose'
     ],
 
@@ -169,8 +170,6 @@
             this.log('Partner has hung up');
             this.gatherer.sendCallData();
             this.rtc.handleRemoveStream();
-          } else {
-            console.error(`Warning: Invalid message type '${data.type}' received`);
           }
         });
 
