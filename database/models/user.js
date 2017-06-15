@@ -16,6 +16,12 @@ var userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  publicID: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    unique: true,
+    auto: true
+  },
   name: String,
   // May add an email syntax validator in the future
   email: String,
@@ -93,16 +99,16 @@ userSchema.statics.getRatingById = function(id) {
 
 // Populate and retrieve a user's friends list
 userSchema.statics.getFriendsById = function(id) {
+  let user;
   return new Promise((resolve, reject) => {
     this.findOne({_id: id})
+    .then(user => user.populate('friends').execPopulate())
     .then(user => {
-      user.populate('friends').execPopulate()
-      .then(user => {
-        resolve(user.friends);
-      })
-      .catch(reject);
+      resolve(user.friends);
     })
     .catch(reject);
+    // })
+    // .catch(reject);
   });
 };
 
@@ -117,18 +123,37 @@ userSchema.statics.getDataById = function(id) {
   });
 };
 
+userSchema.statics.getPublicId = function(id) {
+  return new Promise((resolve, reject) => {
+    this.findOne({_id: id})
+    .then(user => {
+      resolve(user.publicID);
+    })
+    .catch(reject);
+  });
+};
+
 // =========Setters=========
 
 // Add a new user with the given id to the database, unless a user with that id exists
-userSchema.statics.newUser = function(id) {
+userSchema.statics.newUser = function(id, profileData) {
   return this.find({_id: id}, (err, user) => {
     if (err) {
       console.error(err);
     } else {
       if (user.length === 0) {
-        var account = new this({
-          _id: id
-        });
+
+        let newUserProfile = {
+          _id: id,
+          name: profileData.name,
+          email: profileData.email,
+          data: {
+            languageTime: {}
+          }
+        };
+        if (profileData.picture) { newUserProfile.data.imageURL = profileData.picture; }
+
+        var account = new this(newUserProfile);
 
         account.save((err, account) => {
           if(err) {
@@ -147,14 +172,19 @@ userSchema.statics.newUser = function(id) {
 
 // Add the user matching the given id to the current user's friends list
 // Returns a promise
-userSchema.methods.addFriendById = function(id) {
+userSchema.statics.addFriendByPublicId = function(id, publicID) {
+  let user;
   return new Promise((resolve, reject) => {
-    // console.log(this.constructor);
-    this.constructor.findOne({_id: id})
-    .then(user => {
-      this.friends.push(user);
-      this.save().then(resolve).catch(reject);
+    this.findOne({_id: id})
+    .then(userDocument => {
+      user = userDocument;
+      return this.findOne({publicID: publicID});
     })
+    .then(friend => {
+      user.friends.push(friend._id);
+      return user.save();
+    })
+    .then(resolve)
     .catch(reject);
   });
 };
@@ -189,6 +219,16 @@ userSchema.statics.upvoteById = function(id) {
 // Usage: User.downvoteById(user_id).then((doc) => {}) or User.downvoteById(user_id).exec()
 userSchema.statics.downvoteById = function(id) {
   return this.findOneAndUpdate({_id: id}, { $inc: { "rating.downvotes": 1 } }, {new: true});
+};
+
+userSchema.statics.updateRating = function(partnerId, votes) {
+  let updateQuery = {
+    $inc: {
+      'rating.upvotes': votes.up,
+      'rating.downvotes': votes.down
+    }
+  };
+  return this.findOneAndUpdate({publicID: partnerId}, updateQuery, {new: true});
 };
 
 userSchema.statics.updateAvatar = function(id, imageURL) {

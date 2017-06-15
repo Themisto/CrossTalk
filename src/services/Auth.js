@@ -15,7 +15,7 @@ export default class AuthService {
       // redirectUri: 'https://crosstalk.live/login',
       redirectUri: 'http://localhost:8000/login',
       responseType: 'token id_token',
-      scope: 'openid'
+      scope: 'openid profile email'
     })
   }
 

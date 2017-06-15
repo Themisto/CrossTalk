@@ -30,16 +30,22 @@ app.get('/profile', handlers.index);
 
 // ------------ api routes ------------
 
-app.get('/api/users/rating', handlers.getRating);
-app.get('/api/users/friends', handlers.getFriends);
-app.get('/api/users/data', handlers.getData);
+// Add handlers.authenticate middleware to protected routes
+// Requests to protected endpoints will require an 'x-access-token'
+// header like so: x-access-token: Bearer jwt-token-here
+app.get('/api/users/rating', handlers.authenticate, handlers.getRating);
+app.get('/api/users/friends', handlers.authenticate, handlers.getFriends);
+app.get('/api/users/data', handlers.authenticate, handlers.getData);
+app.get('/api/users/publicId', handlers.authenticate, handlers.getPublicId);
 
-app.put('/api/users/avatar', handlers.updateAvatar);
+app.put('/api/users/avatar', handlers.authenticate, handlers.updateAvatar);
+app.put('/api/users/rating', handlers.authenticate, handlers.updateRating);
 
-app.post('/api/new_user', handlers.login);
+app.post('/api/new_user', handlers.authenticate, handlers.login);
 app.post('/api/queue', rooms.findMatch);
 app.post('/api/translate', handlers.translate);
 app.post('/api/transcribe/:fromLang_toLang', handlers.transcribe);
+app.post('/api/users/friends', handlers.authenticate, handlers.addFriend);
 
 // ------------------------------------
 

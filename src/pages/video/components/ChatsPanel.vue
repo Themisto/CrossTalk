@@ -16,8 +16,8 @@
 
 
 <script>
-
-import TextBox from './TextBox.vue'
+import axios from 'axios';
+import TextBox from './TextBox.vue';
 
 export default {
 
@@ -73,9 +73,24 @@ export default {
           id: this.messages.length,
           text: this.chat
         };
-        this.log('Sending chat message:', message.text);
-        this.socket.message(message);
-        this.messages.push(message);
+        axios.post('/api/translate', {
+          id: message.id,
+          text: message.text,
+          fromLang: this.$root.$data.nativeLang,
+          toLang: this.$root.$data.foreignLang
+        })
+        .then(({data}) => {
+          let translation = {id: message.id, text: data};
+          this.log('Sending chat message:', translation.text);
+          // Send the translated message to the remote user.
+          this.socket.message(translation);
+          // Display the original message for the local user.
+          this.messages.push(message);
+        })
+        .catch(error => {
+          console.log(error);
+          console.log('Error translating chat message.');
+        });
       } else {
         console.log('Warning: Socket not ready for use. Please join a room before sending a chat message.');
       }
