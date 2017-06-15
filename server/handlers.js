@@ -8,6 +8,7 @@ var formidable = require('formidable');
 var wsClient = require('websocket').client;
 var fs = require('fs');
 var streamBuffers = require('stream-buffers');
+var jwt = require('jwt-simple');
 
 // @todo: 'public' is a reserved keyword. Consider refactoring.
 var public = path.join(__dirname + '/../public/');
@@ -19,8 +20,7 @@ module.exports = {
   },
 
   login: (req, res) => {
-    console.log();
-    User.newUser(utils.idFromToken(req.body.token));
+    User.newUser(req.body.userID, req.body.tokenPayload);
     res.end();
   },
 
@@ -43,9 +43,21 @@ module.exports = {
     });
   },
 
+  authenticate: (req, res, next) => {
+    try {
+      let token = req.body.token || req.header('x-access-token').split(' ')[1];
+      let payload = jwt.decode(token, process.env.AUTH0_SECRET, 'RS256');
+      req.body.tokenPayload = payload;
+      req.body.userID = payload.user_id.split('|')[1];
+      next();
+    } catch (e) {
+      console.log('Warning: Token from client has expired, access denied');
+      res.sendStatus(401);
+    }
+  },
+
   getRating: (req, res) => {
-    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
-    User.getRatingById(id)
+    User.getRatingById(req.body.userID)
     .then((rating) => {
       res.send(rating);
     })
@@ -56,8 +68,7 @@ module.exports = {
   },
 
   getFriends: (req, res) => {
-    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
-    User.getFriendsById(id)
+    User.getFriendsById(req.body.userID)
     .then((friends) => {
       res.send(friends);
     })
@@ -68,8 +79,7 @@ module.exports = {
   },
 
   getData: (req, res) => {
-    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
-    User.getDataById(id)
+    User.getDataById(req.body.userID)
     .then((data) => {
       res.send(data);
     })
@@ -79,16 +89,48 @@ module.exports = {
     });
   },
 
+  getPublicId: (req, res) => {
+    User.getPublicId(req.body.userID)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.error('Failed to get public id!', err);
+      res.sendStatus(500);
+    });
+  },
+
   updateAvatar: (req, res) => {
-    let id = utils.idFromToken(req.header('x-access-token').split(' ')[1]);
-    User.updateAvatar(id, req.body.imageURL)
+    User.updateAvatar(req.body.userID, req.body.imageURL)
     .then((user) => {
-      res.send(user.data.imageURL);
+      res.status(202).send(user.data.imageURL);
     })
     .catch((err) => {
       console.error('Failed to update avatar!', err);
       res.sendStatus(500);
     });
+  },
+
+  addFriend: (req, res) => {
+    User.addFriendByPublicId(req.body.userID, req.body.friendId)
+    .then(() => {
+      res.status(201).send(req.body.friendId);
+    })
+    .catch((err) => {
+      console.error('Failed to add friend!', err);
+      res.sendStatus(500);
+    });
+  },
+
+  updateRating: (req, res) => {
+    User.updateRating(req.body.partnerId, req.body.votes)
+    .then((user) => {
+      res.status(202).send(req.body.votes);
+    })
+    .catch((err) => {
+      console.error('Failed to update rating!', err);
+      res.sendStatus(500);
+    })
   },
 
   // Process, transcribe, and translate video chat audio file that client is trying to upload.

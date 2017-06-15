@@ -15,7 +15,7 @@ export default class AuthService {
       // redirectUri: 'http://localhost:8000/login',
       // audience: 'http://localhost:8000/',
       responseType: 'token id_token',
-      scope: 'openid'
+      scope: 'openid profile email'
     })
   }
 

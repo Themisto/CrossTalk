@@ -12,6 +12,7 @@
     :socket="socket"
     :socketReady="socketReady"
     :verbose="verbose"
+    :roomJoined="roomJoined"
     v-on:Ready="joinRoom"
   ></video-stream>
 

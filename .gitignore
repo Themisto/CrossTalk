@@ -46,5 +46,7 @@ public/*
 **/.DS_Store
 # API keys and confidential config variables
 config.*
-
+# Mongo executable
 mongod.exe
+# Sound files
+server/uploads/
