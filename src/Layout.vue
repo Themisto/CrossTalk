@@ -58,7 +58,6 @@ body {
 #main-container {
 
   display: grid;
-  /*grid-gap: 15px;*/
   background:
     -webkit-linear-gradient(45deg, hsla(153, 47%, 49%, 1) 0%, hsla(153, 47%, 49%, 0) 70%),
     -webkit-linear-gradient(315deg, hsla(211, 100%, 29%, 1) 10%, hsla(211, 100%, 29%, 0) 80%),
@@ -80,14 +79,6 @@ body {
   grid-template-rows: 1fr 18fr 1fr;
 }
 
-#main-container >  {
-  /*font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;*/
-}
-
 #navbar {
   grid-area: navbar;
 
@@ -95,17 +86,10 @@ body {
 
 #body {
   grid-area: body;
-  /*margin-top: 20px;*/
-  margin-bottom: 40px;
-
   font-size: 20px;
   display: flex;
-  /*align-items: center;*/
   justify-content: center;
   text-align: center;
-/*  height: 100vh;
-  border: 1px solid yellow;*/
-
 }
 
 #footer {

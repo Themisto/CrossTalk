@@ -203,7 +203,7 @@
       this.log('Mounted');
       this.localVideo = document.getElementById('local-video');
       this.remoteVideo = document.getElementById('remote-video');
-      setTimeout(this.recordSnippet, 1000);
+      // setTimeout(this.recordSnippet, 1000);
       // this.subtitles = new SubtitleEngine(this.remoteVideo, this.$root.$data.nativeLang);
     },
 
@@ -224,6 +224,7 @@
   #videos {
     display: grid;
     grid-gap: 10px;
+    height: calc(100vh - 126px);
 
     grid-template-columns: repeat(8, [col] auto ) ;
     grid-template-rows: repeat(8, [row] auto  );
