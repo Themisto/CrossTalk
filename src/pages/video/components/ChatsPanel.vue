@@ -2,7 +2,7 @@
 <div id="chats-panel">
   <div id="text-box">
     <text-box
-      v-for="message in messages"
+      v-for="message in reverseMessages"
       :message="message"
       :key="message.id"
     ></text-box>
@@ -33,6 +33,12 @@ export default {
     return {
       messages: [],
       chat: '',
+    }
+  },
+
+  computed: {
+    reverseMessages() {
+      return this.messages.slice().reverse();
     }
   },
 
@@ -115,6 +121,9 @@ export default {
   margin-top: auto;
   height: calc(100% - 25px);
   overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
 }
 
 #text-box::-webkit-scrollbar {
@@ -122,15 +131,17 @@ export default {
 }
 
 #text-box > * {
-  margin-top: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
   font-size: 12pt;
+  text-align: left;
 }
 
 #textMessage {
   width: calc(100% - 2px);
   background-color: #515151;
   border: none;
-  /*margin-left: 1px;*/
 }
 
 #textMessage:focus {
