@@ -143,7 +143,7 @@ export default {
 
 
 #chats-panel {
-  height: calc(100vh - 142px);
+  height: calc(100vh - 130px);
   background-color: black;
   opacity: 0.6;
   box-shadow: 2px 2px 20px 2px black;
