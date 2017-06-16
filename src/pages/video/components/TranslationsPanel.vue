@@ -50,6 +50,7 @@ export default {
     background-color: black;
     opacity: 0.6;
     box-shadow: 2px 2px 20px 2px black;
+    overflow: scroll;
   }
 
 

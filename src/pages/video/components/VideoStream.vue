@@ -97,10 +97,13 @@
         });
 
         recorder.setRecordingDuration(3000, () => {
-          setTimeout(this.recordSnippet, 0);
-          setTimeout(() => {
-            this.postAudioClip(recorder);
-          }, 0);
+          // setTimeout(this.recordSnippet, 0);
+          this.postAudioClip(recorder);
+          recorder.startRecording();
+          // this.recordSnippet();
+          // setTimeout(() => {
+          //   this.postAudioClip(recorder);
+          // }, 0);
         });
 
         recorder.startRecording();
@@ -229,8 +232,8 @@
 
   #remote-video {
     /*background: rgba(0,0,0,0.6);*/
-    /*width: 100%;*/
-    /*height: 100%;*/
+    width: 100%;
+    height: 100%;
     /*box-shadow: 2px 2px 20px 2px #111;*/
     /*grid-column: col 1 / span  8;*/
     /*grid-row: row 1 / span 8;*/

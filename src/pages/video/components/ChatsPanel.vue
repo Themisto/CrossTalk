@@ -73,6 +73,9 @@ export default {
           id: this.messages.length,
           text: this.chat
         };
+
+        console.log('msg before api call', message);
+
         axios.post('/api/translate', {
           id: message.id,
           text: message.text,
@@ -111,7 +114,6 @@ export default {
 
 #text-box {
   margin-top: auto;
-
 }
 
 
@@ -121,11 +123,7 @@ export default {
   background-color: black;
   opacity: 0.6;
   box-shadow: 2px 2px 20px 2px black;
-/*  justify-content: left;
-  display: flex;
-  flex-direction: column;*/
-/*  align-items: right;
-  padding-top: auto;*/
+  height: 100%;
  }
 
 
