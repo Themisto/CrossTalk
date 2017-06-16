@@ -117,7 +117,13 @@ userSchema.statics.getDataById = function(id) {
   return new Promise((resolve, reject) => {
     this.findOne({_id: id})
     .then(user => {
-      resolve(user.data);
+      let data = {
+        name: user.name,
+        email: user.email,
+        metrics: user.data,
+        rating: user.rating.net
+      }
+      resolve(data);
     })
     .catch(reject);
   });

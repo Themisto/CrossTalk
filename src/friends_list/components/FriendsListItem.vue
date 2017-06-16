@@ -40,8 +40,8 @@ export default {
 <style scoped>
 
 #friends-list-item {
-  color: black;
-  background-color: rgba(175, 175, 175, 0.7);
+  color: white;
+  background-color: rgba(0, 0, 0, 0.2);
   margin-top: 5px;
   display: grid;
   grid-template-areas:

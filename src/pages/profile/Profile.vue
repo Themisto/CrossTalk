@@ -2,10 +2,16 @@
 <div id="profile-page">
 
   <avatar-panel :data="data"></avatar-panel>
-  <info-panel></info-panel>
 
-  <history-panel></history-panel>
-  <friends-list></friends-list>
+
+  <history-panel :data="data"></history-panel>
+
+  <div id="friends-list-container">
+
+    <h2>Trigger</h2>
+    <friends-list></friends-list>
+
+  </div>
 
 </div>
 
@@ -18,7 +24,7 @@
 import AvatarPanel from './components/AvatarPanel.vue';
 // import Friendslist from './components/FriendsList.vue';
 import HistoryPanel from './components/HistoryPanel.vue';
-import InfoPanel from './components/InfoPanel.vue';
+
 
 import FriendsList from '../../friends_list/FriendsList.vue';
 import axios from 'axios';
@@ -53,8 +59,8 @@ export default {
   components: {
     AvatarPanel,
     FriendsList,
-    HistoryPanel,
-    InfoPanel
+    HistoryPanel
+
   },
 
   mounted: function() {
@@ -79,8 +85,8 @@ export default {
 
   grid-template-areas:
 
-    "avatar-panel history-panel friends-list"
-    "info-panel history-panel friends-list";
+    "avatar-panel avatar-panel friends-list-container"
+    "history-panel history-panel friends-list-container";
 
   grid-template-rows: 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr;
@@ -110,18 +116,17 @@ export default {
 
 
 
-#info-panel {
-  grid-area: info-panel;
 
-}
 
 #history-panel {
   grid-area: history-panel;
 }
 
 
-#friends-list {
-  grid-area: friends-list;
+#friends-list-container {
+  padding: 20px;
+
+  grid-area: friends-list-container;
   position: relative;
   /*border: 1px solid lime;*/
 
