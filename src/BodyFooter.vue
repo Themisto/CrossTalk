@@ -31,7 +31,7 @@
   color: white;
   /*opacity: 0.6;*/
   width: 100%;
-  height: auto;
+  height: 40px;
   display: flex;
   /*justify-content: space-around;*/
   /*margin-top: 50px;*/

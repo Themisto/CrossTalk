@@ -8,8 +8,7 @@
     ></text-box>
   </div>
   <div>
-    <input placeholder="Enter chat here" v-model="chat">
-    <button v-on:click="sendMessage"> Send </button>
+    <input id="textMessage" placeholder="Send Message" v-model="chat" v-on:keyup.enter="sendMessage">
   </div>
 </div>
 </template>
@@ -114,19 +113,40 @@ export default {
 
 #text-box {
   margin-top: auto;
+  height: calc(100% - 25px);
+  overflow: scroll;
+}
+
+#text-box::-webkit-scrollbar {
+  display: none;
+}
+
+#text-box > * {
+  margin-top: auto;
+  font-size: 12pt;
+}
+
+#textMessage {
+  width: calc(100% - 2px);
+  background-color: #515151;
+  border: none;
+  /*margin-left: 1px;*/
+}
+
+#textMessage:focus {
+  color: white;
+}
+
+#textMessage::placeholder {
+  color: white;
 }
 
 
-
-
- #chats-panel {
-  height: calc(100vh - 126px);
+#chats-panel {
+  height: calc(100vh - 142px);
   background-color: black;
   opacity: 0.6;
   box-shadow: 2px 2px 20px 2px black;
- }
-
-
-
+}
 
 </style>

@@ -224,7 +224,7 @@
   #videos {
     display: grid;
     grid-gap: 10px;
-    height: calc(100vh - 126px);
+    height: calc(100vh - 142px);
 
     grid-template-columns: repeat(8, [col] auto ) ;
     grid-template-rows: repeat(8, [row] auto  );
