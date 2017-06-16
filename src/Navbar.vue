@@ -74,9 +74,11 @@ nav {
 
 nav * {
   text-decoration: none;
+  font-size: 12pt;
   /*text-shadow: 1px 1px black;*/
   color: rgba(255, 255, 255, 0.9);
-  padding: 20px;
+  /*padding: 20px;*/
+  padding: 14px;
 }
 
 /*nav > *:not(#group):hover {

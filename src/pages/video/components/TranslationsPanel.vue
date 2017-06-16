@@ -53,7 +53,7 @@ export default {
     opacity: 0.6;
     box-shadow: 2px 2px 20px 2px black;
     overflow: scroll;
-    height: calc(100vh - 126px);
+    height: calc(100vh - 130px);
     align-items: left;
   }
 

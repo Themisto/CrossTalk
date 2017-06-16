@@ -118,6 +118,9 @@ export default {
   display: grid;
   grid-gap: 20px;
   margin: 20px;
+/*  margin-top: 20px;
+  margin-right: 20px;
+  margin-left: 20px;*/
 
   /*justify-content: space-around;*/
   grid-template-areas:

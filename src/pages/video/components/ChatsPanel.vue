@@ -2,14 +2,13 @@
 <div id="chats-panel">
   <div id="text-box">
     <text-box
-      v-for="message in messages"
+      v-for="message in reverseMessages"
       :message="message"
       :key="message.id"
     ></text-box>
   </div>
   <div>
-    <input placeholder="Enter chat here" v-model="chat">
-    <button v-on:click="sendMessage"> Send </button>
+    <input id="textMessage" placeholder="Send Message" v-model="chat" v-on:keyup.enter="sendMessage">
   </div>
 </div>
 </template>
@@ -34,6 +33,12 @@ export default {
     return {
       messages: [],
       chat: '',
+    }
+  },
+
+  computed: {
+    reverseMessages() {
+      return this.messages.slice().reverse();
     }
   },
 
@@ -114,19 +119,45 @@ export default {
 
 #text-box {
   margin-top: auto;
+  height: calc(100% - 25px);
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
+#text-box::-webkit-scrollbar {
+  display: none;
+}
+
+#text-box > * {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  font-size: 12pt;
+  text-align: left;
+}
+
+#textMessage {
+  width: calc(100% - 2px);
+  background-color: #515151;
+  border: none;
+}
+
+#textMessage:focus {
+  color: white;
+}
+
+#textMessage::placeholder {
+  color: white;
 }
 
 
-
-
- #chats-panel {
-  height: calc(100vh - 126px);
+#chats-panel {
+  height: calc(100vh - 130px);
   background-color: black;
   opacity: 0.6;
   box-shadow: 2px 2px 20px 2px black;
- }
-
-
-
+}
 
 </style>
