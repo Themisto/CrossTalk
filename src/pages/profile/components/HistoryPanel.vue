@@ -6,9 +6,9 @@
     <h2>Favourite Languages</h2>
 
     <div id="favourites-container">
-      <ul>
-        <li v-for="fave in favouriteLanguages">{{ `${fave}: ${data.metrics.languageTime[fave]} seconds` }}</li>
-      </ul>
+
+        <p v-for="fave in favouriteLanguages">{{ `${fave} - time spent practicing: ${data.metrics.languageTime[fave]} seconds` }}</p>
+
     </div>
 
 
@@ -16,6 +16,12 @@
 
   <div id="recent-calls">
     <h2>Recent Calls</h2>
+    <div id="recent-container">
+
+        <p v-for="recent in recentCalls">{{ `${new Date(recent.date).toDateString()} - ${recent.fromLang} to ${recent.toLang}, for ${recent.duration} seconds` }}</p>
+
+    </div>
+
   </div>
 
 
@@ -33,7 +39,8 @@ export default {
 
   data() {
     return {
-      favouriteLanguages: []
+      favouriteLanguages: [],
+      recentCalls: []
     }
 
   },
@@ -41,7 +48,8 @@ export default {
   watch: {
     data: function() {
       this.favouriteLanguages = this.sortLanguages();
-      console.log("Language Time >>>>>> ", this.data.metrics.languageTime);
+      this.recentCalls = this.displayRecentCalls();
+      console.log("Recent Calls >>>>>> ", this.recentCalls);
 
 
     }
@@ -53,7 +61,12 @@ export default {
       var sorted = Object.keys(languages).sort(function(a,b) {
         return languages[a] < languages[b];
       });
-      return sorted.length >= 5 ? sorted.slice(0, 5) : sorted;
+      return sorted.length > 5 ? sorted.slice(0, 5) : sorted;
+    },
+
+    displayRecentCalls: function() {
+      var recent = this.data.metrics.callHistory;
+      return recent.length > 5 ? recent.slice(recent.length - 5, recent.length).reverse() : recent.reverse();
     }
   }
 }
@@ -81,18 +94,29 @@ export default {
 
 #favourite {
   grid-area: favourite;
-  border: 1px solid red;
+  /*border: 1px solid red;*/
 }
 
 #recent-calls {
   grid-area: recent-calls;
-  border: 1px solid blue;
+  /*border: 1px solid blue;*/
+
 }
 
-/*ul {
+p {
+  margin: 10px;
+  padding: 10px;
+  align-items: left;
+  justify-content: left;
+  font-size: 24px;
+}
+
+ul {
   text-align: left;
   align-items: left;
-}*/
+  list-style-type: none;
+  margin: 0;
+}
 
 
 
