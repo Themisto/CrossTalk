@@ -161,8 +161,12 @@
 <style scoped>
   #controls {
     position: absolute;
-    top: 70px;
+    top: 80px;
     display: flex;
+  }
+
+  #controls > *:hover {
+    cursor: pointer;
   }
 
   #addFriend {
@@ -176,6 +180,13 @@
     margin-left: 10px;
     margin-top: 10px;
   }
+
+  #addFriend:hover {
+    background-color: #42b883;
+
+  }
+
+
 
   #votes {
     height: 40px;

@@ -27,9 +27,9 @@
 
 <style>
 .body-footer {
-  background-color: black;
+  background: rgba(0,0,0,0.5);
   color: white;
-  opacity: 0.6;
+  /*opacity: 0.6;*/
   width: 100%;
   height: auto;
   display: flex;
