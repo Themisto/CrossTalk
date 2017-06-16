@@ -180,7 +180,7 @@
           }
         });
 
-        this.socket.on('translateText', this.subtitles.push);
+        // this.socket.on('translateText', this.subtitles.push);
 
         window.addEventListener('beforeunload', () => {
           this.gatherer.sendCallData();
@@ -203,7 +203,8 @@
       this.log('Mounted');
       this.localVideo = document.getElementById('local-video');
       this.remoteVideo = document.getElementById('remote-video');
-      this.subtitles = new SubtitleEngine(this.remoteVideo, this.$root.$data.nativeLang);
+      setTimeout(this.recordSnippet, 1000);
+      // this.subtitles = new SubtitleEngine(this.remoteVideo, this.$root.$data.nativeLang);
     },
 
     beforeDestroy: function() {
