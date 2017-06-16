@@ -57,11 +57,13 @@ export default {
 
   methods: {
     sortLanguages: function() {
-      var languages = this.data.metrics.languageTime;
-      var sorted = Object.keys(languages).sort(function(a,b) {
-        return languages[a] < languages[b];
-      });
-      return sorted.length > 5 ? sorted.slice(0, 5) : sorted;
+      if (this.data.metrics.languageTime) {
+        var languages = this.data.metrics.languageTime;
+        var sorted = Object.keys(languages).sort(function(a,b) {
+          return languages[a] < languages[b];
+        });
+        return sorted.length > 5 ? sorted.slice(0, 5) : sorted;
+      }
     },
 
     displayRecentCalls: function() {

@@ -1,7 +1,7 @@
 <template>
 <div id="friends-list-item">
   <img id="avatar"
-    src="https://ca.slack-edge.com/T0455847Q-U048WUTPW-c9aad4cb38d9-48">
+    :src="imageURL">
   <div id="info-container">
     <div id="info">
       <p>{{user.name || user._id}}</p>
@@ -22,6 +22,7 @@ export default {
   props: ['user'],
   data: function() {
     return {
+      imageURL: this.user.data.imageURL
     };
   },
   methods: {
