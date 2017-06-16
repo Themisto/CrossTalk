@@ -15,9 +15,11 @@ export default class SubtitleEngine {
     this.track = this.video.addTextTrack('subtitles', 'Translation', this.language);
     // Set visibility. Maybe this should toggle based on if there's anything in the queue?
     this.track.mode = "showing";
+    this.conditionSubtitle = this.conditionSubtitle.bind(this);
+    this.push = this.push.bind(this);
 
     // Watch queue
-  };
+  }
 
   conditionSubtitle(text) {
     if (text.length > this.maxLength) {
@@ -33,7 +35,7 @@ export default class SubtitleEngine {
     } else {
       return [text];
     }
-  };
+  }
 
   push(text) {
     let subtitles = this.conditionSubtitle(text);
@@ -43,7 +45,7 @@ export default class SubtitleEngine {
       this.track.addCue(new VTTCue(startTime, endTime, subtitles[i]));
       this.lastCueTime = endTime;
     }
-  };
+  }
 
   // processQueue() {
 
