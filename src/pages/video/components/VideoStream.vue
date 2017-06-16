@@ -22,6 +22,7 @@
   import recordrtc from 'recordrtc';
   import axios from 'axios';
   import MetricsGatherer from '../../../services/metricsGatherer.js';
+  import SubtitleEngine from '../../../services/subtitleEngine.js';
 
   export default {
 
@@ -34,13 +35,14 @@
 
     data: function() {
       return {
-        localVideo: null,           // Video element displaying local stream
-        remoteVideo: null,          // Video element displaying remote stream
-        rtc: null,                  // WebRTC instance
-        gatherer: null,              // Video/audio stream from counterpart
-        showRemote: true,
-        showLocal: true,
-        inCall: false
+        localVideo: null,     // Video element displaying local stream
+        remoteVideo: null,    // Video element displaying remote stream
+        rtc: null,            // WebRTC instance
+        gatherer: null,       // MetricsGatherer instance
+        subtitles: null,      // SubtitleEngine instance
+        showRemote: true,     // Toggle remote video element rendering
+        showLocal: true,      // Toggle local video element rendering
+        inCall: false         // Status of call
       };
     },
 
@@ -175,6 +177,8 @@
           }
         });
 
+        this.socket.on('translateText', this.subtitles.push);
+
         window.addEventListener('beforeunload', () => {
           this.gatherer.sendCallData();
           this.rtc.hangup();
@@ -196,8 +200,7 @@
       this.log('Mounted');
       this.localVideo = document.getElementById('local-video');
       this.remoteVideo = document.getElementById('remote-video');
-      window.localVideo = this.localVideo;
-      setTimeout(this.recordSnippet, 1000);
+      this.subtitles = new SubtitleEngine(this.remoteVideo, this.$root.$data.nativeLang);
     },
 
     beforeDestroy: function() {
@@ -225,6 +228,11 @@
   #videos > * {
     color: #fff;
     z-index:10;
+  }
+
+  video::cue {
+    background: rgba(0,0,0,0.6);
+    color: lightgray;
   }
 
   #remote-video {
