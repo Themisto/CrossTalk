@@ -90,6 +90,7 @@ body {
   display: flex;
   justify-content: center;
   text-align: center;
+
 }
 
 #footer {
