@@ -41,6 +41,11 @@
     margin-top: -40px;
   }
 
+  #controls > *:hover {
+  cursor: pointer;
+  background-color: #42b883;
+  }
+
   #controls p {
     /*font-size: 20pt;*/
   }

@@ -90,16 +90,16 @@ export default {
 #profile-page > * {
   /*background: rgba(0,0,0,0.7);*/
   color: white;
+  background: rgba(0,0,0,0.5);
   /*opacity: 0.5;*/
-  box-shadow: 2px 2px 20px 2px black;
+  box-shadow: 0px 6px 20px 3px rgba(0,0,0,0.7);
+  transition: box-shadow 0.5s;
 }
 
-/*#profile-page > *:hover {
-  background-color: black;
-  color: white;
-  opacity: 0.55;
-  box-shadow: 2px 2px 2px 2px black;
-}*/
+#profile-page > *:hover {
+
+  box-shadow: 0px 7px 25px 4px rgba(0,0,0,0.7);
+}
 
 
 
@@ -123,7 +123,7 @@ export default {
 #friends-list {
   grid-area: friends-list;
   position: relative;
-  border: 1px solid lime;
+  /*border: 1px solid lime;*/
 
 }
 
