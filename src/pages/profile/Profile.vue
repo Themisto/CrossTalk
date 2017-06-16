@@ -98,7 +98,7 @@ export default {
 
 #profile-page > *:hover {
 
-  box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.7);
+  box-shadow: 0px 7px 25px 4px rgba(0,0,0,0.7);
 }
 
 
