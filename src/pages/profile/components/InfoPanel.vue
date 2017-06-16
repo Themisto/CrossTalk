@@ -32,7 +32,7 @@ export default {
 
   watch: {
     data: function() {
-      console.log("GET TRIGGERED! ", this.data);
+      console.log("Info >>>> ", this.data);
       if (this.data !== null) {
         this.showInfo = true;
       }

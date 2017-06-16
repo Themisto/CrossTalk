@@ -8,7 +8,7 @@
 
   <div id="friends-list-container">
 
-    <h2>Trigger</h2>
+    <h2>Friends</h2>
     <friends-list></friends-list>
 
   </div>

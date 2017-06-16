@@ -56,10 +56,10 @@ ul {
 
 }
 
-li {
+/*li {
     display: inline;
     padding: 10px;
-}
+}*/
 
 
 </style>
