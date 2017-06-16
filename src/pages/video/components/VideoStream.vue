@@ -241,23 +241,13 @@
   }
 
   #remote-video {
-    /*background: rgba(0,0,0,0.6);*/
     width: 100%;
     height: 100%;
-    /*box-shadow: 2px 2px 20px 2px #111;*/
-    /*grid-column: col 1 / span  8;*/
-    /*grid-row: row 1 / span 8;*/
   }
 
   #local-video {
-    /*background: rgba(0,0,0,0.6);*/
-    /*grid-column: col 8;*/
-    /*grid-row: row 8;*/
     width: auto;
     height: 100%;
-    /*box-shadow: 2px 2px 20px 2px #111;*/
-    /*z-index:11;*/
-    /*margin-bottom: 20px;*/
   }
 
   .remote-video-container {
@@ -273,11 +263,10 @@
     background: rgba(0,0,0,0.6);
     grid-column: col 8;
     grid-row: row 8;
-    width: auto;
+    width: 200px;
     height: 150px;
     box-shadow: 2px 2px 20px 2px #111;
     z-index:11;
-    /*margin-bottom: 20px;*/
   }
 
   #recorder {

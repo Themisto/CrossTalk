@@ -1,9 +1,9 @@
 <template>
   <div id="controls">
-    <div id="mute" v-on:click="toggleMute">
+    <div id="mute" v-on:click="toggleMute" :class="{'green': !audioOn, 'black': audioOn}">
       <p>&#127908</p>
     </div>
-    <div id="video" v-on:click="toggleCam">
+    <div id="video" v-on:click="toggleCam" :class="{'green': !camOn, 'black': camOn}">
       <p>&#128249</p>
     </div>
   </div>
@@ -16,17 +16,21 @@
     props: ['socket', 'toggle'],
     data() {
       return {
+        audioOn: true,
+        camOn: true
       }
     },
     methods: {
       toggleMute: function() {
         console.log('button mute');
         this.socket.control('mic');
+        this.audioOn = !this.audioOn;
       },
       toggleCam: function() {
         console.log('button cam');
         this.socket.control('cam');
         this.toggle();
+        this.camOn = !this.camOn;
       }
     }
   }
@@ -42,12 +46,15 @@
   }
 
   #controls > *:hover {
-  cursor: pointer;
-  background-color: #42b883;
+    cursor: pointer;
+    background-color: #42b883;
+  }
+  .green {
+    background-color: #42b883;
   }
 
-  #controls p {
-    /*font-size: 20pt;*/
+  .black {
+    background-color: black;
   }
 
   #controls div {
@@ -55,7 +62,6 @@
     margin-bottom: 10px;
     width: 30px;
     height: 30px;
-    background-color: black;
     border-radius: 100%;
   }
 
